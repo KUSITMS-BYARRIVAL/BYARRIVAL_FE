@@ -1,0 +1,122 @@
+name: PR Checks
+
+# PR을 열거나 커밋을 푸시하면
+# 1) Lint, Format, Typecheck, Expo Doctor를 모두 실행 (하나가 실패해도 나머지 계속 진행)
+# 2) 결과를 PR 댓글 하나로 남기고, 다시 실행되면 같은 댓글을 갱신
+# 3) 하나라도 실패하면 워크플로우를 실패 처리
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+# 같은 PR에 새 커밋이 올라오면 이전 실행은 취소
+concurrency:
+  group: pr-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      # CI에서는 Git 훅 설치가 필요 없음
+      HUSKY: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # package.json의 packageManager와 같은 npm 버전 사용
+      - name: Install pinned npm
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        id: lint
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Format
+        id: format
+        continue-on-error: true
+        run: npm run format:check
+
+      - name: Typecheck
+        id: typecheck
+        continue-on-error: true
+        run: npm run typecheck
+
+      - name: Expo Doctor
+        id: expo_doctor
+        continue-on-error: true
+        run: npx expo-doctor
+
+      - name: Comment PR result
+        if: always()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const results = [
+              { name: 'Lint', outcome: '${{ steps.lint.outcome }}' },
+              { name: 'Format', outcome: '${{ steps.format.outcome }}' },
+              { name: 'Typecheck', outcome: '${{ steps.typecheck.outcome }}' },
+              { name: 'Expo Doctor', outcome: '${{ steps.expo_doctor.outcome }}' },
+            ];
+
+            const icon = (outcome) =>
+              ({ success: '✅', failure: '❌', skipped: '⏭️' })[outcome] ?? '⚠️';
+            const rows = results.map((r) => `| ${r.name} | ${icon(r.outcome)} |`).join('\n');
+            const marker = '### 🤖 PR Checks 결과';
+            const body = [
+              marker,
+              '',
+              '| 체크 항목 | 결과 |',
+              '| --- | --- |',
+              rows,
+              '',
+              `[워크플로우 로그 보기](${context.payload.repository.html_url}/actions/runs/${context.runId})`,
+            ].join('\n');
+
+            // 댓글이 30개를 넘어도 찾을 수 있도록 전체 페이지 조회
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(
+              (c) => c.user?.type === 'Bot' && c.body?.startsWith(marker),
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - name: Fail if any check failed
+        if: |
+          steps.lint.outcome == 'failure' ||
+          steps.format.outcome == 'failure' ||
+          steps.typecheck.outcome == 'failure' ||
+          steps.expo_doctor.outcome == 'failure'
+        run: exit 1
