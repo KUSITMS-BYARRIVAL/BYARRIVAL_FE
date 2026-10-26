@@ -1,0 +1,40 @@
+name: "이슈 생성"
+description: "Jira 스토리 아래에 하위 작업이 생성되고, 브랜치가 자동으로 만들어집니다"
+title: "[FEAT] "
+body:
+  - type: input
+    id: parentKey
+    attributes:
+      label: "🎟️ 상위 작업 (Ticket Number)"
+      description: "작업할 Jira 스토리 번호를 입력하세요"
+      placeholder: "DCK-00"
+    validations:
+      required: true
+
+  - type: input
+    id: branchType
+    attributes:
+      label: "🌿 브랜치 유형"
+      description: "영문 소문자로 입력 (feat, fix, refactor, chore 등)"
+      placeholder: "feat"
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: "🌳 브랜치에 포함될 작업 내용"
+      description: "영문, 숫자, _, - 만 사용 (한글 X)"
+      placeholder: "common_components"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 Description"
+      value: |
+        - 구현할 내용 1
+        - 구현할 내용 2
+    validations:
+      required: true
