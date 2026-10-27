@@ -1,0 +1,160 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+
+# ─────────────────────────────────────────
+# 🌐 언어, 말투 설정
+# ─────────────────────────────────────────
+language: "ko-KR"
+
+# 리뷰와 답변 전체의 말투 (최대 250자)
+tone_instructions: "단정적으로 지적하기보다 이유와 함께 개선 방법을 제안해 주세요."
+
+# ─────────────────────────────────────────
+# 🔍 코드래빗 리뷰 기본 설정
+# ─────────────────────────────────────────
+reviews:
+  # 리뷰 강도 프로필
+  profile: "chill"
+
+  # PR 전체 요약
+  high_level_summary: false
+
+  # 리뷰 완료 축하 시
+  poem: false
+
+  # 리뷰 진행 중 운세 문구
+  in_progress_fortune: false
+
+  # 리뷰 상태 코멘트
+  review_status: true
+
+  # 워크스루 접어두기
+  collapse_walkthrough: false
+
+  # 시퀀스 다이어그램
+  sequence_diagrams: false
+
+  # 변경 파일 목록 요약
+  changed_files_summary: true
+
+  # 자동 리뷰 설정
+  auto_review:
+    # 자동 리뷰
+    enabled: true
+
+    # 드래프트 PR 리뷰
+    drafts: false
+
+    # 새 커밋 변경분만 리뷰
+    auto_incremental_review: true
+
+    # 리뷰 대상 브랜치
+    base_branches:
+      - "^dev$"
+
+  # 머지 전 체크
+  pre_merge_checks:
+    # 함수 주석 비율 검사
+    docstrings:
+      mode: "off"
+
+  # ── 리뷰에서 제외할 파일/폴더 패턴 ──────────────
+  path_filters:
+    - "!**/node_modules/**"
+    - "!**/package-lock.json"
+    - "!**/.expo/**"
+    - "!**/ios/**"
+    - "!**/android/**"
+    - "!**/expo-env.d.ts"
+    - "!**/dist/**"
+    - "!**/coverage/**"
+    - "!**/__snapshots__/**"
+    - "!**/*.generated.*"
+
+  # ── 경로별 맞춤 리뷰 지침 ────────────────────────
+  path_instructions:
+    # ── 전체 공통 ──
+    - path: "**/*"
+      instructions: |
+        Expo SDK 58, React Native 0.88, React 19.3, Expo Router, TypeScript 프로젝트입니다.
+        Expo는 SDK마다 API가 자주 바뀌므로 SDK 58 기준으로 리뷰해 주세요.
+
+        [폴더 구조]
+        - src/app/ 은 경로 연결만 담당합니다. 화면 UI는 src/screens/{도메인}/ 에 작성합니다.
+        - 컴포넌트 위치 기준
+          - 도메인을 모르는 공통 컴포넌트 → src/components/
+          - 한 도메인에서만 쓰는 컴포넌트와 섹션 → src/screens/{도메인}/components/
+        - screens/ 의 도메인 폴더끼리 서로 import하지 않습니다.
+
+        [네이밍]
+        - 파일명, 폴더명: kebab-case (top-navigation.tsx, calendar-section/)
+        - 훅 파일 use- 접두사 (use-debounce.ts) / 스토어 -store (auth-store.ts) / 타입 .types (user.types.ts)
+        - 단위 테스트: 대상 영역의 __tests__/ 폴더에 대상 파일명 + .test (components/__tests__/user-card.test.tsx)
+        - 라우트: 동적 [userId].tsx / 레이아웃 _layout.tsx / 그룹 (tabs)/
+        - 컴포넌트, 타입, 인터페이스: PascalCase / 함수, 변수, 훅: camelCase / 상수 값: UPPER_SNAKE_CASE
+        - boolean: is, has, can 접두사 / 이벤트 핸들러: 정의는 handle, props는 on 접두사
+
+        [코드]
+        - any 타입 사용은 지양합니다.
+        - console.log, 하드코딩된 토큰이나 키 등 민감 정보는 지적해 주세요.
+        - Expo 패키지는 npx expo install로 설치합니다. SDK와 맞지 않는 버전이 보이면 알려 주세요.
+        - React Compiler를 사용하므로 useMemo, useCallback, React.memo를 기계적으로 권하지 마세요.
+
+        [리뷰 제외]
+        - 포매팅(Prettier 담당), ESLint 규칙으로 잡히는 내용, 브랜치명, 커밋 메시지, PR 제목
+
+    # ── 공통 컴포넌트 ──
+    - path: "src/components/**"
+      instructions: |
+        [역할]
+        - 도메인을 모르는 컴포넌트만 둡니다. (Button, Card, TopNavigation, Toast 등)
+        - API 호출, 도메인 스토어, 도메인 타입(예: BoardingRecord)을 사용하거나 특정 화면 문구가 하드코딩되어 있으면
+          src/screens/{도메인}/components/ 로 옮기도록 제안해 주세요.
+        - 표시할 내용은 props로 받고, 모양과 상호작용만 담당하는지 확인해 주세요.
+
+        [설계]
+        - 구성만 다른 시안은 하나의 컴포넌트와 props 조합으로 만드는지 확인해 주세요.
+        - 종류가 늘어날 수 있는 자리(오른쪽 버튼 등)는 ReactNode로 받는지 확인해 주세요.
+        - variant는 cva로 정의하고, 외부 className은 cn으로 합치는지 확인해 주세요.
+
+        [스타일]
+        - 색상, 간격을 값으로 하드코딩하지 않고 디자인 토큰을 사용하는지 확인해 주세요.
+
+    # ── 단위 테스트 ──
+    - path: "**/*.test.*"
+      instructions: |
+        Jest(jest-expo) + React Native Testing Library v14로 작성한 단위 테스트입니다.
+
+        [위치]
+        - 대상 영역 안의 __tests__/ 폴더에 두고, src/app/ 안에는 두지 않습니다.
+
+        [RNTL v14]
+        - render, renderHook, fireEvent, userEvent는 Promise를 반환합니다. await 누락과 async가 아닌 테스트 함수를 지적해 주세요.
+        - react-test-renderer, @testing-library/jest-native는 사용하지 않습니다. toBeOnTheScreen 등 matcher는 RNTL에 내장되어 있습니다.
+        - 컴포넌트 타입으로 찾는 쿼리(UNSAFE_getByType 등)는 v14에서 지원하지 않습니다.
+
+        [작성 방식]
+        - 구현 세부가 아닌 사용자에게 보이는 동작을 검증합니다.
+        - 쿼리는 getByRole, getByText 우선, testID는 마지막 수단입니다.
+        - 사용자 동작은 userEvent를 우선합니다.
+
+# ─────────────────────────────────────────
+# 💬 채팅(코멘트 답변) 설정
+# ─────────────────────────────────────────
+chat:
+  # 리뷰 코멘트에 답글을 달면 자동으로 응답
+  auto_reply: true
+
+# ─────────────────────────────────────────
+# 🧠 지식베이스 설정
+# ─────────────────────────────────────────
+knowledge_base:
+  # 지식베이스 사용 (PR 패턴, 팀 학습 내용 축적)
+  opt_out: false
+
+  # 리뷰 중 웹 검색으로 최신 라이브러리 정보 참조
+  web_search:
+    enabled: true
+
+  # 학습 범위: "local" → 현재 레포지토리만 학습
+  learnings:
+    scope: local
