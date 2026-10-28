@@ -5,6 +5,7 @@ const {
   toLineHeightPx,
 } = require("./src/theme/typography");
 const { PALETTE, SEMANTIC } = require("./src/theme/colors");
+const { RADIUS } = require("./src/theme/radius");
 
 const {
   background: iconBackground,
@@ -19,6 +20,10 @@ module.exports = {
   theme: {
     // extend가 아닌 교체: Tailwind 기본 색을 없애고 디자인 팔레트만 쓴다
     colors: PALETTE,
+    // radius도 교체: Tailwind 기본값 대신 디자인 값만 쓴다
+    borderRadius: Object.fromEntries(
+      Object.entries(RADIUS).map(([name, value]) => [name, `${value}px`]),
+    ),
     extend: {
       // 시맨틱 컬러는 용도에 맞는 접두사에서만 쓸 수 있게 등록한다
       textColor: {
