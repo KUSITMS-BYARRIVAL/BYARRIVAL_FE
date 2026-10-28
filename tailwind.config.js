@@ -1,17 +1,41 @@
+const plugin = require("tailwindcss/plugin");
+const {
+  FONT_FAMILY_BY_WEIGHT,
+  TYPOGRAPHY,
+  toLineHeightPx,
+} = require("./src/theme/typography");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-      // RN은 커스텀 폰트에서 fontWeight로 굵기를 고르지 못하므로 굵기별 폰트 이름을 직접 지정한다
       fontFamily: {
-        "pretendard-regular": ["Pretendard-Regular"],
-        "pretendard-medium": ["Pretendard-Medium"],
-        "pretendard-semibold": ["Pretendard-SemiBold"],
-        "pretendard-bold": ["Pretendard-Bold"],
+        "pretendard-regular": [FONT_FAMILY_BY_WEIGHT[400]],
+        "pretendard-medium": [FONT_FAMILY_BY_WEIGHT[500]],
+        "pretendard-semibold": [FONT_FAMILY_BY_WEIGHT[600]],
+        "pretendard-bold": [FONT_FAMILY_BY_WEIGHT[700]],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // 시맨틱 타이포 토큰: text-heading1-b 하나로 크기, 행간, 폰트(굵기)를 한 번에 적용한다
+    plugin(({ addUtilities }) => {
+      addUtilities(
+        Object.fromEntries(
+          Object.entries(TYPOGRAPHY).map(
+            ([name, { fontSize, lineHeight, fontWeight }]) => [
+              `.text-${name}`,
+              {
+                fontSize: `${fontSize}px`,
+                lineHeight: `${toLineHeightPx(fontSize, lineHeight)}px`,
+                fontFamily: FONT_FAMILY_BY_WEIGHT[fontWeight],
+              },
+            ],
+          ),
+        ),
+      );
+    }),
+  ],
 };

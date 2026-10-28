@@ -20,4 +20,14 @@ describe("cn", () => {
       "p-4 text-red-500",
     );
   });
+
+  it("타이포 토큰과 색상 클래스는 함께 유지한다", () => {
+    expect(cn("text-heading1-b", "text-blue-500")).toBe(
+      "text-heading1-b text-blue-500",
+    );
+  });
+
+  it("타이포 토큰끼리는 뒤에 오는 값으로 덮어쓴다", () => {
+    expect(cn("text-body1-r", "text-heading1-b")).toBe("text-heading1-b");
+  });
 });
