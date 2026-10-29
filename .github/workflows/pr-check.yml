@@ -51,6 +51,11 @@ jobs:
         continue-on-error: true
         run: npm run format:check
 
+      # expo-env.d.ts(.css import 타입 등)는 git에서 제외된 생성 파일이라 CI에서 직접 만든다
+      # https://docs.expo.dev/router/reference/typed-routes/
+      - name: Generate Expo types
+        run: npx expo customize tsconfig.json
+
       - name: Typecheck
         id: typecheck
         continue-on-error: true
