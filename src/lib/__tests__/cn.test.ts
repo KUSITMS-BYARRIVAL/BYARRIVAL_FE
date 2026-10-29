@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/cn";
 
 describe("cn", () => {
   it("여러 클래스를 하나의 문자열로 합친다", () => {

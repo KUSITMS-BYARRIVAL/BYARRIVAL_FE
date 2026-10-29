@@ -41,3 +41,17 @@ example
 # generated native folders
 /ios
 /android
+
+# Claude Code 로컬 설정 (심링크)
+.claude/hooks
+.claude/rules
+.claude/skills
+.claude/settings.local.json
+/CLAUDE.md
+/docs
+/.dev
+/HANDOFF.md
+
+# oh-my-claudecode 플러그인 실행 상태 (세션·작업 기록, 개인별 로컬)
+.omc/
+
