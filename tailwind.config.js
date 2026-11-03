@@ -60,12 +60,16 @@ module.exports = {
       addUtilities(
         Object.fromEntries(
           Object.entries(TYPOGRAPHY).map(
-            ([name, { fontSize, lineHeight, fontWeight }]) => [
+            ([name, { fontSize, lineHeight, fontWeight, letterSpacing }]) => [
               `.text-${name}`,
               {
                 fontSize: `${fontSize}px`,
                 lineHeight: `${toLineHeightPx(fontSize, lineHeight)}px`,
                 fontFamily: FONT_FAMILY_BY_WEIGHT[fontWeight],
+                // RN은 letterSpacing에 %를 쓸 수 없으므로 px로 변환한다
+                ...(letterSpacing && {
+                  letterSpacing: `${(fontSize * letterSpacing) / 100}px`,
+                }),
               },
             ],
           ),

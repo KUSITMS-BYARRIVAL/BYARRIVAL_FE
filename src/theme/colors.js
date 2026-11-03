@@ -158,6 +158,9 @@ const SEMANTIC = {
     disabled: PALETTE.grey[300],
     danger: PALETTE.red[500],
     pressed: PALETTE["grey-opacity"][100],
+    // btn/selected: Brand 버튼의 disabled 배경
+    // 디자인 컨펌 후 주석 제거
+    selected: PALETTE.green[50],
   },
   card: {
     white: PALETTE.white,
