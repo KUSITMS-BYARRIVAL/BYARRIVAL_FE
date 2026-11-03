@@ -31,6 +31,7 @@ const TYPOGRAPHY = {
   "label2-sb": { fontSize: 14, lineHeight: 140, fontWeight: 600 },
   "label3-sb": { fontSize: 12, lineHeight: 140, fontWeight: 600 },
   "caption1-r": { fontSize: 12, lineHeight: 140, fontWeight: 400 },
+  "caption1-m": { fontSize: 12, lineHeight: 140, fontWeight: 500 },
 };
 
 /** RN은 lineHeight에 %를 쓸 수 없으므로 px로 변환한다 */
