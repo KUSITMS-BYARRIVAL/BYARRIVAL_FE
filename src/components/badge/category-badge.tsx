@@ -8,7 +8,7 @@ type Category = keyof typeof SEMANTIC.category.background;
 
 // 동적 클래스 이름은 Tailwind가 수집하지 못하므로 리터럴로 매핑한다
 const containerVariants = cva(
-  "h-7 items-center justify-center rounded-full px-2.5",
+  "h-7 w-[50px] items-center justify-center rounded-full",
   {
     variants: {
       category: {
