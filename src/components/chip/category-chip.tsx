@@ -1,66 +1,23 @@
 import { Pressable, type PressableProps, Text } from "react-native";
 
 import { cn } from "@/lib/cn";
-import type { SEMANTIC } from "@/theme/colors";
+import { type Category, CATEGORY_CLASS } from "@/theme/category";
 
-type ChipCategory = "all" | keyof typeof SEMANTIC.category.background;
+type ChipCategory = "all" | Category;
 
-// 동적 클래스 이름은 Tailwind가 수집하지 못하므로 리터럴로 매핑한다
-// 선택 배경은 카테고리 글자색과 같은데 맞는 시맨틱 배경 토큰이 없어 팔레트를 쓴다
-const CATEGORY_CLASS: Record<
-  ChipCategory,
-  { bg: string; selectedBg: string; text: string }
-> = {
+// "전체"는 카테고리가 아닌 필터 선택지라 칩에만 둔다
+const CHIP_CLASS = {
+  ...CATEGORY_CLASS,
   all: {
     bg: "bg-btn-neutral-weak",
-    selectedBg: "bg-btn-neutral",
     text: "text-primary",
-  },
-  economy: {
-    bg: "bg-category-economy",
-    selectedBg: "bg-light-green-600",
-    text: "text-category-economy",
-  },
-  tech: {
-    bg: "bg-category-tech",
-    selectedBg: "bg-ice-blue-600",
-    text: "text-category-tech",
-  },
-  career: {
-    bg: "bg-category-career",
-    selectedBg: "bg-marine-blue-600",
-    text: "text-category-career",
-  },
-  science: {
-    bg: "bg-category-science",
-    selectedBg: "bg-royal-blue-600",
-    text: "text-category-science",
-  },
-  society: {
-    bg: "bg-category-society",
-    selectedBg: "bg-cobalt-600",
-    text: "text-category-society",
-  },
-  global: {
-    bg: "bg-category-global",
-    selectedBg: "bg-navy-600",
-    text: "text-category-global",
-  },
-  life: {
-    bg: "bg-category-life",
-    selectedBg: "bg-blue-purple-600",
-    text: "text-category-life",
-  },
-  culture: {
-    bg: "bg-category-culture",
-    selectedBg: "bg-purple-600",
-    text: "text-category-culture",
+    selectedBg: "bg-btn-neutral",
   },
 };
 
 type CategoryChipProps = Omit<PressableProps, "children"> & {
   category: ChipCategory;
-  // TODO: 카테고리 → 한글 라벨(전체·경제…) 매핑은 도메인 작업 때 추가하고 label prop을 대체한다
+  // TODO: 한글 라벨 매핑은 서버 카테고리 값 확인 후 도메인 쪽에 추가한다
   label: string;
   selected?: boolean;
   className?: string;
@@ -74,7 +31,7 @@ export function CategoryChip({
   accessibilityState,
   ...props
 }: CategoryChipProps) {
-  const { bg, selectedBg, text } = CATEGORY_CLASS[category];
+  const { bg, selectedBg, text } = CHIP_CLASS[category];
 
   return (
     <Pressable
