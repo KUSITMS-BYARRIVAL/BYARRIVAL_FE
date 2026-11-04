@@ -12,6 +12,9 @@ const PALETTE = {
   transparent: "transparent",
   current: "currentColor",
   white: "#FFFFFF",
+  // 소셜 로그인 버튼용 브랜드 색. 각 사 디자인 가이드에서 정한 값이라 바꾸지 않는다
+  black: "#000000",
+  "kakao-yellow": "#FEE500",
   green: {
     50: "#EEFAF4",
     100: "#D6F2E4",
@@ -159,6 +162,8 @@ const SEMANTIC = {
     danger: PALETTE.red[500],
     pressed: PALETTE["grey-opacity"][100],
     "disabled-brand": PALETTE.green[50],
+    apple: PALETTE.black,
+    kakao: PALETTE["kakao-yellow"],
   },
   card: {
     white: PALETTE.white,
