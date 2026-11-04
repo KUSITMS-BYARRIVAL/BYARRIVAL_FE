@@ -40,7 +40,7 @@ const containerVariants = cva(
       { size: ["s", "m"], icon: "right", className: "pr-1.5" },
       { size: "l", icon: "left", className: "pl-5" },
       { size: "l", icon: "right", className: "pr-5" },
-      { disabled: true, color: "brand", className: "bg-btn-selected" },
+      { disabled: true, color: "brand", className: "bg-btn-disabled-brand" },
       {
         disabled: true,
         color: ["neutral", "neutral-weak", "danger"],

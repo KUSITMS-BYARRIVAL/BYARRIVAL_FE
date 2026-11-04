@@ -1,4 +1,4 @@
-import { Pressable, type PressableProps, Text } from "react-native";
+import { Pressable, type PressableProps, Text, View } from "react-native";
 
 import { DeleteIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
@@ -19,35 +19,40 @@ export function Chip({
   accessibilityState,
   ...props
 }: ChipProps) {
+  // 삭제 버튼을 칩 버튼 안에 두면 스크린리더가 칩만 읽어 삭제 버튼에 닿지 못해 형제로 둔다
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ ...accessibilityState, selected }}
+    <View
       className={cn(
-        "h-8 flex-row items-center justify-center gap-1.5 rounded-full px-3",
+        "h-8 flex-row items-center gap-1.5 overflow-hidden rounded-full",
         selected ? "bg-green-opacity-100" : "bg-white",
         className,
       )}
-      {...props}
     >
-      <Text
-        className={cn(
-          "text-label2-sb",
-          selected ? "text-brand" : "text-tertiary",
-        )}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ ...accessibilityState, selected }}
+        className={cn("h-full justify-center pl-3", !onDelete && "pr-3")}
+        {...props}
       >
-        {label}
-      </Text>
+        <Text
+          className={cn(
+            "text-label2-sb",
+            selected ? "text-brand" : "text-tertiary",
+          )}
+        >
+          {label}
+        </Text>
+      </Pressable>
       {onDelete && (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`${label} 삭제`}
-          hitSlop={8}
+          className="h-full justify-center pr-3"
           onPress={onDelete}
         >
           <DeleteIcon color={SEMANTIC.icon.brand} />
         </Pressable>
       )}
-    </Pressable>
+    </View>
   );
 }

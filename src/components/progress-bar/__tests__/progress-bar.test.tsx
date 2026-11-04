@@ -16,4 +16,11 @@ describe("ProgressBar", () => {
       now: 100,
     });
   });
+
+  it("NaN이면 0%로 본다", async () => {
+    await render(<ProgressBar progress={NaN} />);
+    expect(screen.getByRole("progressbar")).toHaveAccessibilityValue({
+      now: 0,
+    });
+  });
 });

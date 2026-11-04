@@ -9,7 +9,9 @@ type ProgressBarProps = {
 };
 
 export function ProgressBar({ progress, className }: ProgressBarProps) {
-  const percent = Math.round(Math.min(Math.max(progress, 0), 1) * 100);
+  // 0/0 같은 계산에서 NaN이 들어오면 0%로 본다
+  const safeProgress = Number.isFinite(progress) ? progress : 0;
+  const percent = Math.round(Math.min(Math.max(safeProgress, 0), 1) * 100);
 
   return (
     <View
