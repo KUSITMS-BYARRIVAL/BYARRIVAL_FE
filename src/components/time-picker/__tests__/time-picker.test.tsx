@@ -14,6 +14,10 @@ const act = (name: string, actionName: "increment" | "decrement") =>
     nativeEvent: { actionName },
   });
 
+type Node = ReturnType<typeof screen.getByRole>;
+// 각 휠(adjustable)의 첫 자식이 스크롤 영역이다
+const scrollView = (name: string) => column(name).children[0] as Node;
+
 describe("TimePicker", () => {
   it("24시간 값을 12시간제 시·분·오전오후로 보여준다", async () => {
     await renderPicker({ hour: 20, minute: 5 });
@@ -49,6 +53,31 @@ describe("TimePicker", () => {
     const onChange = await renderPicker({ hour: 23, minute: 0 });
     await act("시", "increment");
     expect(onChange).toHaveBeenCalledWith({ hour: 12, minute: 0 });
+  });
+
+  it("마지막 항목에서 올리면 onChange를 호출하지 않는다", async () => {
+    const onChange = await renderPicker({ hour: 8, minute: 55 });
+    await act("분", "increment");
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("휠을 끌어서 멈추면 멈춘 칸의 값으로 onChange를 호출한다", async () => {
+    const onChange = await renderPicker({ hour: 8, minute: 0 });
+    const wheel = scrollView("분");
+    await fireEvent(wheel, "scrollBeginDrag");
+    // 한 칸 42px → 두 칸 아래(10분)에서 멈춤
+    await fireEvent(wheel, "momentumScrollEnd", {
+      nativeEvent: { contentOffset: { y: 84 } },
+    });
+    expect(onChange).toHaveBeenLastCalledWith({ hour: 8, minute: 10 });
+  });
+
+  it("끌지 않았는데 스크롤이 멈춘 이벤트만 오면 값을 바꾸지 않는다", async () => {
+    const onChange = await renderPicker({ hour: 8, minute: 0 });
+    await fireEvent(scrollView("분"), "momentumScrollEnd", {
+      nativeEvent: { contentOffset: { y: 84 } },
+    });
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("첫 항목에서 내리면 onChange를 호출하지 않는다", async () => {
