@@ -15,6 +15,7 @@ export function Chip({
   label,
   selected = true,
   onDelete,
+  disabled,
   className,
   accessibilityState,
   ...props
@@ -32,6 +33,7 @@ export function Chip({
         accessibilityRole="button"
         accessibilityState={{ ...accessibilityState, selected }}
         className={cn("h-full justify-center pl-3", !onDelete && "pr-3")}
+        disabled={disabled}
         {...props}
       >
         <Text
@@ -48,6 +50,7 @@ export function Chip({
           accessibilityRole="button"
           accessibilityLabel={`${label} 삭제`}
           className="h-full justify-center pr-3"
+          disabled={disabled}
           onPress={onDelete}
         >
           <DeleteIcon color={SEMANTIC.icon.brand} />

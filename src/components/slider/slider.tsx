@@ -10,10 +10,16 @@ type SliderProps = {
   /** 0 ~ STEP_COUNT - 1 단계 */
   value: number;
   onValueChange: (value: number) => void;
+  accessibilityLabel?: string;
   className?: string;
 };
 
-export function Slider({ value, onValueChange, className }: SliderProps) {
+export function Slider({
+  value,
+  onValueChange,
+  accessibilityLabel,
+  className,
+}: SliderProps) {
   const [width, setWidth] = useState(0);
   const range = Math.max(width - THUMB_SIZE, 0);
   const thumbLeft = (value / (STEP_COUNT - 1)) * range;
@@ -40,6 +46,7 @@ export function Slider({ value, onValueChange, className }: SliderProps) {
     <View
       accessible
       accessibilityRole="adjustable"
+      accessibilityLabel={accessibilityLabel}
       accessibilityValue={{ min: 0, max: STEP_COUNT - 1, now: value }}
       accessibilityActions={[{ name: "increment" }, { name: "decrement" }]}
       onAccessibilityAction={(e) =>

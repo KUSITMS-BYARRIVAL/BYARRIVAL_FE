@@ -66,4 +66,17 @@ describe("Slider", () => {
     });
     expect(onValueChange).toHaveBeenCalledWith(2);
   });
+
+  it("넘긴 접근성 이름으로 찾을 수 있다", async () => {
+    await render(
+      <Slider
+        value={0}
+        onValueChange={jest.fn()}
+        accessibilityLabel="컨디션"
+      />,
+    );
+    expect(
+      screen.getByRole("adjustable", { name: "컨디션" }),
+    ).toBeOnTheScreen();
+  });
 });

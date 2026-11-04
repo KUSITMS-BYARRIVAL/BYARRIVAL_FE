@@ -41,4 +41,18 @@ describe("Chip", () => {
     await fireEvent.press(chip());
     expect(onPress).toHaveBeenCalledTimes(1);
   });
+
+  it("disabled면 칩과 삭제 버튼 모두 눌리지 않는다", async () => {
+    const onPress = jest.fn();
+    const onDelete = jest.fn();
+    await render(
+      <Chip label="텍스트" disabled onPress={onPress} onDelete={onDelete} />,
+    );
+    await fireEvent.press(chip());
+    await fireEvent.press(screen.getByLabelText("텍스트 삭제"));
+    expect(onPress).not.toHaveBeenCalled();
+    expect(onDelete).not.toHaveBeenCalled();
+    expect(chip()).toBeDisabled();
+    expect(screen.getByLabelText("텍스트 삭제")).toBeDisabled();
+  });
 });

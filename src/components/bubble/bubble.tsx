@@ -1,28 +1,23 @@
-import { Pressable, type PressableProps, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { cn } from "@/lib/cn";
 
-type BubbleProps = Omit<PressableProps, "children"> & {
+type BubbleProps = {
   text: string;
   className?: string;
 };
 
-export function Bubble({ text, className, ...props }: BubbleProps) {
+// 현재는 카드 안에서만 쓰여 카드가 누르기를 맡으므로 View로 구현
+// 말풍선만 따로 눌러야 하거나 눌림 효과가 필요해지면 Pressable로 바꾼다
+export function Bubble({ text, className }: BubbleProps) {
   return (
-    // 눌림 효과만 있고 동작은 없어서 버튼으로 안내하지 않는다
-    <Pressable
+    <View
       className={cn(
-        "overflow-hidden rounded-xl rounded-tl-none bg-green-opacity-100 px-5 py-4",
+        "rounded-xl rounded-tl-none bg-green-opacity-100 px-5 py-4",
         className,
       )}
-      {...props}
     >
-      {({ pressed }) => (
-        <>
-          {pressed && <View className="absolute inset-0 bg-card-pressed" />}
-          <Text className="text-primary text-body2-m">{text}</Text>
-        </>
-      )}
-    </Pressable>
+      <Text className="text-primary text-body2-m">{text}</Text>
+    </View>
   );
 }

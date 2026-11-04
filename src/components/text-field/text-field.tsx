@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Text, TextInput, type TextInputProps, View } from "react-native";
 
 import { cn } from "@/lib/cn";
@@ -14,9 +15,14 @@ export function TextField({
   helperText,
   maxLength,
   value,
+  defaultValue,
+  onChangeText,
   className,
   ...props
 }: TextFieldProps) {
+  // 비제어(defaultValue)로 써도 글자 수가 맞도록 입력값을 따로 기억한다
+  const [uncontrolledText, setUncontrolledText] = useState(defaultValue ?? "");
+  const text = value ?? uncontrolledText;
   const hasHelper = !!helperText || maxLength !== undefined;
   const helperClass = cn(
     "text-caption1-r",
@@ -28,6 +34,11 @@ export function TextField({
       <TextInput
         maxLength={maxLength}
         value={value}
+        defaultValue={defaultValue}
+        onChangeText={(next) => {
+          setUncontrolledText(next);
+          onChangeText?.(next);
+        }}
         placeholderTextColor={
           error ? SEMANTIC.text.danger : SEMANTIC.text["on-fill-muted"]
         }
@@ -44,10 +55,7 @@ export function TextField({
         <View className="flex-row justify-between px-1">
           <Text className={helperClass}>{helperText}</Text>
           {maxLength !== undefined && (
-            // 글자 수는 value로 세므로 제어 컴포넌트로 써야 정확하다
-            <Text className={helperClass}>
-              {`${value?.length ?? 0}/${maxLength}`}
-            </Text>
+            <Text className={helperClass}>{`${text.length}/${maxLength}`}</Text>
           )}
         </View>
       )}

@@ -27,4 +27,16 @@ describe("TextField", () => {
     await render(<TextField value="안녕하세요" />);
     expect(screen.queryByText(/\/\d+$/)).toBeNull();
   });
+
+  it("defaultValue로 써도 글자 수를 표시하고 입력하면 갱신한다", async () => {
+    await render(
+      <TextField placeholder="닉네임" defaultValue="안녕" maxLength={10} />,
+    );
+    expect(screen.getByText("2/10")).toBeOnTheScreen();
+    await fireEvent.changeText(
+      screen.getByPlaceholderText("닉네임"),
+      "안녕하세요",
+    );
+    expect(screen.getByText("5/10")).toBeOnTheScreen();
+  });
 });
