@@ -38,7 +38,7 @@ export function CategoryChip({
       accessibilityRole="button"
       accessibilityState={{ ...accessibilityState, selected }}
       className={cn(
-        "h-8 w-[58px] items-center justify-center rounded-full",
+        "min-h-8 min-w-[58px] items-center justify-center rounded-full px-2.5",
         selected ? selectedBg : bg,
         className,
       )}

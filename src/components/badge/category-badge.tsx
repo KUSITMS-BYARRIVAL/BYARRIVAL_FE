@@ -17,10 +17,11 @@ export function CategoryBadge({
 }: CategoryBadgeProps) {
   const { bg, text } = CATEGORY_CLASS[category];
 
+  // 최소 50px, 긴 라벨이나 큰 시스템 글자에서는 라벨에 맞춰 늘어난다
   return (
     <View
       className={cn(
-        "h-7 w-[50px] items-center justify-center rounded-full",
+        "min-h-7 min-w-[50px] items-center justify-center rounded-full px-2.5",
         bg,
         className,
       )}
