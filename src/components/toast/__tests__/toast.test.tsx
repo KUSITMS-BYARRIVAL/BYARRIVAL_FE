@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { AccessibilityInfo } from "react-native";
 
 import { Toast } from "../toast";
 
@@ -18,7 +19,16 @@ describe("Toast", () => {
         onLabelPress={handleLabelPress}
       />,
     );
-    fireEvent.press(screen.getByRole("button", { name: "보러가기" }));
+    await fireEvent.press(screen.getByRole("button", { name: "보러가기" }));
     expect(handleLabelPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("iOS에서는 메시지를 스크린리더로 읽어준다", async () => {
+    const announce = jest
+      .spyOn(AccessibilityInfo, "announceForAccessibility")
+      .mockImplementation(() => {});
+    await render(<Toast message="닉네임을 바꿨어요" />);
+    expect(announce).toHaveBeenCalledWith("닉네임을 바꿨어요");
+    announce.mockRestore();
   });
 });

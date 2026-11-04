@@ -1,4 +1,11 @@
-import { Pressable, Text, View } from "react-native";
+import { useEffect } from "react";
+import {
+  AccessibilityInfo,
+  Platform,
+  Pressable,
+  Text,
+  View,
+} from "react-native";
 
 import { cn } from "@/lib/cn";
 
@@ -10,6 +17,13 @@ type ToastProps = {
 };
 
 export function Toast({ message, label, onLabelPress, className }: ToastProps) {
+  // accessibilityLiveRegion은 Android 전용이라 iOS VoiceOver는 직접 읽어준다
+  useEffect(() => {
+    if (Platform.OS === "ios") {
+      AccessibilityInfo.announceForAccessibility(message);
+    }
+  }, [message]);
+
   return (
     <View
       accessibilityLiveRegion="polite"

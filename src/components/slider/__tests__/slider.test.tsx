@@ -85,6 +85,20 @@ describe("Slider", () => {
     expect(onValueChange).toHaveBeenLastCalledWith(2);
   });
 
+  it("stepCount가 1이면 손잡이를 시작점에 두고 단계를 바꾸지 않는다", async () => {
+    const onValueChange = jest.fn();
+    await render(
+      <Slider value={0} stepCount={1} onValueChange={onValueChange} />,
+    );
+    const slider = screen.getByRole("adjustable");
+    await fireEvent(slider, "layout", {
+      nativeEvent: { layout: { width: 324 } },
+    });
+    await fireEvent(slider, "responderGrant", touchAt(500));
+    expect(onValueChange).not.toHaveBeenCalled();
+    expect(slider).toHaveAccessibilityValue({ min: 0, max: 0, now: 0 });
+  });
+
   it("넘긴 접근성 이름으로 찾을 수 있다", async () => {
     await render(
       <Slider
