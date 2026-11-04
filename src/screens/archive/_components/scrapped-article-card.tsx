@@ -16,7 +16,7 @@ type ScrappedArticleCardProps = {
   title: string;
   imageUrl: string;
   aiSummary: string;
-  bookmarked: boolean;
+  isBookmarked: boolean;
   onBookmarkPress: () => void;
   className?: string;
 };
@@ -28,7 +28,7 @@ export function ScrappedArticleCard({
   title,
   imageUrl,
   aiSummary,
-  bookmarked,
+  isBookmarked,
   onBookmarkPress,
   className,
 }: ScrappedArticleCardProps) {
@@ -39,7 +39,7 @@ export function ScrappedArticleCard({
           <CategoryBadge category={category} label={categoryLabel} />
           <Text className="text-tertiary text-body3-m">{scrappedAt}</Text>
         </View>
-        <BookmarkButton bookmarked={bookmarked} onPress={onBookmarkPress} />
+        <BookmarkButton bookmarked={isBookmarked} onPress={onBookmarkPress} />
       </View>
       <View className="flex-row items-start justify-between gap-3">
         <Text className="max-w-[242px] flex-1 text-primary text-body1-m">

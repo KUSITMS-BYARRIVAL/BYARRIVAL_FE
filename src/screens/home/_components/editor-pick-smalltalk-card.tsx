@@ -12,7 +12,7 @@ type EditorPickSmalltalkCardProps = {
   newsTitle: string;
   question: string;
   followUp: string;
-  bookmarked: boolean;
+  isBookmarked: boolean;
   onBookmarkPress: () => void;
   className?: string;
 };
@@ -23,7 +23,7 @@ export function EditorPickSmalltalkCard({
   newsTitle,
   question,
   followUp,
-  bookmarked,
+  isBookmarked,
   onBookmarkPress,
   className,
 }: EditorPickSmalltalkCardProps) {
@@ -31,7 +31,7 @@ export function EditorPickSmalltalkCard({
     <View className={cn("gap-3.5 rounded bg-white p-5", className)}>
       <View className="flex-row items-center justify-between">
         <CategoryBadge category={category} label={categoryLabel} />
-        <BookmarkButton bookmarked={bookmarked} onPress={onBookmarkPress} />
+        <BookmarkButton bookmarked={isBookmarked} onPress={onBookmarkPress} />
       </View>
       <View className="flex-row items-center gap-2 rounded-sm bg-grey-700 px-3 py-2.5">
         <Text className="text-on-fill-default text-label3-sb">
