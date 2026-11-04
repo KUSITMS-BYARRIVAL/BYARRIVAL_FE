@@ -1,0 +1,37 @@
+<svg width="135" height="135" viewBox="0 0 135 135" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="icon-category" opacity="0.25">
+<g>
+<circle id="Ellipse 2" cx="67.5" cy="67.4999" r="57.375" fill="#74D2A3"/>
+</g>
+<g>
+<g id="Repeat group 1_inner" data-figma-trr="r22u2.8-0f">
+<path id="Vector 27" d="M67.2971 12.1028V41.2651" stroke-width="3.375" stroke-linecap="round" stroke="#55C88F"/>
+</g>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(21.7461 -16.2251) rotate(16.3636)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(47.1825 -25.6664) rotate(32.7273)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(74.2485 -27.559) rotate(49.0909)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(100.751 -21.7495) rotate(65.4545)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(124.544 -8.7087) rotate(81.8182)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(143.699 10.507) rotate(98.1818)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(156.664 34.3409) rotate(114.545)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(162.389 60.862) rotate(130.909)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(160.41 87.9218) rotate(147.273)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(150.888 113.328) rotate(163.636)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(134.594 135.022) rotate(180)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(112.848 151.248) rotate(-163.636)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(87.4117 160.689) rotate(-147.273)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(60.3457 162.581) rotate(-130.909)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(33.8429 156.772) rotate(-114.545)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(10.0504 143.731) rotate(-98.1818)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-9.10436 124.516) rotate(-81.8182)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-22.0695 100.682) rotate(-65.4546)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-27.7947 74.1605) rotate(-49.0909)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-25.8162 47.1007) rotate(-32.7273)"/>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-16.2941 21.6945) rotate(-16.3636)"/>
+</g>
+<g>
+<circle id="Ellipse 2_2" cx="67.5" cy="67.4999" r="44.8319" fill="#D6F2E4"/>
+</g>
+<path id="$" d="M64.6765 92.9357V92.8665C59.1373 92.3126 54.3598 90.3046 51.9364 88.2967C50.5516 87.1196 49.79 86.081 49.79 84.1423C49.79 81.9959 51.6594 79.8495 53.7366 79.8495C54.8445 79.8495 55.6753 80.0572 56.5062 80.6111C59.1373 82.4113 61.7684 83.7269 64.6765 84.2116V69.6713C56.5755 67.5248 51.0363 63.9936 51.0363 55.131C51.0363 47.0992 56.16 42.5986 64.6765 41.56V40.6599C64.6765 38.5827 66.0613 37.1979 68.8309 37.1979C71.6004 37.1979 72.9852 38.5827 72.9852 40.6599V41.7677C76.8626 42.4601 79.9784 43.9142 81.8479 45.0912C83.1634 45.9913 84.0635 47.1684 84.0635 48.7609C84.0635 51.0458 82.2633 53.1923 80.1861 53.1923C79.4937 53.1923 78.5244 52.9845 77.6243 52.4306C76.2395 51.5997 74.7162 50.8381 72.9852 50.3534V63.1627C81.3632 65.4476 86.21 69.5328 86.21 77.6338C86.21 85.1809 81.7786 90.8586 72.9852 92.5203V92.9357C72.9852 95.0129 71.6004 96.3977 68.8309 96.3977C66.0613 96.3977 64.6765 95.0129 64.6765 92.9357ZM77.6935 77.98C77.6935 74.9335 76.378 73.341 72.9852 72.0254V83.7961C76.0318 82.896 77.6935 81.0265 77.6935 77.98ZM59.8297 55.2002C59.8297 58.7314 61.5607 59.9085 64.6765 60.8778V50.0765C61.9069 50.5611 59.8297 51.8767 59.8297 55.2002Z" fill="#55C88F"/>
+</g>
+</svg>
