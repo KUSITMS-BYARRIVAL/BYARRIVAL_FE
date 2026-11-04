@@ -1,4 +1,5 @@
 export { default as AiIcon } from "./ai.svg";
+export { default as AlarmIcon } from "./alarm.svg";
 export { default as AppleIcon } from "./apple.svg";
 export { default as ArrowLeftLIcon } from "./arrow-left-l.svg";
 export { default as ArrowLeftSIcon } from "./arrow-left-s.svg";
@@ -10,4 +11,11 @@ export { default as ClockIcon } from "./clock.svg";
 export { default as DeleteIcon } from "./delete.svg";
 export { default as KakaoIcon } from "./kakao.svg";
 export { default as SearchIcon } from "./search.svg";
+export { default as ShareIcon } from "./share.svg";
 export { default as SubwayIcon } from "./subway.svg";
+export { default as TabArchiveIcon } from "./tab-archive.svg";
+export { default as TabArchiveSelectedIcon } from "./tab-archive-selected.svg";
+export { default as TabHomeIcon } from "./tab-home.svg";
+export { default as TabHomeSelectedIcon } from "./tab-home-selected.svg";
+export { default as TabMyIcon } from "./tab-my.svg";
+export { default as TabMySelectedIcon } from "./tab-my-selected.svg";
