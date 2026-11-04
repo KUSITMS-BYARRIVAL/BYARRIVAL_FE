@@ -5,7 +5,9 @@ import { Slider } from "../slider";
 // 너비 324 → 손잡이(24) 중심이 12 ~ 312를 3칸(100px)으로 나눈다
 async function renderSlider(value: number) {
   const onValueChange = jest.fn();
-  await render(<Slider value={value} onValueChange={onValueChange} />);
+  await render(
+    <Slider value={value} stepCount={4} onValueChange={onValueChange} />,
+  );
   const slider = screen.getByRole("adjustable");
   await fireEvent(slider, "layout", {
     nativeEvent: { layout: { width: 324 } },
@@ -67,10 +69,27 @@ describe("Slider", () => {
     expect(onValueChange).toHaveBeenCalledWith(2);
   });
 
+  it("stepCount에 맞춰 트랙을 나눈다", async () => {
+    const onValueChange = jest.fn();
+    await render(
+      <Slider value={0} stepCount={3} onValueChange={onValueChange} />,
+    );
+    const slider = screen.getByRole("adjustable");
+    await fireEvent(slider, "layout", {
+      nativeEvent: { layout: { width: 324 } },
+    });
+    // 3단계면 12 ~ 312를 2칸(150px)으로 나눠 162가 가운데 단계다
+    await fireEvent(slider, "responderGrant", touchAt(162));
+    expect(onValueChange).toHaveBeenLastCalledWith(1);
+    await fireEvent(slider, "responderGrant", touchAt(500));
+    expect(onValueChange).toHaveBeenLastCalledWith(2);
+  });
+
   it("넘긴 접근성 이름으로 찾을 수 있다", async () => {
     await render(
       <Slider
         value={0}
+        stepCount={4}
         onValueChange={jest.fn()}
         accessibilityLabel="컨디션"
       />,
