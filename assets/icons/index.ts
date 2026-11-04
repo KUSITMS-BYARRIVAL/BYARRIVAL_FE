@@ -10,3 +10,4 @@ export { default as ClockIcon } from "./clock.svg";
 export { default as DeleteIcon } from "./delete.svg";
 export { default as KakaoIcon } from "./kakao.svg";
 export { default as SearchIcon } from "./search.svg";
+export { default as SubwayIcon } from "./subway.svg";
