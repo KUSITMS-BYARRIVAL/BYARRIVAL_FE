@@ -13,7 +13,7 @@ tone_instructions: "단정적으로 지적하기보다 이유와 함께 개선 �
 # ─────────────────────────────────────────
 reviews:
   # 리뷰 강도 프로필
-  profile: "chill"
+  profile: "quiet"
 
   # PR 전체 요약
   high_level_summary: false
