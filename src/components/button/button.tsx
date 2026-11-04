@@ -1,10 +1,12 @@
 import { cva } from "class-variance-authority";
 import { Pressable, type PressableProps, Text, View } from "react-native";
 
-import ArrowLeftL from "@/assets/icons/arrow-left-l.svg";
-import ArrowLeftS from "@/assets/icons/arrow-left-s.svg";
-import ArrowRightL from "@/assets/icons/arrow-right-l.svg";
-import ArrowRightS from "@/assets/icons/arrow-right-s.svg";
+import {
+  ArrowLeftLIcon,
+  ArrowLeftSIcon,
+  ArrowRightLIcon,
+  ArrowRightSIcon,
+} from "@/assets/icons";
 import { cn } from "@/lib/cn";
 import { SEMANTIC } from "@/theme/colors";
 
@@ -64,8 +66,8 @@ const TEXT_CLASS: Record<ContentColor, string> = {
 
 // Figma 화살표는 L만 그림(비율·선 굵기)이 달라 xs·s·m은 S를 쓴다
 const ARROW_ICONS = {
-  left: { s: ArrowLeftS, l: ArrowLeftL },
-  right: { s: ArrowRightS, l: ArrowRightL },
+  left: { s: ArrowLeftSIcon, l: ArrowLeftLIcon },
+  right: { s: ArrowRightSIcon, l: ArrowRightLIcon },
 };
 
 function getContentColor(

@@ -1,6 +1,6 @@
 import { Pressable, type PressableProps, Text, View } from "react-native";
 
-import ArrowRightS from "@/assets/icons/arrow-right-s.svg";
+import { ArrowRightSIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
 import { SEMANTIC } from "@/theme/colors";
 
@@ -30,7 +30,7 @@ export function TextButton({
         <>
           {pressed && <View className="absolute inset-0 bg-btn-pressed" />}
           <Text className="text-secondary text-label2-sb">{label}</Text>
-          {hasArrow && <ArrowRightS color={SEMANTIC.icon.secondary} />}
+          {hasArrow && <ArrowRightSIcon color={SEMANTIC.icon.secondary} />}
         </>
       )}
     </Pressable>

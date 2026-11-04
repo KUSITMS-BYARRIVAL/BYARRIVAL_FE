@@ -1,6 +1,6 @@
 import { Pressable, type PressableProps, Text } from "react-native";
 
-import DeleteIcon from "@/assets/icons/delete.svg";
+import { DeleteIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
 import { SEMANTIC } from "@/theme/colors";
 
