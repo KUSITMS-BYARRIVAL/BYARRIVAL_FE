@@ -158,6 +158,7 @@ const SEMANTIC = {
     disabled: PALETTE.grey[300],
     danger: PALETTE.red[500],
     pressed: PALETTE["grey-opacity"][100],
+    "disabled-brand": PALETTE.green[50],
   },
   card: {
     white: PALETTE.white,

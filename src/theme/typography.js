@@ -9,7 +9,7 @@ const FONT_FAMILY_BY_WEIGHT = {
   700: "Pretendard-Bold",
 };
 
-/** Typography/Semantic 토큰. 키가 클래스 이름이 된다 (`text-heading1-b`). */
+/** Typography/Semantic 토큰. 키가 클래스 이름이 된다 (`text-heading1-b`). letterSpacing은 Figma처럼 %로 적고 없으면 0이다. */
 const TYPOGRAPHY = {
   "display1-b": { fontSize: 32, lineHeight: 125, fontWeight: 700 },
   "heading1-b": { fontSize: 28, lineHeight: 125, fontWeight: 700 },
@@ -22,10 +22,16 @@ const TYPOGRAPHY = {
   "body1-m": { fontSize: 16, lineHeight: 150, fontWeight: 500 },
   "body2-r": { fontSize: 14, lineHeight: 150, fontWeight: 400 },
   "body2-m": { fontSize: 14, lineHeight: 150, fontWeight: 500 },
-  "label1-sb": { fontSize: 17, lineHeight: 140, fontWeight: 600 },
+  "label1-sb": {
+    fontSize: 17,
+    lineHeight: 140,
+    fontWeight: 600,
+    letterSpacing: -1,
+  },
   "label2-sb": { fontSize: 14, lineHeight: 140, fontWeight: 600 },
   "label3-sb": { fontSize: 12, lineHeight: 140, fontWeight: 600 },
   "caption1-r": { fontSize: 12, lineHeight: 140, fontWeight: 400 },
+  "caption1-m": { fontSize: 12, lineHeight: 140, fontWeight: 500 },
 };
 
 /** RN은 lineHeight에 %를 쓸 수 없으므로 px로 변환한다 */
