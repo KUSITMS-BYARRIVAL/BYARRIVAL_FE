@@ -33,8 +33,9 @@ export function TextField({
         }
         cursorColor={PALETTE.grey[600]}
         selectionColor={PALETTE.grey[600]}
+        // iOS 한 줄 TextInput에 lineHeight를 주면 영문 아래꼬리가 잘려서 body2-m에서 행간만 뺐다
         className={cn(
-          "min-h-[54px] rounded-[14px] border border-default px-4 py-2.5 text-body2-m",
+          "min-h-[54px] rounded-[14px] border border-default px-4 py-2.5 font-pretendard-medium text-[14px]",
           error ? "bg-red-50 text-danger" : "bg-white text-primary",
         )}
         {...props}
