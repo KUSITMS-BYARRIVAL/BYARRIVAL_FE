@@ -11,7 +11,7 @@ export function SummaryCard({ points, className }: SummaryCardProps) {
   return (
     <View
       className={cn(
-        "gap-3.5 rounded-md border border-brand bg-card-green p-5",
+        "gap-[15px] rounded-md border border-brand bg-card-green p-5",
         className,
       )}
     >

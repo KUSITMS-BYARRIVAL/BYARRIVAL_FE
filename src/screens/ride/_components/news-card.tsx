@@ -31,7 +31,7 @@ export function NewsCard({
           <CategoryBadge category={category} label={categoryLabel} />
           <View className="flex-row items-center gap-1">
             <View className="size-5 items-center justify-center">
-              <ClockIcon />
+              <ClockIcon width={20} height={20} />
             </View>
             <Text className="text-secondary text-caption1-m">
               {readMinutes}분
