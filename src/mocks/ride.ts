@@ -1,4 +1,5 @@
 import type { BoardingArticle } from "@/screens/ride/_components/boarding-pass-card";
+import type { RideArticle } from "@/screens/ride/_components/stop-article";
 
 export const RIDE_DATE_LABEL = "10월 10일 토요일";
 
@@ -26,49 +27,86 @@ export const CONDITIONS = [
   },
 ];
 
-// 시안 숫자(기사 7개 · 예상 20분)에 맞춰 읽는 시간을 나눴다
-export const BOARDING_ARTICLES: BoardingArticle[] = [
+// 실제 기사 7개. 분야는 앱 카테고리로 매핑했고, 원본에 없는 읽는 시간(난이도 EASY 짧게 · HARD 길게, 시안 합계 20분) · 키워드 · 이미지는 임시값이다
+export const BOARDING_ARTICLES: RideArticle[] = [
   {
     category: "economy",
     label: "경제",
-    title: "스타트업 투자 한파... 생존한 기업들의 공통점은?",
+    title: "[단독] 'K과자 첫 수출 1000억' 눈앞…롯데 빼빼로, 새 역사",
     minutes: 2,
+    date: "2026.11.04",
+    press: "뉴스핌",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.newspim.com/news/view/20261104000211",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-1/800/600",
+  },
+  {
+    category: "economy",
+    label: "경제",
+    title:
+      "\"편의점마다 다른 맛이네\"…포테토칩 이어 가나초콜릿도 '도장깨기' 뜬다",
+    minutes: 2,
+    date: "2026.11.04",
+    press: "한경닷컴",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.hankyung.com/article/202611044443g",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-2/800/600",
+  },
+  {
+    category: "life",
+    label: "라이프",
+    title: "설거지 귀찮은 2030…물만 붓는 단백질에 지갑 연다",
+    minutes: 3,
+    date: "2026.11.03",
+    press: "한경닷컴",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.hankyung.com/article/202611033577g",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-3/800/600",
   },
   {
     category: "tech",
     label: "테크",
-    title: "생성형 AI 검색, 기존 포털 점유율을 얼마나 가져갔나",
-    minutes: 3,
-  },
-  {
-    category: "career",
-    label: "커리어",
-    title: "이직 시장 얼어붙자 '사내 이동'이 늘었다",
-    minutes: 3,
-  },
-  {
-    category: "career",
-    label: "커리어",
-    title: "주 4일제 시범 도입 1년, 생산성은 어떻게 바뀌었나",
+    title: '"한국은 AI 미래 결정짓는 핵심 국가"… AMD 러브콜',
     minutes: 2,
+    date: "2026.11.04",
+    press: "한국경제",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.hankyung.com/article/202611045302i",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-4/800/600",
   },
   {
     category: "tech",
     label: "테크",
-    title: "폴더블폰 판매량, 처음으로 1분기 1천만 대 넘었다",
+    title: "구글, TPU 판매 본격화…삼성·SK하이닉스 HBM에 '제2 엔비디아' 뜨나",
     minutes: 4,
+    date: "2026.11.04",
+    press: "뉴스핌",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.newspim.com/news/view/20261104000460",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-5/800/600",
   },
   {
-    category: "career",
-    label: "커리어",
-    title: "신입 채용에서 포트폴리오 비중이 커진 이유",
-    minutes: 3,
+    category: "society",
+    label: "사회",
+    title:
+      "[금융권 해킹] ① K-금융의 허점, 은행·제2금융·증권사·코인 거래소도 '해킹 또 해킹'",
+    minutes: 4,
+    date: "2026.11.04",
+    press: "뉴스핌",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.newspim.com/news/view/20261103000769",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-6/800/600",
   },
   {
     category: "global",
     label: "글로벌",
-    title: "유럽 중앙은행, 1년 만에 금리 동결 결정",
+    title: "'블루 쓰나미' 불어닥친 미국…막 내리는 트럼프 시대",
     minutes: 3,
+    date: "2026.11.04",
+    press: "한국경제",
+    keywords: ["#오늘의 브리핑"],
+    url: "https://www.hankyung.com/article/202611045995i",
+    imageUrl: "https://picsum.photos/seed/byarrival-stop-7/800/600",
   },
 ];
 
