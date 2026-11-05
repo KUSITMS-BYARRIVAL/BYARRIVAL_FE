@@ -12,6 +12,9 @@ export type BoardingArticle = {
   minutes: number;
 };
 
+export const getTotalMinutes = (articles: BoardingArticle[]) =>
+  articles.reduce((sum, { minutes }) => sum + minutes, 0);
+
 type BoardingPassCardProps = {
   from: string;
   to: string;
@@ -25,7 +28,7 @@ export function BoardingPassCard({
   articles,
   className,
 }: BoardingPassCardProps) {
-  const totalMinutes = articles.reduce((sum, { minutes }) => sum + minutes, 0);
+  const totalMinutes = getTotalMinutes(articles);
 
   return (
     <View className={className}>
