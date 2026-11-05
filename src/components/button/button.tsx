@@ -1,5 +1,5 @@
 import { cva } from "class-variance-authority";
-import type { ReactNode } from "react";
+import type { ReactElement } from "react";
 import { Pressable, type PressableProps, Text, View } from "react-native";
 
 import {
@@ -98,7 +98,7 @@ type ButtonProps = Omit<PressableProps, "children"> & {
     | {
         icon?: never;
         /** 라벨 앞 아이콘 종류가 늘어날 수 있어 노드로 받는다 */
-        leadingIcon?: ReactNode;
+        leadingIcon?: ReactElement;
       }
   );
 
