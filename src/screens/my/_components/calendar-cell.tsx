@@ -34,6 +34,13 @@ const STATUS_CLASS: Record<
   },
 };
 
+const STATUS_NAME: Record<CalendarStatus, string> = {
+  before: "",
+  attendance: "출석",
+  complete: "완주",
+  offday: "쉬는 날",
+};
+
 export function CalendarCell({
   label,
   status = "before",
@@ -44,6 +51,10 @@ export function CalendarCell({
 
   return (
     <View
+      accessible
+      accessibilityLabel={[label, STATUS_NAME[status], isToday && "현재"]
+        .filter(Boolean)
+        .join(", ")}
       className={cn(
         "items-center justify-center rounded-sm",
         box,

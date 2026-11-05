@@ -55,4 +55,14 @@ describe("CalendarCell", () => {
       expect(boxClass()).toContain(borderClass);
     },
   );
+
+  it("읽기 도구용 레이블에 이름·상태·현재 여부를 담는다", async () => {
+    await render(<CalendarCell label="15" status="complete" isToday />);
+    expect(screen.getByLabelText("15, 완주, 현재")).toBeTruthy();
+  });
+
+  it("before 상태는 레이블에 상태를 넣지 않는다", async () => {
+    await render(<CalendarCell label="3월" />);
+    expect(screen.getByLabelText("3월")).toBeTruthy();
+  });
 });
