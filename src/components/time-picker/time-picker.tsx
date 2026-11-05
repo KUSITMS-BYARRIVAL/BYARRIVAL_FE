@@ -111,6 +111,9 @@ function WheelColumn({
         style={{ height: PICKER_HEIGHT }}
         contentContainerStyle={{ paddingVertical: EDGE_PADDING }}
         showsVerticalScrollIndicator={false}
+        // Android는 세로 스크롤 안의 세로 스크롤이 기본으로 바깥에 드래그를 뺏기므로
+        // (예: BottomSheet 본문 ScrollView 안) 휠이 직접 스크롤을 받도록 켠다
+        nestedScrollEnabled
         // iOS가 상단바만큼 스크롤 여백을 자동으로 더하면 칸 위치가 어긋나 끈다
         automaticallyAdjustContentInsets={false}
         contentInsetAdjustmentBehavior="never"

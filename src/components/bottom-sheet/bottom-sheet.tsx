@@ -67,6 +67,8 @@ export function BottomSheet({
           {/* 본문이 길면 제목·버튼은 고정하고 본문만 스크롤한다 */}
           <ScrollView
             className="shrink"
+            // Android에서 본문 안의 세로 스크롤(TimePicker 휠 등)에 드래그를 넘겨줄 수 있도록 켠다
+            nestedScrollEnabled
             bounces={false}
             showsVerticalScrollIndicator={false}
           >
