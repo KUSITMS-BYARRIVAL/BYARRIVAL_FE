@@ -1,4 +1,4 @@
-import type { Category } from "@/theme/category";
+import type { BoardingArticle } from "@/screens/ride/_components/boarding-pass-card";
 
 export const RIDE_DATE_LABEL = "10월 10일 토요일";
 
@@ -27,12 +27,7 @@ export const CONDITIONS = [
 ];
 
 // 시안 숫자(기사 7개 · 예상 20분)에 맞춰 읽는 시간을 나눴다
-export const BOARDING_ARTICLES: {
-  category: Category;
-  label: string;
-  title: string;
-  minutes: number;
-}[] = [
+export const BOARDING_ARTICLES: BoardingArticle[] = [
   {
     category: "economy",
     label: "경제",

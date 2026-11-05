@@ -71,8 +71,8 @@ export function BoardingPassCard({
         </View>
       </View>
       <View className="gap-3 rounded-b bg-card-white p-5">
-        {articles.map(({ category, label, title, minutes }, i) => (
-          <View key={i} className="flex-row items-center gap-2">
+        {articles.map(({ category, label, title, minutes }) => (
+          <View key={title} className="flex-row items-center gap-2">
             <CategoryBadge category={category} label={label} />
             <Text
               numberOfLines={1}
