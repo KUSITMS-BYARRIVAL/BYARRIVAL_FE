@@ -24,7 +24,7 @@ export function BoardingPassScreen() {
           label="출발하기"
           color="neutral"
           size="l"
-          onPress={() => router.push("/ride/stop/0")}
+          onPress={() => router.push("/ride/stop")}
         />
         <Button
           label="다른 뉴스 더 탑승시키기"
