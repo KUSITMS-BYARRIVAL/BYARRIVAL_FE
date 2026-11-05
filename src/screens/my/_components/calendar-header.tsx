@@ -24,6 +24,7 @@ export function CalendarHeader({
         accessibilityRole="button"
         accessibilityLabel={prevLabel}
         onPress={onPrev}
+        hitSlop={8}
       >
         <ArrowLeftSIcon color={SEMANTIC.icon.primary} />
       </Pressable>
@@ -33,6 +34,7 @@ export function CalendarHeader({
         accessibilityRole="button"
         accessibilityLabel={nextLabel}
         onPress={onNext}
+        hitSlop={8}
       >
         <ArrowRightSIcon color={SEMANTIC.icon.primary} />
       </Pressable>

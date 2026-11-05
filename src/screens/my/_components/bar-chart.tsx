@@ -11,7 +11,7 @@ type BarChartProps = {
 };
 
 export function BarChart({ weeklyMinutes, className }: BarChartProps) {
-  const maxMinutes = Math.max(...weeklyMinutes);
+  const maxMinutes = Math.max(0, ...weeklyMinutes);
   const lastIndex = weeklyMinutes.length - 1;
 
   return (
