@@ -1,6 +1,10 @@
 import { render, screen } from "@testing-library/react-native";
 
-import { type BoardingArticle, BoardingPassCard } from "../boarding-pass-card";
+import {
+  type BoardingArticle,
+  BoardingPassCard,
+  getTotalMinutes,
+} from "../boarding-pass-card";
 
 const ARTICLES: BoardingArticle[] = [
   { category: "economy", label: "경제", title: "금리 동결", minutes: 3 },
@@ -35,5 +39,15 @@ describe("BoardingPassCard", () => {
     await render(<BoardingPassCard from="집" to="회사" articles={[]} />);
     expect(screen.getByText("0개")).toBeOnTheScreen();
     expect(screen.getByText("0분")).toBeOnTheScreen();
+  });
+});
+
+describe("getTotalMinutes", () => {
+  it("기사 읽는 시간을 모두 더한다", () => {
+    expect(getTotalMinutes(ARTICLES)).toBe(14);
+  });
+
+  it("기사가 없으면 0을 반환한다", () => {
+    expect(getTotalMinutes([])).toBe(0);
   });
 });

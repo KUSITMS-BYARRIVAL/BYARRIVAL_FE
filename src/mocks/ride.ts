@@ -71,3 +71,60 @@ export const BOARDING_ARTICLES: BoardingArticle[] = [
     minutes: 3,
   },
 ];
+
+type SelectArticle = BoardingArticle & {
+  imageUrl: string;
+  summary: string[];
+};
+
+// 이미지는 시안 원본이 없어 임시 URL을 쓴다. 첫 기사는 시안 그대로다
+export const SELECT_ARTICLES: SelectArticle[] = [
+  {
+    category: "economy",
+    label: "경제",
+    title: '한국은행, 기준금리 동결... "하반기 불확실성 여전"',
+    minutes: 2,
+    imageUrl: "https://picsum.photos/seed/byarrival-1/800/600",
+    summary: [
+      "기준금리 연 3.00% 동결 결정",
+      "대외 불확실성과 물가 안정세 동시 고려",
+      "하반기 인하 가능성 약 60% 전망",
+    ],
+  },
+  {
+    category: "tech",
+    label: "테크",
+    title: "온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다",
+    minutes: 3,
+    imageUrl: "https://picsum.photos/seed/byarrival-2/800/600",
+    summary: [
+      "온디바이스 AI 탑재폰 출하량 전년 대비 2배 전망",
+      "통신 없이 번역 · 요약 기능 사용 가능",
+      "중저가 모델까지 탑재 확대 예상",
+    ],
+  },
+  {
+    category: "career",
+    label: "커리어",
+    title: "MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'",
+    minutes: 2,
+    imageUrl: "https://picsum.photos/seed/byarrival-3/800/600",
+    summary: [
+      "직장인 61%가 본업 외 사이드 프로젝트 진행",
+      "주된 이유는 추가 수입보다 자기계발",
+      "회사의 겸업 허용 여부가 이직 기준으로 부상",
+    ],
+  },
+  {
+    category: "global",
+    label: "글로벌",
+    title: "미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'",
+    minutes: 4,
+    imageUrl: "https://picsum.photos/seed/byarrival-4/800/600",
+    summary: [
+      "연준 의장, 9월 금리 인하 가능성 언급",
+      "고용 둔화 신호가 인하 근거로 제시",
+      "과도한 기대는 경계해야 한다는 시각도",
+    ],
+  },
+];
