@@ -1,20 +1,19 @@
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
-import { ArrowLeftSIcon, ArrowRightSIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
-import { SEMANTIC } from "@/theme/colors";
 
-import { CalendarDay, type CalendarDayStatus } from "./calendar-day";
+import { CalendarCell, type CalendarStatus } from "./calendar-cell";
+import { CalendarHeader } from "./calendar-header";
 import { getCalendarWeeks } from "./helpers";
 
 const WEEKDAYS = ["월", "화", "수", "목", "금", "토", "일"];
 
-type CalendarProps = {
+type CalendarMonthProps = {
   year: number;
   /** 1~12 */
   month: number;
   /** 일 → 상태. 없는 날은 before */
-  dayStatuses?: Partial<Record<number, CalendarDayStatus>>;
+  dayStatuses?: Partial<Record<number, CalendarStatus>>;
   /** 오늘이 이 달에 있을 때만 일(day)을 넘긴다 */
   today?: number;
   onPrevMonth: () => void;
@@ -22,7 +21,7 @@ type CalendarProps = {
   className?: string;
 };
 
-export function Calendar({
+export function CalendarMonth({
   year,
   month,
   dayStatuses = {},
@@ -30,33 +29,20 @@ export function Calendar({
   onPrevMonth,
   onNextMonth,
   className,
-}: CalendarProps) {
+}: CalendarMonthProps) {
   return (
     // 칸 크기·간격은 고정하고 기기 너비 차이는 좌우 여백이 흡수하도록 가운데 정렬한다
     <View
       className={cn("w-full items-center rounded bg-white py-5", className)}
     >
       <View className="gap-3">
-        <View className="flex-row items-center gap-1">
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="이전 달"
-            onPress={onPrevMonth}
-          >
-            <ArrowLeftSIcon color={SEMANTIC.icon.primary} />
-          </Pressable>
-          {/* Figma 스타일명은 Title3/SB지만 값(16px·600)이 title2-sb와 같아 title2-sb를 쓴다 */}
-          <Text className="text-primary text-title2-sb">
-            {year}년 {month}월
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="다음 달"
-            onPress={onNextMonth}
-          >
-            <ArrowRightSIcon color={SEMANTIC.icon.primary} />
-          </Pressable>
-        </View>
+        <CalendarHeader
+          title={`${year}년 ${month}월`}
+          prevLabel="이전 달"
+          nextLabel="다음 달"
+          onPrev={onPrevMonth}
+          onNext={onNextMonth}
+        />
         <View className="flex-row gap-2">
           {WEEKDAYS.map((weekday) => (
             <Text
@@ -73,11 +59,13 @@ export function Calendar({
               day === null ? (
                 <View key={dayIndex} className="size-[38px]" />
               ) : (
-                <CalendarDay
-                  key={dayIndex}
-                  day={day}
+                <CalendarCell
+                  // 같은 칸을 재사용하면 달 이동 후 배경이 새로 붙을 때 둥근 모서리가 빠져서 날짜마다 새로 그린다
+                  key={`${year}-${month}-${day}`}
+                  label={String(day)}
                   status={dayStatuses[day]}
                   isToday={day === today}
+                  className="size-[38px]"
                 />
               ),
             )}
