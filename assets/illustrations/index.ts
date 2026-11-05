@@ -1,3 +1,7 @@
+export { default as AssetBagIllustration } from "./asset-bag.svg";
+export { default as AssetHandleIllustration } from "./asset-handle.svg";
+export { default as AssetSubwayIllustration } from "./asset-subway.svg";
+export { default as AssetSuitIllustration } from "./asset-suit.svg";
 export { default as BearCelebrateIllustration } from "./bear-celebrate.svg";
 export { default as BearMagnifierIllustration } from "./bear-magnifier.svg";
 export { default as BearWorkerIllustration } from "./bear-worker.svg";
