@@ -72,11 +72,13 @@ export const BOARDING_ARTICLES: BoardingArticle[] = [
   },
 ];
 
-// 이미지는 시안 원본이 없어 임시 URL을 쓴다. 첫 기사는 시안 그대로다
-export const SELECT_ARTICLES: (BoardingArticle & {
+type SelectArticle = BoardingArticle & {
   imageUrl: string;
   summary: string[];
-})[] = [
+};
+
+// 이미지는 시안 원본이 없어 임시 URL을 쓴다. 첫 기사는 시안 그대로다
+export const SELECT_ARTICLES: SelectArticle[] = [
   {
     category: "economy",
     label: "경제",
