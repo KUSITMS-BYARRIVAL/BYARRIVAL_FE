@@ -11,6 +11,8 @@ export { default as CheckIcon } from "./check.svg";
 export { default as ClockIcon } from "./clock.svg";
 export { default as DeleteIcon } from "./delete.svg";
 export { default as KakaoIcon } from "./kakao.svg";
+export { default as MinusIcon } from "./minus.svg";
+export { default as PlusIcon } from "./plus.svg";
 export { default as SearchIcon } from "./search.svg";
 export { default as ShareIcon } from "./share.svg";
 export { default as SubwayIcon } from "./subway.svg";
