@@ -7,3 +7,7 @@ export { default as BearMagnifierIllustration } from "./bear-magnifier.svg";
 export { default as BearWorkerIllustration } from "./bear-worker.svg";
 export { default as BuildingIllustration } from "./building.svg";
 export { default as HomeStreakBackgroundIllustration } from "./home-streak-background.svg";
+export { default as WeatherCloudyIllustration } from "./weather-cloudy.svg";
+export { default as WeatherDefaultIllustration } from "./weather-default.svg";
+export { default as WeatherRainIllustration } from "./weather-rain.svg";
+export { default as WeatherSunnyIllustration } from "./weather-sunny.svg";

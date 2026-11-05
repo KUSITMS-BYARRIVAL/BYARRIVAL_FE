@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="210" height="210" viewBox="0 0 210 210" fill="none"><g transform="translate(-378 -351)"><g>
+<g>
+<g id="Repeat group 1_3_inner">
+<path d="M487.356 396.362C487.356 398.726 485.406 400.642 483 400.642C480.594 400.642 478.644 398.726 478.644 396.362L478.644 365.38C478.644 363.016 480.594 361.1 483 361.1C485.406 361.1 487.356 363.016 487.356 365.38L487.356 396.362Z" fill="#FFC35C" />
+</g>
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(463.908 -207.973) rotate(45)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(939 -27.0001) rotate(90)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(1146.97 436.908) rotate(135)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(966 912) rotate(-180)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(502.092 1119.97) rotate(-135)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(27.0001 939) rotate(-90)" />
+<use xlink:href="#Repeat%20group%201_3_inner" transform="translate(-180.973 475.092) rotate(-45)" />
+</g>
+<circle cx="482.55" cy="455.55" r="47.7251" fill="#FFC35C" />
+<circle cx="463.64" cy="433.038" r="7.20379" fill="#FFE2B0" />
+</g>
+</g></svg>
