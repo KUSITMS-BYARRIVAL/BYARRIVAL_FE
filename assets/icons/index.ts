@@ -90,6 +90,7 @@ export { default as Step3RedIcon } from "./step/step-3-red.svg";
 export { default as SubwayIcon } from "./subway.svg";
 export { default as SubwayLineIcon } from "./subway-line.svg";
 export { default as SubwayMonoIcon } from "./subway-mono.svg";
+export { default as SubwaySideIcon } from "./subway-side.svg";
 export { default as TabArchiveIcon } from "./tab-archive.svg";
 export { default as TabArchiveSelectedIcon } from "./tab-archive-selected.svg";
 export { default as TabHomeIcon } from "./tab-home.svg";
