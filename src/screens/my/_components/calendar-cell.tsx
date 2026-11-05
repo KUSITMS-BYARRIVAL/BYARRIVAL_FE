@@ -8,7 +8,7 @@ type CalendarCellProps = {
   label: string;
   status?: CalendarStatus;
   isToday?: boolean;
-  /** 칸 크기는 사용처가 정한다 (일: 38×38 고정, 월: 너비 늘어남) */
+  /** 칸 크기는 사용처가 정한다 (일: 38×38, 월: 45.5×48) */
   className?: string;
 };
 
