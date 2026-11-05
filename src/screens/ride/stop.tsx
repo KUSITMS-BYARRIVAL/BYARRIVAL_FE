@@ -26,11 +26,15 @@ export function StopScreen() {
   const { width } = useWindowDimensions();
   const pagerRef = useRef<ScrollViewInstance>(null);
   const [index, setIndex] = useState(0);
+  const [readUrls, setReadUrls] = useState<string[]>([]);
   const isLast = index === TOTAL - 1;
 
   const handleNext = () => {
-    // TODO: 도착(arrival) 화면이 생기면 그쪽으로 이동
-    if (isLast) return router.dismissTo("/");
+    if (isLast)
+      return router.push({
+        pathname: "/ride/arrival",
+        params: { readCount: readUrls.length },
+      });
     pagerRef.current?.scrollTo({ x: (index + 1) * width });
     setIndex(index + 1);
   };
@@ -90,7 +94,12 @@ export function StopScreen() {
             <View key={article.url} className="p-5" style={{ width }}>
               <StopArticle
                 article={article}
-                onOriginalPress={() => WebBrowser.openBrowserAsync(article.url)}
+                onOriginalPress={() => {
+                  setReadUrls((prev) =>
+                    prev.includes(article.url) ? prev : [...prev, article.url],
+                  );
+                  WebBrowser.openBrowserAsync(article.url);
+                }}
               />
             </View>
           ))}
