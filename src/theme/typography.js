@@ -11,17 +11,54 @@ const FONT_FAMILY_BY_WEIGHT = {
 
 /** Typography/Semantic 토큰. 키가 클래스 이름이 된다 (`text-heading1-b`). letterSpacing은 Figma처럼 %로 적고 없으면 0이다. */
 const TYPOGRAPHY = {
-  "display1-b": { fontSize: 32, lineHeight: 125, fontWeight: 700 },
+  // Figma Time Digit 숫자(48px·Bold·135%·-2%). 시맨틱 이름이 없어 용도로 이름 붙인다
+  "digit-b": {
+    fontSize: 48,
+    lineHeight: 135,
+    fontWeight: 700,
+    letterSpacing: -2,
+  },
+  "display1-b": {
+    fontSize: 32,
+    lineHeight: 140,
+    fontWeight: 700,
+    letterSpacing: -2,
+  },
   "heading1-b": { fontSize: 28, lineHeight: 125, fontWeight: 700 },
   "heading2-b": { fontSize: 24, lineHeight: 135, fontWeight: 700 },
+  "heading2-sb": {
+    fontSize: 22,
+    lineHeight: 140,
+    fontWeight: 600,
+    letterSpacing: -2,
+  },
   "heading3-sb": { fontSize: 18, lineHeight: 140, fontWeight: 600 },
-  "title1-sb": { fontSize: 18, lineHeight: 140, fontWeight: 600 },
-  "title2-sb": { fontSize: 16, lineHeight: 140, fontWeight: 600 },
-  "title3-sb": { fontSize: 14, lineHeight: 140, fontWeight: 600 },
+  "title1-sb": {
+    fontSize: 20,
+    lineHeight: 140,
+    fontWeight: 600,
+    letterSpacing: -1,
+  },
+  "title2-sb": {
+    fontSize: 18,
+    lineHeight: 140,
+    fontWeight: 600,
+    letterSpacing: -1,
+  },
+  "title3-sb": {
+    fontSize: 16,
+    lineHeight: 140,
+    fontWeight: 600,
+    letterSpacing: -1,
+  },
   "body1-r": { fontSize: 16, lineHeight: 150, fontWeight: 400 },
   "body1-m": { fontSize: 16, lineHeight: 150, fontWeight: 500 },
+  "body1-sb": { fontSize: 16, lineHeight: 150, fontWeight: 600 },
   "body2-r": { fontSize: 14, lineHeight: 150, fontWeight: 400 },
   "body2-m": { fontSize: 14, lineHeight: 150, fontWeight: 500 },
+  "body2-sb": { fontSize: 14, lineHeight: 150, fontWeight: 600 },
+  "body3-r": { fontSize: 13, lineHeight: 140, fontWeight: 400 },
+  "body3-m": { fontSize: 13, lineHeight: 140, fontWeight: 500 },
   "label1-sb": {
     fontSize: 17,
     lineHeight: 140,

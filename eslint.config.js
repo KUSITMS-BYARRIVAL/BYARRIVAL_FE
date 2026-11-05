@@ -18,6 +18,11 @@ module.exports = defineConfig([
               group: ["@/assets/icons/*.svg"],
               message: '"@/assets/icons"에서 이름 있는 import로 가져오세요.',
             },
+            {
+              group: ["@/assets/illustrations/*.svg"],
+              message:
+                '"@/assets/illustrations"에서 이름 있는 import로 가져오세요.',
+            },
           ],
         },
       ],
