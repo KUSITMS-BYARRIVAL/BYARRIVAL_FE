@@ -12,3 +12,10 @@ export function getCalendarWeeks(year: number, month: number) {
     cells.slice(i * 7, i * 7 + 7),
   );
 }
+
+const MAX_BAR_HEIGHT = 85;
+
+/** 보이는 주들 중 최댓값이 가장 높은 막대가 되도록 0~최댓값을 0~85px로 비례시킨다 */
+export function getBarHeight(minutes: number, maxMinutes: number) {
+  return maxMinutes === 0 ? 0 : (minutes / maxMinutes) * MAX_BAR_HEIGHT;
+}
