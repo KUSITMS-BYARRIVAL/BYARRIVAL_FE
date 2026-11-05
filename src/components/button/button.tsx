@@ -92,11 +92,15 @@ type ButtonProps = Omit<PressableProps, "children"> & {
   label: string;
   color?: ButtonColor;
   size?: ButtonSize;
-  icon?: "left" | "right";
-  /** 라벨 앞 아이콘 (예: SmallTalkIcon). 종류가 늘어날 수 있어 노드로 받는다 */
-  leadingIcon?: ReactNode;
   className?: string;
-};
+} & (
+    | { icon?: "left" | "right"; leadingIcon?: never }
+    | {
+        icon?: never;
+        /** 라벨 앞 아이콘 종류가 늘어날 수 있어 노드로 받는다 */
+        leadingIcon?: ReactNode;
+      }
+  );
 
 export function Button({
   label,

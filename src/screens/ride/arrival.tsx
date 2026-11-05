@@ -46,7 +46,7 @@ export function ArrivalScreen() {
             </View>
             <View className="gap-2">
               <ArrivalResultCard
-                readCount={Number(readCount ?? 0)}
+                readCount={Number(readCount) || 0}
                 total={BOARDING_ARTICLES.length}
                 streakDays={ARRIVAL_STREAK_DAYS}
               />

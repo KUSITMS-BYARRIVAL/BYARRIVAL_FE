@@ -95,8 +95,9 @@ export function StopScreen() {
               <StopArticle
                 article={article}
                 onOriginalPress={() => {
-                  if (!readUrls.includes(article.url))
-                    setReadUrls([...readUrls, article.url]);
+                  setReadUrls((prev) =>
+                    prev.includes(article.url) ? prev : [...prev, article.url],
+                  );
                   WebBrowser.openBrowserAsync(article.url);
                 }}
               />
