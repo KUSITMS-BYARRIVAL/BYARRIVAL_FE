@@ -82,7 +82,8 @@ reviews:
         - src/app/ 은 경로 연결만 담당합니다. 화면 UI는 src/screens/{도메인}/ 에 작성합니다.
         - 컴포넌트 위치 기준
           - 도메인을 모르는 공통 컴포넌트 → src/components/
-          - 한 도메인에서만 쓰는 컴포넌트와 섹션 → src/screens/{도메인}/components/
+          - 한 도메인에서만 쓰는 컴포넌트와 섹션 → src/screens/{도메인}/_components/
+          - 여러 화면에서 함께 쓰는 컴포넌트 → src/screens/_components/
         - screens/ 의 도메인 폴더끼리 서로 import하지 않습니다.
 
         [네이밍]
@@ -110,7 +111,7 @@ reviews:
         [역할]
         - 도메인을 모르는 컴포넌트만 둡니다. (Button, Card, TopNavigation, Toast 등)
         - API 호출, 도메인 스토어, 도메인 타입(예: BoardingRecord)을 사용하거나 특정 화면 문구가 하드코딩되어 있으면
-          src/screens/{도메인}/components/ 로 옮기도록 제안해 주세요.
+          src/screens/{도메인}/_components/ (여러 화면에서 쓰면 src/screens/_components/)로 옮기도록 제안해 주세요.
         - 표시할 내용은 props로 받고, 모양과 상호작용만 담당하는지 확인해 주세요.
 
         [설계]
