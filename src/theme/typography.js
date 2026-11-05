@@ -49,6 +49,7 @@ const TYPOGRAPHY = {
   "body1-sb": { fontSize: 16, lineHeight: 150, fontWeight: 600 },
   "body2-r": { fontSize: 14, lineHeight: 150, fontWeight: 400 },
   "body2-m": { fontSize: 14, lineHeight: 150, fontWeight: 500 },
+  "body2-sb": { fontSize: 14, lineHeight: 150, fontWeight: 600 },
   "body3-r": { fontSize: 13, lineHeight: 140, fontWeight: 400 },
   "body3-m": { fontSize: 13, lineHeight: 140, fontWeight: 500 },
   "label1-sb": {
