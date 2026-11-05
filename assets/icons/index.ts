@@ -6,6 +6,7 @@ export { default as ArrowLeftSIcon } from "./arrow-left-s.svg";
 export { default as ArrowRightLIcon } from "./arrow-right-l.svg";
 export { default as ArrowRightSIcon } from "./arrow-right-s.svg";
 export { default as BookmarkIcon } from "./bookmark.svg";
+export { default as CheckCircleIcon } from "./check-circle.svg";
 export { default as CheckIcon } from "./check.svg";
 export { default as ClockIcon } from "./clock.svg";
 export { default as DeleteIcon } from "./delete.svg";
