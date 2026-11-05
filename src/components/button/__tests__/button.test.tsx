@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { Text } from "react-native";
 
 import { SEMANTIC } from "@/theme/colors";
 
@@ -129,6 +130,12 @@ describe("Button", () => {
     it("icon이 right이면 아이콘이 label 뒤에 렌더된다", async () => {
       await render(<Button label="확인" icon="right" />);
       expect(childTypes()).toEqual(["Text", "SvgMock"]);
+    });
+
+    it("leadingIcon을 넘기면 label 앞에 렌더된다", async () => {
+      await render(<Button label="확인" leadingIcon={<Text>아이콘</Text>} />);
+      expect(screen.getByText("아이콘")).toBeOnTheScreen();
+      expect(childTypes()).toEqual(["Text", "Text"]);
     });
   });
 });
