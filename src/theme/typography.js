@@ -11,6 +11,13 @@ const FONT_FAMILY_BY_WEIGHT = {
 
 /** Typography/Semantic 토큰. 키가 클래스 이름이 된다 (`text-heading1-b`). letterSpacing은 Figma처럼 %로 적고 없으면 0이다. */
 const TYPOGRAPHY = {
+  // Figma Time Digit 숫자(48px·Bold·135%·-2%). 시맨틱 이름이 없어 용도로 이름 붙인다
+  "digit-b": {
+    fontSize: 48,
+    lineHeight: 135,
+    fontWeight: 700,
+    letterSpacing: -2,
+  },
   "display1-b": {
     fontSize: 32,
     lineHeight: 140,
