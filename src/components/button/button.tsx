@@ -1,4 +1,5 @@
 import { cva } from "class-variance-authority";
+import type { ReactNode } from "react";
 import { Pressable, type PressableProps, Text, View } from "react-native";
 
 import {
@@ -31,6 +32,7 @@ const containerVariants = cva(
         danger: "bg-btn-danger",
       },
       icon: { left: "", right: "" },
+      hasLeadingIcon: { true: "gap-2" },
       disabled: { true: "" },
     },
     compoundVariants: [
@@ -40,6 +42,11 @@ const containerVariants = cva(
       { size: ["s", "m"], icon: "right", className: "pr-1.5" },
       { size: "l", icon: "left", className: "pl-5" },
       { size: "l", icon: "right", className: "pr-5" },
+      // Figma Icon-First: 왼쪽 38px 원형 아이콘 버튼. S만 높이가 38px로 다르다
+      { size: "xs", hasLeadingIcon: true, className: "pl-1 pr-2.5" },
+      { size: "s", hasLeadingIcon: true, className: "h-[38px] pl-3 pr-4" },
+      { size: "m", hasLeadingIcon: true, className: "pl-3 pr-4" },
+      { size: "l", hasLeadingIcon: true, className: "pl-5 pr-7" },
       { disabled: true, color: "brand", className: "bg-btn-disabled-brand" },
       {
         disabled: true,
@@ -86,6 +93,8 @@ type ButtonProps = Omit<PressableProps, "children"> & {
   color?: ButtonColor;
   size?: ButtonSize;
   icon?: "left" | "right";
+  /** 라벨 앞 아이콘 (예: SmallTalkIcon). 종류가 늘어날 수 있어 노드로 받는다 */
+  leadingIcon?: ReactNode;
   className?: string;
 };
 
@@ -94,6 +103,7 @@ export function Button({
   color = "brand",
   size = "m",
   icon,
+  leadingIcon,
   disabled,
   className,
   accessibilityState,
@@ -108,7 +118,13 @@ export function Button({
       accessibilityState={{ ...accessibilityState, disabled: isDisabled }}
       disabled={isDisabled}
       className={cn(
-        containerVariants({ size, color, icon, disabled: isDisabled }),
+        containerVariants({
+          size,
+          color,
+          icon,
+          hasLeadingIcon: !!leadingIcon,
+          disabled: isDisabled,
+        }),
         className,
       )}
       {...props}
@@ -119,6 +135,7 @@ export function Button({
         return (
           <>
             {pressed && <View className="absolute inset-0 bg-btn-pressed" />}
+            {leadingIcon}
             {icon === "left" && ArrowIcon && <ArrowIcon color={iconColor} />}
             <Text className={cn(LABEL_CLASS[size], TEXT_CLASS[contentColor])}>
               {label}
