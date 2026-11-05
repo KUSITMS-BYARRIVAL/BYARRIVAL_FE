@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="0 0 40 40" fill="none"><g transform="translate(-211 -21)"><g>
+<g>
+<g>
+<circle cx="231" cy="41" r="17" fill="#D0D0D0" />
+</g>
+<g>
+<g id="Repeat group 1_inner">
+<path d="M230.94 24.5859V33.2266" stroke="#AAAAAA" stroke-linecap="round" />
+</g>
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(20.9066 -63.4024) rotate(16.3636)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(58.8289 -118.346) rotate(32.7273)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(110.695 -160.381) rotate(49.0909)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(172.302 -186.1) rotate(65.4545)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(238.66 -193.421) rotate(81.8182)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(304.392 -181.751) rotate(98.1818)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(364.174 -152.034) rotate(114.545)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(413.162 -106.678) rotate(130.909)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(447.387 -49.3582) rotate(147.273)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(464.077 15.2823) rotate(163.636)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(461.88 82.0064) rotate(180)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(440.973 145.409) rotate(-163.636)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(403.051 200.353) rotate(-147.273)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(351.185 242.387) rotate(-130.909)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(289.578 268.107) rotate(-114.545)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(223.22 275.428) rotate(-98.1818)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(157.488 263.757) rotate(-81.8182)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(97.7062 234.04) rotate(-65.4546)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(48.7183 188.685) rotate(-49.0909)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(14.4929 131.365) rotate(-32.7273)" />
+<use xlink:href="#Repeat%20group%201_inner" transform="translate(-2.19725 66.7243) rotate(-16.3636)" />
+</g>
+<g>
+<circle cx="231" cy="40.9998" r="13.2835" fill="#F6F6F6" />
+</g>
+<path d="M230.015 48.5364V48.5159C228.374 48.3518 226.959 47.7568 226.24 47.1619C225.83 46.8131 225.604 46.5054 225.604 45.9309C225.604 45.295 226.158 44.659 226.774 44.659C227.102 44.659 227.348 44.7205 227.594 44.8847C228.374 45.4181 229.154 45.8078 230.015 45.9515V41.6432C227.615 41.0072 225.974 39.961 225.974 37.335C225.974 34.9552 227.492 33.6217 230.015 33.314V33.0473C230.015 32.4318 230.426 32.0215 231.246 32.0215C232.067 32.0215 232.477 32.4318 232.477 33.0473V33.3755C233.626 33.5807 234.549 34.0115 235.103 34.3602C235.493 34.6269 235.76 34.9757 235.76 35.4476C235.76 36.1246 235.226 36.7605 234.611 36.7605C234.406 36.7605 234.118 36.699 233.852 36.5349C233.441 36.2887 232.99 36.063 232.477 35.9194V39.7148C234.96 40.3918 236.396 41.6022 236.396 44.0025C236.396 46.2387 235.083 47.9209 232.477 48.4133V48.5364C232.477 49.1519 232.067 49.5622 231.246 49.5622C230.426 49.5622 230.015 49.1519 230.015 48.5364ZM233.872 44.1051C233.872 43.2024 233.482 42.7305 232.477 42.3407V45.8284C233.38 45.5617 233.872 45.0077 233.872 44.1051ZM228.579 37.3555C228.579 38.4018 229.092 38.7505 230.015 39.0378V35.8374C229.195 35.981 228.579 36.3708 228.579 37.3555Z" fill="#AAAAAA" />
+</g>
+</g>
+</g></svg>
