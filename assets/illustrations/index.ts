@@ -1,3 +1,4 @@
+export { default as ArrivalSubwayIllustration } from "./arrival-subway.svg";
 export { default as AssetBagIllustration } from "./asset-bag.svg";
 export { default as AssetHandleIllustration } from "./asset-handle.svg";
 export { default as AssetSubwayIllustration } from "./asset-subway.svg";
