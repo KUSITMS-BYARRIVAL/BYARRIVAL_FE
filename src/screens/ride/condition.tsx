@@ -87,7 +87,7 @@ export function ConditionScreen() {
           label="시작하기"
           color="neutral"
           size="l"
-          onPress={() => router.push("/ride/select")}
+          onPress={() => router.push("/ride/boarding-pass")}
         />
       </View>
     </View>
