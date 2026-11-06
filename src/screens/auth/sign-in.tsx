@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SocialLoginButton } from "@/screens/auth/_components/social-login-button";
@@ -21,7 +21,12 @@ export function SignInScreen() {
   });
 
   return (
-    <View className="flex-1 bg-black" style={{ paddingBottom: bottom }}>
+    // 작은 화면에서는 일러스트가 커서 로그인 버튼이 밀리므로 스크롤로 닿게 한다
+    <ScrollView
+      className="flex-1 bg-black"
+      contentContainerStyle={{ paddingBottom: bottom }}
+      bounces={false}
+    >
       <Image
         source={heroImage}
         contentFit="cover"
@@ -54,6 +59,6 @@ export function SignInScreen() {
           />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
