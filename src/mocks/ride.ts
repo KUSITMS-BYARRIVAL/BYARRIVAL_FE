@@ -38,7 +38,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "뉴스핌",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.newspim.com/news/view/20261104000211",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-1/800/600",
+    image: require("@/assets/images/news/stop-1.jpg"),
   },
   {
     category: "economy",
@@ -50,7 +50,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "한경닷컴",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.hankyung.com/article/202611044443g",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-2/800/600",
+    image: require("@/assets/images/news/stop-2.jpg"),
   },
   {
     category: "life",
@@ -61,7 +61,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "한경닷컴",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.hankyung.com/article/202611033577g",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-3/800/600",
+    image: require("@/assets/images/news/stop-3.jpg"),
   },
   {
     category: "tech",
@@ -72,7 +72,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "한국경제",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.hankyung.com/article/202611045302i",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-4/800/600",
+    image: require("@/assets/images/news/stop-4.jpg"),
   },
   {
     category: "tech",
@@ -83,7 +83,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "뉴스핌",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.newspim.com/news/view/20261104000460",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-5/800/600",
+    image: require("@/assets/images/news/stop-5.jpg"),
   },
   {
     category: "society",
@@ -95,7 +95,7 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "뉴스핌",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.newspim.com/news/view/20261103000769",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-6/800/600",
+    image: require("@/assets/images/news/stop-6.jpg"),
   },
   {
     category: "global",
@@ -106,23 +106,23 @@ export const BOARDING_ARTICLES: RideArticle[] = [
     press: "한국경제",
     keywords: ["#오늘의 브리핑"],
     url: "https://www.hankyung.com/article/202611045995i",
-    imageUrl: "https://picsum.photos/seed/byarrival-stop-7/800/600",
+    image: require("@/assets/images/news/stop-7.jpg"),
   },
 ];
 
 type SelectArticle = BoardingArticle & {
-  imageUrl: string;
+  image: number;
   summary: string[];
 };
 
-// 이미지는 시안 원본이 없어 임시 URL을 쓴다. 첫 기사는 시안 그대로다
+// 이미지는 시안 원본이 없어 임시 이미지를 쓴다. 첫 기사는 시안 그대로다
 export const SELECT_ARTICLES: SelectArticle[] = [
   {
     category: "economy",
     label: "경제",
     title: '한국은행, 기준금리 동결... "하반기 불확실성 여전"',
     minutes: 2,
-    imageUrl: "https://picsum.photos/seed/byarrival-1/800/600",
+    image: require("@/assets/images/news/select-1.jpg"),
     summary: [
       "기준금리 연 3.00% 동결 결정",
       "대외 불확실성과 물가 안정세 동시 고려",
@@ -134,7 +134,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     label: "테크",
     title: "온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다",
     minutes: 3,
-    imageUrl: "https://picsum.photos/seed/byarrival-2/800/600",
+    image: require("@/assets/images/news/select-2.jpg"),
     summary: [
       "온디바이스 AI 탑재폰 출하량 전년 대비 2배 전망",
       "통신 없이 번역 · 요약 기능 사용 가능",
@@ -146,7 +146,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     label: "커리어",
     title: "MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'",
     minutes: 2,
-    imageUrl: "https://picsum.photos/seed/byarrival-3/800/600",
+    image: require("@/assets/images/news/select-3.jpg"),
     summary: [
       "직장인 61%가 본업 외 사이드 프로젝트 진행",
       "주된 이유는 추가 수입보다 자기계발",
@@ -158,7 +158,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     label: "글로벌",
     title: "미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'",
     minutes: 4,
-    imageUrl: "https://picsum.photos/seed/byarrival-4/800/600",
+    image: require("@/assets/images/news/select-4.jpg"),
     summary: [
       "연준 의장, 9월 금리 인하 가능성 언급",
       "고용 둔화 신호가 인하 근거로 제시",

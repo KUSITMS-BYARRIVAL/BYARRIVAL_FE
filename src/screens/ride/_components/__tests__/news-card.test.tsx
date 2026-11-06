@@ -10,7 +10,7 @@ describe("NewsCard", () => {
         categoryLabel="경제"
         readMinutes={2}
         title="한국은행, 기준금리 동결"
-        imageUrl="https://example.com/a.png"
+        image="https://example.com/a.png"
       />,
     );
     expect(screen.getByText("2분")).toBeOnTheScreen();
