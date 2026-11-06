@@ -101,8 +101,7 @@ export function UserTypeScreen() {
           size="l"
           color="neutral"
           disabled={!userType}
-          // TODO: ONB-06 출근 시각 설정으로 이동 (다음 화면 퍼블리싱 후 연결)
-          onPress={() => {}}
+          onPress={() => router.push("/departure-time")}
         />
       </View>
     </View>

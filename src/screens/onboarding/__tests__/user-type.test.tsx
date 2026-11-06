@@ -1,4 +1,5 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
+import { router } from "expo-router";
 
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -7,7 +8,9 @@ import { UserTypeScreen } from "../user-type";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), push: jest.fn() },
+}));
 
 beforeEach(() =>
   useOnboardingStore.setState({ nickname: "아침형", userType: null }),
@@ -34,5 +37,13 @@ describe("UserTypeScreen", () => {
     expect(screen.getByRole("radio", { name: /학생/ })).not.toBeChecked();
     expect(useOnboardingStore.getState().userType).toBe("worker");
     expect(nextButton()).toBeEnabled();
+  });
+
+  it("유형을 고르고 다음을 누르면 출근 시각 설정으로 넘어간다", async () => {
+    const user = userEvent.setup();
+    await render(<UserTypeScreen />);
+    await user.press(screen.getByRole("radio", { name: /기타/ }));
+    await user.press(nextButton());
+    expect(router.push).toHaveBeenCalledWith("/departure-time");
   });
 });
