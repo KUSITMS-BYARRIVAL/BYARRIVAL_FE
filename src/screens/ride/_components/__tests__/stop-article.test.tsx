@@ -11,7 +11,7 @@ const ARTICLE: RideArticle = {
   press: "한국경제",
   keywords: ["#금리", "#오늘의 브리핑"],
   url: "https://example.com/article",
-  imageUrl: "https://example.com/a.png",
+  image: "https://example.com/a.png",
 };
 
 const renderArticle = (

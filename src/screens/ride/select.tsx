@@ -43,7 +43,7 @@ export function SelectScreen() {
           }
         >
           {SELECT_ARTICLES.map(
-            ({ category, label, title, minutes, imageUrl, summary }) => (
+            ({ category, label, title, minutes, image, summary }) => (
               <View
                 key={title}
                 className="gap-3.5 px-5 pb-5 pt-6"
@@ -54,7 +54,7 @@ export function SelectScreen() {
                   categoryLabel={label}
                   readMinutes={minutes}
                   title={title}
-                  imageUrl={imageUrl}
+                  image={image}
                 />
                 <SummaryCard points={summary} />
               </View>

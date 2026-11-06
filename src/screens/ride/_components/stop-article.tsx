@@ -13,7 +13,7 @@ export type RideArticle = BoardingArticle & {
   press: string;
   keywords: string[];
   url: string;
-  imageUrl: string;
+  image: string | number;
 };
 
 type StopArticleProps = {
@@ -67,7 +67,7 @@ export function StopArticle({
         </View>
         <View className="overflow-hidden rounded">
           <Image
-            source={{ uri: article.imageUrl }}
+            source={article.image}
             contentFit="cover"
             style={{ width: "100%", height: 180 }}
           />

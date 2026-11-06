@@ -12,7 +12,7 @@ type NewsCardProps = {
   /** 읽는 데 걸리는 시간(분) */
   readMinutes: number;
   title: string;
-  imageUrl: string;
+  image: string | number;
   className?: string;
 };
 
@@ -21,7 +21,7 @@ export function NewsCard({
   categoryLabel,
   readMinutes,
   title,
-  imageUrl,
+  image,
   className,
 }: NewsCardProps) {
   return (
@@ -41,7 +41,7 @@ export function NewsCard({
         <Text className="text-primary text-title2-sb">{title}</Text>
       </View>
       <Image
-        source={{ uri: imageUrl }}
+        source={image}
         contentFit="cover"
         style={{ width: "100%", height: 267 }}
       />
