@@ -1,99 +1,14 @@
 import { router } from "expo-router";
-import type { ComponentType } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { SvgProps } from "react-native-svg";
 
-import {
-  CategoryCareerIcon,
-  CategoryCareerSelectedIcon,
-  CategoryCultureIcon,
-  CategoryCultureSelectedIcon,
-  CategoryEconomyIcon,
-  CategoryEconomySelectedIcon,
-  CategoryGlobalIcon,
-  CategoryGlobalSelectedIcon,
-  CategoryLifeIcon,
-  CategoryLifeSelectedIcon,
-  CategoryScienceIcon,
-  CategoryScienceSelectedIcon,
-  CategorySocietyIcon,
-  CategorySocietySelectedIcon,
-  CategoryTechIcon,
-  CategoryTechSelectedIcon,
-} from "@/assets/icons";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { SelectionTile } from "@/screens/onboarding/_components/selection-tile";
-import { type Interest, useOnboardingStore } from "@/stores/onboarding-store";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./constants";
-
-export const INTERESTS: {
-  value: Interest;
-  title: string;
-  subtitle: string;
-  Icon: ComponentType<SvgProps>;
-  SelectedIcon: ComponentType<SvgProps>;
-}[] = [
-  {
-    value: "economy",
-    title: "경제",
-    subtitle: "Economy",
-    Icon: CategoryEconomyIcon,
-    SelectedIcon: CategoryEconomySelectedIcon,
-  },
-  {
-    value: "tech",
-    title: "테크",
-    subtitle: "Tech",
-    Icon: CategoryTechIcon,
-    SelectedIcon: CategoryTechSelectedIcon,
-  },
-  {
-    value: "career",
-    title: "커리어",
-    subtitle: "Career",
-    Icon: CategoryCareerIcon,
-    SelectedIcon: CategoryCareerSelectedIcon,
-  },
-  {
-    value: "society",
-    title: "사회",
-    subtitle: "Society",
-    Icon: CategorySocietyIcon,
-    SelectedIcon: CategorySocietySelectedIcon,
-  },
-  {
-    value: "global",
-    title: "글로벌",
-    subtitle: "Global",
-    Icon: CategoryGlobalIcon,
-    SelectedIcon: CategoryGlobalSelectedIcon,
-  },
-  {
-    value: "life",
-    title: "라이프",
-    subtitle: "Lifestyle",
-    Icon: CategoryLifeIcon,
-    SelectedIcon: CategoryLifeSelectedIcon,
-  },
-  {
-    value: "science",
-    title: "과학",
-    subtitle: "Science",
-    Icon: CategoryScienceIcon,
-    SelectedIcon: CategoryScienceSelectedIcon,
-  },
-  {
-    value: "culture",
-    title: "문화",
-    subtitle: "Culture",
-    Icon: CategoryCultureIcon,
-    SelectedIcon: CategoryCultureSelectedIcon,
-  },
-];
+import { INTERESTS, ONBOARDING_STEPS } from "./constants";
 
 // 화면설계서 ONB-08 관심 분야 선택
 export function InterestsScreen() {

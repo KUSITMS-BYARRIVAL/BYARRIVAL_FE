@@ -1,47 +1,14 @@
 import { router } from "expo-router";
-import type { ComponentType } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import type { SvgProps } from "react-native-svg";
 
-import {
-  AssetBagIllustration,
-  AssetSubwayIllustration,
-  AssetSuitIllustration,
-} from "@/assets/illustrations";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { SelectionCard } from "@/screens/onboarding/_components/selection-card";
-import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./constants";
-
-export const USER_TYPES: {
-  type: UserType;
-  title: string;
-  description: string;
-  Asset: ComponentType<SvgProps>;
-}[] = [
-  {
-    type: "worker",
-    title: "직장인",
-    description: "출근길에 읽어요",
-    Asset: AssetSuitIllustration,
-  },
-  {
-    type: "student",
-    title: "학생",
-    description: "등교·통학길에 읽어요",
-    Asset: AssetBagIllustration,
-  },
-  {
-    type: "other",
-    title: "기타",
-    description: "이동하는 시간에 읽어요",
-    Asset: AssetSubwayIllustration,
-  },
-];
+import { DEFAULT_NICKNAME, ONBOARDING_STEPS, USER_TYPES } from "./constants";
 
 // 화면설계서 ONB-05 이동 유형 선택
 export function UserTypeScreen() {
