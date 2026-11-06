@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useRef, useState } from "react";
 import {
@@ -25,7 +25,11 @@ export function StopScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const pagerRef = useRef<ScrollViewInstance>(null);
-  const [index, setIndex] = useState(0);
+  // 홈 '이어서 탑승하기'로 들어오면 멈췄던 정거장에서 시작한다
+  const { start } = useLocalSearchParams<{ start?: string }>();
+  const [startIndex] = useState(Number(start ?? 0));
+  const [index, setIndex] = useState(startIndex);
+  // shortcut: 이어 타기 전에 원문 본 기록은 빠진다, API 연결 시 서버 진행 상태로 교체
   const [readUrls, setReadUrls] = useState<string[]>([]);
   const isLast = index === TOTAL - 1;
 
@@ -86,6 +90,7 @@ export function StopScreen() {
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
+          contentOffset={{ x: startIndex * width, y: 0 }}
           onMomentumScrollEnd={(e) =>
             setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
           }

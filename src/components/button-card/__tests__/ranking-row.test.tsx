@@ -34,4 +34,38 @@ describe("RankingRow", () => {
       screen.getByText("오늘 출근길 직장인 97명이 보고 있어요"),
     ).toBeOnTheScreen();
   });
+
+  it("rankTone을 주지 않으면 순위 원이 회색 배경에 secondary 숫자다", async () => {
+    await render(<RankingRow rank={1} title="제목" subtext="보조 문구" />);
+    const rank = screen.getByText("1");
+    expect(rank.props.className).toContain("text-secondary");
+    expect(rank.parent!.props.className).toContain("bg-icon-background");
+  });
+
+  it("rankTone이 brand면 순위 원이 초록 배경에 흰 숫자다", async () => {
+    await render(
+      <RankingRow rank={1} title="제목" subtext="보조 문구" rankTone="brand" />,
+    );
+    const rank = screen.getByText("1");
+    expect(rank.props.className).toContain("text-on-fill-default");
+    expect(rank.parent!.props.className).toContain("bg-green-500");
+  });
+
+  it("titleNumberOfLines를 주지 않으면 제목 줄 수 제한이 없다", async () => {
+    await render(<RankingRow rank={1} title="제목" subtext="보조 문구" />);
+    expect(screen.getByText("제목").props.numberOfLines).toBeUndefined();
+  });
+
+  it("titleNumberOfLines가 1이면 제목만 한 줄로 제한한다", async () => {
+    await render(
+      <RankingRow
+        rank={1}
+        title="제목"
+        subtext="보조 문구"
+        titleNumberOfLines={1}
+      />,
+    );
+    expect(screen.getByText("제목").props.numberOfLines).toBe(1);
+    expect(screen.getByText("보조 문구").props.numberOfLines).toBeUndefined();
+  });
 });

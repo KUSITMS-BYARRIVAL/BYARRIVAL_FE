@@ -46,7 +46,8 @@ export function EditorPickSmalltalkCard({
       </View>
       <Bubble text={question} />
       <Text className="text-secondary text-body3-r">
-        <Text className="text-brand text-body3-m">이어서 · </Text>
+        <Text className="text-brand text-body3-m">이어서</Text>
+        <Text className="text-brand"> · </Text>
         {followUp}
       </Text>
     </View>

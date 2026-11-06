@@ -35,7 +35,8 @@ export function SmalltalkCard({
             <Bubble text={question} className="self-stretch" />
           </View>
           <Text className="pl-2.5 text-secondary text-body3-r">
-            <Text className="text-brand text-body3-m">이어서 · </Text>
+            <Text className="text-brand text-body3-m">이어서</Text>
+            <Text className="text-brand"> · </Text>
             {followUp}
           </Text>
           {pressed && <View className="absolute inset-0 bg-card-pressed-2" />}
