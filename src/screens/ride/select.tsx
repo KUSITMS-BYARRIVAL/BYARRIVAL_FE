@@ -1,9 +1,11 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useState } from "react";
 import {
+  Animated,
   ScrollView,
   type ScrollViewInstance,
   Text,
+  useAnimatedValue,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -26,6 +28,7 @@ export function SelectScreen() {
   const articles = isExtra ? EXTRA_ARTICLES : SELECT_ARTICLES;
   const [index, setIndex] = useState(0);
   const pagerRef = useRef<ScrollViewInstance>(null);
+  const scrollX = useAnimatedValue(0);
   const toggleArticle = useRideStore((state) => state.toggleArticle);
   const selected = useSelectedArticles();
   // 다른 뉴스 더 탑승시키기는 UT용 화면이라 고른 기사를 이 화면에서만 기억한다. 나가면 사라지고 탑승권·정거장에는 반영하지 않는다
@@ -43,6 +46,14 @@ export function SelectScreen() {
       : toggleArticle(title);
   const isSelected = (title: string) =>
     (isExtra ? extraSelected : selected).some((a) => a.title === title);
+  // QA: 지나간 기사로는 돌아가지 않는다. 왼쪽으로 끌면 현재 기사 위치로 되돌린다
+  const lockBackSwipe = (e: {
+    nativeEvent: { contentOffset: { x: number } };
+  }) => {
+    if (e.nativeEvent.contentOffset.x < index * width) {
+      pagerRef.current?.scrollTo({ x: index * width, animated: false });
+    }
+  };
   // 바는 넘긴 카드 순서만큼 차오르고(선택과 무관), 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
   const progress = index / Math.max(articles.length - 1, 1);
 
@@ -60,7 +71,6 @@ export function SelectScreen() {
           </Text>
         </View>
         {/* 뉴스 카드와 AI 요약이 함께 넘어가도록 한 페이지에 묶는다 */}
-        {/* QA: 지나간 기사로는 돌아가지 않는다. 왼쪽으로 끌면 현재 기사 위치로 되돌린다 */}
         <ScrollView
           ref={pagerRef}
           horizontal
@@ -68,33 +78,73 @@ export function SelectScreen() {
           showsHorizontalScrollIndicator={false}
           scrollEventThrottle={16}
           onScroll={(e) => {
-            if (e.nativeEvent.contentOffset.x < index * width) {
-              pagerRef.current?.scrollTo({ x: index * width, animated: false });
-            }
+            // 카드 연출은 JS에서 스크롤 위치를 넘겨 계산한다 (카드 7장이라 충분히 가볍다)
+            scrollX.setValue(e.nativeEvent.contentOffset.x);
+            lockBackSwipe(e);
           }}
           onMomentumScrollEnd={(e) =>
             setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
           }
         >
           {articles.map(
-            ({ category, label, title, minutes, image, summary }) => (
-              <View
-                key={title}
-                className="gap-3.5 px-5 pb-5 pt-6"
-                style={{ width }}
-              >
-                <NewsCard
-                  category={category}
-                  categoryLabel={label}
-                  readMinutes={minutes}
-                  title={title}
-                  image={image}
-                  isSelected={isSelected(title)}
-                  onPress={() => toggle(title)}
-                />
-                <SummaryCard points={summary} />
-              </View>
-            ),
+            ({ category, label, title, minutes, image, summary }, i) => {
+              const page = i * width;
+              // 다음 카드는 제자리(뒤)에서 커지며 올라온다
+              const incoming = [page - width, page];
+              // 고르지 않은 카드는 넘길 때 작아지고 기울며 흐려져 버려지는 느낌을 준다. 고른 카드는 그대로 넘어간다
+              const outgoing = [page, page + width];
+              const discard = !isSelected(title);
+              return (
+                <Animated.View
+                  key={title}
+                  className="gap-3.5 px-5 pb-5 pt-6"
+                  style={{
+                    width,
+                    // 빠져나가는 카드가 올라오는 카드 위에 보이도록 앞 카드를 위에 쌓는다
+                    zIndex: articles.length - i,
+                    opacity: scrollX.interpolate({
+                      inputRange: [...incoming, outgoing[1]],
+                      outputRange: [0, 1, discard ? 0 : 1],
+                      extrapolate: "clamp",
+                    }),
+                    transform: [
+                      {
+                        translateX: scrollX.interpolate({
+                          inputRange: incoming,
+                          outputRange: [-width, 0],
+                          extrapolate: "clamp",
+                        }),
+                      },
+                      {
+                        scale: scrollX.interpolate({
+                          inputRange: [...incoming, outgoing[1]],
+                          outputRange: [0.9, 1, discard ? 0.8 : 1],
+                          extrapolate: "clamp",
+                        }),
+                      },
+                      {
+                        rotate: scrollX.interpolate({
+                          inputRange: outgoing,
+                          outputRange: ["0deg", discard ? "-12deg" : "0deg"],
+                          extrapolate: "clamp",
+                        }),
+                      },
+                    ],
+                  }}
+                >
+                  <NewsCard
+                    category={category}
+                    categoryLabel={label}
+                    readMinutes={minutes}
+                    title={title}
+                    image={image}
+                    isSelected={!discard}
+                    onPress={() => toggle(title)}
+                  />
+                  <SummaryCard points={summary} />
+                </Animated.View>
+              );
+            },
           )}
         </ScrollView>
       </ScrollView>
