@@ -84,6 +84,34 @@ describe("RegionScreen", () => {
     expect(screen.getByRole("tab", { name: "부산" })).toBeSelected();
   });
 
+  it("검색 중에 지역 칩을 누르면 검색어를 비우고 그 지역 목록을 보여준다", async () => {
+    const user = userEvent.setup();
+    useOnboardingStore.setState({
+      region: { province: "부산", district: "해운대구" },
+    });
+    await render(<RegionScreen />);
+    await user.type(screen.getByLabelText("지역명 검색"), "강남");
+    await user.press(screen.getByRole("button", { name: "부산 해운대구" }));
+
+    expect(screen.getByLabelText("지역명 검색")).toHaveDisplayValue("");
+    expect(screen.getByRole("tab", { name: "부산" })).toBeSelected();
+    expect(screen.getByRole("checkbox", { name: "해운대구" })).toBeChecked();
+  });
+
+  it("검색 중에 지역 칩을 누르면 검색어를 비우고 그 지역 목록을 보여준다", async () => {
+    const user = userEvent.setup();
+    useOnboardingStore.setState({
+      region: { province: "부산", district: "해운대구" },
+    });
+    await render(<RegionScreen />);
+    await user.type(screen.getByLabelText("지역명 검색"), "강남");
+    await user.press(screen.getByRole("button", { name: "부산 해운대구" }));
+
+    expect(screen.getByLabelText("지역명 검색")).toHaveDisplayValue("");
+    expect(screen.getByRole("tab", { name: "부산" })).toBeSelected();
+    expect(screen.getByRole("checkbox", { name: "해운대구" })).toBeChecked();
+  });
+
   it("검색 결과가 없으면 안내 문구를 보여준다", async () => {
     const user = userEvent.setup();
     await render(<RegionScreen />);

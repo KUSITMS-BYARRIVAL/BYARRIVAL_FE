@@ -152,7 +152,11 @@ export function RegionScreen() {
           <Chip
             label={regionLabel(region)}
             accessibilityHint="눌러서 해당 지역 목록으로 이동해요"
-            onPress={() => setProvince(region.province)}
+            // 검색 중이면 패널이 가려져 있어 검색어도 비워 목록을 다시 보여준다
+            onPress={() => {
+              setProvince(region.province);
+              setQuery("");
+            }}
             onDelete={() => setRegion(null)}
             className="ml-5 self-start"
           />
