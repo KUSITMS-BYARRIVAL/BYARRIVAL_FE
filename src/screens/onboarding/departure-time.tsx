@@ -105,7 +105,7 @@ export function DepartureTimeScreen() {
       </ScrollView>
       <View
         className="px-5 pt-2"
-        style={{ paddingBottom: Math.max(bottom, 20) }}
+        style={{ paddingBottom: Math.max(bottom, 30) }}
       >
         {/* 기본값(08:00)이 있어 처음부터 활성 */}
         <Button

@@ -157,7 +157,7 @@ export function InterestsScreen() {
       </ScrollView>
       <View
         className="px-5 pt-2"
-        style={{ paddingBottom: Math.max(bottom, 20) }}
+        style={{ paddingBottom: Math.max(bottom, 30) }}
       >
         <Button
           label="다음으로"

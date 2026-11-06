@@ -146,7 +146,7 @@ export function RegionScreen() {
       </View>
       <View
         className="gap-5 pt-5"
-        style={{ paddingBottom: Math.max(bottom, 20) }}
+        style={{ paddingBottom: Math.max(bottom, 30) }}
       >
         {region && (
           <Chip

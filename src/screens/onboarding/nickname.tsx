@@ -91,7 +91,7 @@ export function NicknameScreen() {
       </ScrollView>
       <View
         className="px-5 pt-2"
-        style={{ paddingBottom: Math.max(bottom, 20) }}
+        style={{ paddingBottom: Math.max(bottom, 30) }}
       >
         {/* Figma 온보딩 다음 버튼은 neutral(검정), 비활성이면 회색·흰 글자 */}
         <Button
