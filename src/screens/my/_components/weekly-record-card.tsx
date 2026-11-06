@@ -5,11 +5,14 @@ import { BarChart } from "./bar-chart";
 type WeeklyRecordCardProps = {
   /** 오래된 주 → 이번 주 순서의 읽은 시간(분). 마지막이 이번 주 */
   weeklyMinutes: number[];
+  /** 지난주 대비 늘어난 읽은 시간(분) */
+  lastWeekDiff: number;
 };
 
-export function WeeklyRecordCard({ weeklyMinutes }: WeeklyRecordCardProps) {
-  const lastWeekDiff = weeklyMinutes.at(-1)! - weeklyMinutes.at(-2)!;
-
+export function WeeklyRecordCard({
+  weeklyMinutes,
+  lastWeekDiff,
+}: WeeklyRecordCardProps) {
   return (
     <View className="gap-3.5 rounded bg-white p-5">
       <View className="flex-row items-center justify-between">

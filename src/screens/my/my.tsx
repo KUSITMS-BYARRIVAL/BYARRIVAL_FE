@@ -4,6 +4,7 @@ import { ScrollView, View } from "react-native";
 
 import {
   DAY_STATUSES_BY_MONTH,
+  LAST_WEEK_DIFF_MINUTES,
   MONTH_MINUTES,
   MONTH_READ_COUNT,
   MONTH_STATUSES_BY_YEAR,
@@ -35,7 +36,10 @@ export function MyScreen() {
           dayStatusesByMonth={DAY_STATUSES_BY_MONTH}
           monthStatusesByYear={MONTH_STATUSES_BY_YEAR}
         />
-        <WeeklyRecordCard weeklyMinutes={WEEKLY_MINUTES} />
+        <WeeklyRecordCard
+          weeklyMinutes={WEEKLY_MINUTES}
+          lastWeekDiff={LAST_WEEK_DIFF_MINUTES}
+        />
       </View>
     </ScrollView>
   );

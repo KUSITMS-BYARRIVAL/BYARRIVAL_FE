@@ -62,3 +62,5 @@ export const MONTH_STATUSES_BY_YEAR: Record<
 
 // 6주 전 → 이번 주 순서의 읽은 시간(분). 지난주 대비 +30분
 export const WEEKLY_MINUTES = [42, 55, 61, 74, 88, 118];
+// shortcut: 증감 표현·전달 형식(숫자/문구)이 미정이라 고정값, API 연결 시 응답 형식에 맞춰 교체
+export const LAST_WEEK_DIFF_MINUTES = 30;
