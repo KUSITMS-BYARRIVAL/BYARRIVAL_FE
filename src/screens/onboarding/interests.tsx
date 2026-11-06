@@ -30,7 +30,7 @@ import { type Interest, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./constants";
 
-const INTERESTS: {
+export const INTERESTS: {
   value: Interest;
   title: string;
   subtitle: string;

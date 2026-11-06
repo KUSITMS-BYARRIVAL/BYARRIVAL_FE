@@ -17,7 +17,7 @@ import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./constants";
 
-const USER_TYPES: {
+export const USER_TYPES: {
   type: UserType;
   title: string;
   description: string;
