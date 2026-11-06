@@ -153,6 +153,58 @@ export const SELECT_ARTICLES = BOARDING_ARTICLES.map((article, i) => ({
   summary: SUMMARIES[i],
 }));
 
+// 보딩패스 '다른 뉴스 더 탑승시키기'에서 보여주는 추가 기사. 이미지는 시안 원본이 없어 임시 이미지를 쓴다. 첫 기사는 시안 그대로다
+export const EXTRA_ARTICLES = [
+  {
+    category: "economy" as const,
+    label: "경제",
+    title: '한국은행, 기준금리 동결... "하반기 불확실성 여전"',
+    minutes: 2,
+    image: require("@/assets/images/news/select-1.jpg"),
+    summary: [
+      "기준금리 연 3.00% 동결 결정",
+      "대외 불확실성과 물가 안정세 동시 고려",
+      "하반기 인하 가능성 약 60% 전망",
+    ],
+  },
+  {
+    category: "tech" as const,
+    label: "테크",
+    title: "온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다",
+    minutes: 3,
+    image: require("@/assets/images/news/select-2.jpg"),
+    summary: [
+      "온디바이스 AI 탑재폰 출하량 전년 대비 2배 전망",
+      "통신 없이 번역 · 요약 기능 사용 가능",
+      "중저가 모델까지 탑재 확대 예상",
+    ],
+  },
+  {
+    category: "career" as const,
+    label: "커리어",
+    title: "MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'",
+    minutes: 2,
+    image: require("@/assets/images/news/select-3.jpg"),
+    summary: [
+      "직장인 61%가 본업 외 사이드 프로젝트 진행",
+      "주된 이유는 추가 수입보다 자기계발",
+      "회사의 겸업 허용 여부가 이직 기준으로 부상",
+    ],
+  },
+  {
+    category: "global" as const,
+    label: "글로벌",
+    title: "미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'",
+    minutes: 4,
+    image: require("@/assets/images/news/select-4.jpg"),
+    summary: [
+      "연준 의장, 9월 금리 인하 가능성 언급",
+      "고용 둔화 신호가 인하 근거로 제시",
+      "과도한 기대는 경계해야 한다는 시각도",
+    ],
+  },
+];
+
 export const ARRIVAL_STREAK_DAYS = 7;
 
 // UT 범위에서는 퀴즈를 만들지 않아 항상 안 푼 상태

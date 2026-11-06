@@ -32,8 +32,9 @@ export function BoardingPassScreen() {
           label="다른 뉴스 더 탑승시키기"
           color="neutral-weak"
           size="l"
-          // 뉴스 탑승하기가 바로 앞 화면이라 새로 쌓지 않고 돌아간다
-          onPress={() => router.back()}
+          onPress={() =>
+            router.push({ pathname: "/ride/select", params: { extra: "1" } })
+          }
         />
       </View>
     </View>
