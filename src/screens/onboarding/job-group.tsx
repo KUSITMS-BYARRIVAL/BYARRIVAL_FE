@@ -233,13 +233,12 @@ export function JobGroupScreen() {
         className="px-5 pt-2"
         style={{ paddingBottom: Math.max(bottom, 20) }}
       >
-        {/* TODO: ONB-10 근무 지역 선택으로 이동 (다음 화면 퍼블리싱 후 연결) */}
         <Button
           label="다음으로"
           size="l"
           color="neutral"
           disabled={!jobGroup}
-          onPress={() => {}}
+          onPress={() => router.push("/region")}
         />
       </View>
     </View>
