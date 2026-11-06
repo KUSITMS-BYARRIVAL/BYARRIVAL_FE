@@ -89,11 +89,13 @@ export function SelectScreen() {
           {articles.map(
             ({ category, label, title, minutes, image, summary }, i) => {
               const page = i * width;
-              // 다음 카드는 제자리(뒤)에서 커지며 올라온다
               const incoming = [page - width, page];
-              // 고르지 않은 카드는 넘길 때 작아지고 기울며 흐려져 버려지는 느낌을 준다. 고른 카드는 그대로 넘어간다
               const outgoing = [page, page + width];
+              // 고르지 않은 카드는 넘길 때 작아지고 기울며 흐려져 버려지는 느낌을 준다
               const discard = !isSelected(title);
+              // 앞 카드가 버려질 때만 이 카드가 제자리(뒤)에서 커지며 올라온다.
+              // 앞 카드를 골랐으면 처음처럼 옆에서 밀려 들어온다
+              const rise = i > 0 && !isSelected(articles[i - 1].title);
               return (
                 <Animated.View
                   key={title}
@@ -104,21 +106,21 @@ export function SelectScreen() {
                     zIndex: articles.length - i,
                     opacity: scrollX.interpolate({
                       inputRange: [...incoming, outgoing[1]],
-                      outputRange: [0, 1, discard ? 0 : 1],
+                      outputRange: [rise ? 0 : 1, 1, discard ? 0 : 1],
                       extrapolate: "clamp",
                     }),
                     transform: [
                       {
                         translateX: scrollX.interpolate({
                           inputRange: incoming,
-                          outputRange: [-width, 0],
+                          outputRange: [rise ? -width : 0, 0],
                           extrapolate: "clamp",
                         }),
                       },
                       {
                         scale: scrollX.interpolate({
                           inputRange: [...incoming, outgoing[1]],
-                          outputRange: [0.9, 1, discard ? 0.8 : 1],
+                          outputRange: [rise ? 0.9 : 1, 1, discard ? 0.8 : 1],
                           extrapolate: "clamp",
                         }),
                       },
