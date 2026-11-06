@@ -31,7 +31,8 @@ export function IntroScreen() {
         style={{ position: "absolute" }}
       />
       <View className="gap-5 px-5" style={{ paddingTop: top + CONTENT_TOP }}>
-        <LogoIllustration />
+        {/* 홈과 같은 로고 파일(85.5×24)을 인트로 Figma 크기로 키운다 */}
+        <LogoIllustration width={142.5} height={40} />
         <Text className="text-brand text-body1-sb">
           {"오늘의 컨디션에 맞게\n딱 맞는 뉴스를 큐레이션해드려요"}
         </Text>
