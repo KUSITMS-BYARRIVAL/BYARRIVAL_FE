@@ -162,13 +162,12 @@ export function RegionScreen() {
           }
         </Text>
         <View className="px-5">
-          {/* TODO: ONB-11 온보딩 완료로 이동하며 온보딩 저장 API 호출 (화면·API 확정 후) */}
           <Button
             label="다음으로"
             size="l"
             color="neutral"
             disabled={!region}
-            onPress={() => {}}
+            onPress={() => router.push("/complete")}
           />
         </View>
       </View>
