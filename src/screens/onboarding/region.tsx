@@ -24,9 +24,10 @@ const COPY: Record<UserType, { title: string; description: string }> = {
     title: "주로 어디서 근무하시나요?",
     description: "근무지와 가까운 지역을 하나만 골라 주세요",
   },
+  // 설계서 T2("통학") 대신 Figma(UT_Onboarding_Step7) 문구를 쓴다
   student: {
-    title: "주로 어디로 통학하시나요?",
-    description: "통학하는 곳과 가까운 지역을 하나만 골라 주세요",
+    title: "주로 어디로 등교하시나요?",
+    description: "학교와 가까운 지역을 하나만 골라 주세요",
   },
   other: {
     title: "주로 어디로 이동하시나요?",

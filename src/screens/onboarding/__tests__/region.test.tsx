@@ -16,7 +16,7 @@ beforeEach(() =>
 describe("RegionScreen", () => {
   it.each([
     ["worker", "주로 어디서 근무하시나요?"],
-    ["student", "주로 어디로 통학하시나요?"],
+    ["student", "주로 어디로 등교하시나요?"],
     ["other", "주로 어디로 이동하시나요?"],
   ] as const)("%s 유형이면 '%s'로 묻는다", async (userType, title) => {
     useOnboardingStore.setState({ userType });
