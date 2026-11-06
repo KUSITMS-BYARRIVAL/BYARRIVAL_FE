@@ -11,6 +11,9 @@ jest.mock("expo-router", () => ({
   useFocusEffect: jest.fn(),
 }));
 
+// 버튼마다 이동을 따로 확인하도록 이전 테스트의 호출 기록을 지운다
+beforeEach(() => jest.clearAllMocks());
+
 describe("SignInScreen", () => {
   it.each(["Apple로 로그인하기", "카카오로 로그인하기"])(
     "%s를 누르면 닉네임 입력으로 넘어간다",
@@ -18,6 +21,7 @@ describe("SignInScreen", () => {
       const user = userEvent.setup();
       await render(<SignInScreen />);
       await user.press(screen.getByRole("button", { name }));
+      expect(router.push).toHaveBeenCalledTimes(1);
       expect(router.push).toHaveBeenCalledWith("/nickname");
     },
   );
