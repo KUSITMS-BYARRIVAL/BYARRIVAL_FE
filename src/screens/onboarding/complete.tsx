@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,6 +20,9 @@ export function OnboardingCompleteScreen() {
   const userType = useOnboardingStore((state) => state.userType);
   const departureTime = useOnboardingStore((state) => state.departureTime);
   const interests = useOnboardingStore((state) => state.interests);
+  const completeOnboarding = useOnboardingStore(
+    (state) => state.completeOnboarding,
+  );
 
   const summary = [
     {
@@ -80,12 +84,16 @@ export function OnboardingCompleteScreen() {
         className="px-5 pt-2"
         style={{ paddingBottom: Math.max(bottom, 30) }}
       >
-        {/* TODO: 온보딩 저장 API 호출 후 홈(HOME-01)으로 이동. 홈 라우트(tabs/index)가 생기면 router.replace로 연결 */}
+        {/* TODO: 온보딩 저장 API 호출 후 이동 (API 명세 확정 후) */}
         <Button
           label="출근길 시작하기"
           size="l"
           color="neutral"
-          onPress={() => {}}
+          // 온보딩으로 돌아가지 않도록 기록을 바꿔 홈(HOME-01)으로 보낸다
+          onPress={() => {
+            completeOnboarding();
+            router.replace("/");
+          }}
         />
       </View>
     </View>

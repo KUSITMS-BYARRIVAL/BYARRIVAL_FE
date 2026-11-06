@@ -46,6 +46,8 @@ type OnboardingState = {
   jobGroup: JobGroup | null;
   /** 근무(통학·이동) 지역. district가 null이면 시/도 전체 */
   region: Region | null;
+  /** 온보딩을 끝까지 마쳤는지. 마치기 전에는 홈 쪽 화면에 들어갈 수 없다 */
+  isOnboarded: boolean;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
@@ -53,6 +55,7 @@ type OnboardingState = {
   toggleInterest: (interest: Interest) => void;
   setJobGroup: (jobGroup: JobGroup) => void;
   setRegion: (region: Region | null) => void;
+  completeOnboarding: () => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -67,6 +70,8 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   interests: [],
   jobGroup: null,
   region: null,
+  // TODO: 로그인 연동 후 서버의 온보딩 완료 여부로 대체 (지금은 앱을 켤 때마다 온보딩부터 시작)
+  isOnboarded: false,
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),
@@ -79,4 +84,5 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     })),
   setJobGroup: (jobGroup) => set({ jobGroup }),
   setRegion: (region) => set({ region }),
+  completeOnboarding: () => set({ isOnboarded: true }),
 }));
