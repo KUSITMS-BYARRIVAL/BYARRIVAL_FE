@@ -15,7 +15,8 @@ const containerVariants = cva("items-center justify-end border", {
     size: {
       l: "h-[160px] w-[172px] rounded p-5",
       // Figma 직군 버튼은 카테고리 버튼을 0.89배로 줄인 값(둥글기 17.8px)이라 가까운 radius 토큰을 쓴다
-      s: "h-[112px] w-[113px] rounded-md p-4",
+      // 직군명·예시가 길어 Figma처럼 한 줄로 두려고 좌우 여백을 줄인다
+      s: "h-[112px] w-[113px] rounded-md px-1 py-4",
     },
     isSelected: {
       true: "border-brand bg-card-green",
@@ -68,7 +69,10 @@ export function SelectionTile({
       <View className={cn("items-center", size === "l" ? "gap-2" : "gap-1")}>
         <View className="size-10 items-center justify-center">{icon}</View>
         <View className="items-center">
+          {/* 좁은 화면에서도 한 줄을 지키도록 넘치면 글자를 줄인다 */}
           <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
             className={cn(
               "text-center",
               TITLE_CLASS[size],
@@ -79,6 +83,8 @@ export function SelectionTile({
           </Text>
           {subtitle && (
             <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
               className={cn(
                 "text-center text-caption1-m",
                 isSelected ? "text-brand" : "text-tertiary",

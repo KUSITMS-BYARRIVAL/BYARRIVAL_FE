@@ -24,7 +24,12 @@ const TYPOGRAPHY = {
     fontWeight: 700,
     letterSpacing: -2,
   },
-  "heading1-b": { fontSize: 28, lineHeight: 125, fontWeight: 700 },
+  "heading1-b": {
+    fontSize: 24,
+    lineHeight: 140,
+    fontWeight: 700,
+    letterSpacing: -2,
+  },
   "heading2-b": { fontSize: 24, lineHeight: 135, fontWeight: 700 },
   "heading2-sb": {
     fontSize: 22,
