@@ -1,11 +1,18 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
+import { router } from "expo-router";
+
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { NicknameScreen } from "../nickname";
 
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), push: jest.fn() },
+}));
+
+beforeEach(() => useOnboardingStore.setState({ nickname: "", userType: null }));
 
 const nextButton = () => screen.getByRole("button", { name: "다음으로" });
 
@@ -45,5 +52,20 @@ describe("NicknameScreen", () => {
   it("공백만 입력하면 다음으로 넘어갈 수 없다", async () => {
     await typeNickname("   ");
     expect(nextButton()).toBeDisabled();
+  });
+
+  it("다음을 누르면 닉네임을 저장하고 유형 선택으로 넘어간다", async () => {
+    const user = userEvent.setup();
+    await render(<NicknameScreen />);
+    await user.type(screen.getByLabelText("닉네임"), " 아침형 ");
+    await user.press(nextButton());
+    expect(useOnboardingStore.getState().nickname).toBe("아침형");
+    expect(router.push).toHaveBeenCalledWith("/user-type");
+  });
+
+  it("저장된 닉네임이 있으면 그 값으로 시작한다", async () => {
+    useOnboardingStore.setState({ nickname: "출근요정" });
+    await render(<NicknameScreen />);
+    expect(screen.getByDisplayValue("출근요정")).toBeOnTheScreen();
   });
 });

@@ -14,12 +14,12 @@ import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { TextField } from "@/components/text-field/text-field";
 import { NicknamePreviewCard } from "@/screens/onboarding/_components/nickname-preview-card";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
-const ONBOARDING_STEPS = 7;
+import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./constants";
+
 const NICKNAME_MAX_LENGTH = 10;
 const NICKNAME_MIN_LENGTH = 2;
-// 입력 전 미리보기 카드에 보여줄 기본 닉네임 (화면설계서 ONB-04)
-const DEFAULT_NICKNAME = "출근러";
 // 한글(조합 중인 자모 포함)·영문·숫자만 허용
 const NICKNAME_PATTERN = /^[가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9]*$/;
 
@@ -33,7 +33,10 @@ function validateNickname(nickname: string): string | null {
 
 export function NicknameScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  const [nickname, setNickname] = useState("");
+  // 뒤로 돌아와도 입력값이 남도록 스토어 값으로 시작한다
+  const savedNickname = useOnboardingStore((state) => state.nickname);
+  const saveNickname = useOnboardingStore((state) => state.setNickname);
+  const [nickname, setNickname] = useState(savedNickname);
   const trimmed = nickname.trim();
   const errorMessage = trimmed ? validateNickname(trimmed) : null;
   // 공백만 입력한 경우도 통과시키지 않는다
@@ -92,15 +95,17 @@ export function NicknameScreen() {
         className="px-5 pt-2"
         style={{ paddingBottom: Math.max(bottom, 20) }}
       >
-        {/* Figma 다음 버튼은 비활성일 때 회색 배경·흰 글자라 neutral의 비활성 모양을 쓰고, 입력하면 brand로 바꾼다 */}
+        {/* Figma 온보딩 다음 버튼은 neutral(검정), 비활성이면 회색·흰 글자 */}
         <Button
           label="다음으로"
           size="l"
-          color={isValid ? "brand" : "neutral"}
+          color="neutral"
           disabled={!isValid}
-          // TODO: 닉네임을 온보딩 상태에 저장하고 ONB-05 이동 유형 선택으로 이동 (다음 화면 퍼블리싱 후 연결)
           // TODO: 금칙어("사용할 수 없는 닉네임이에요")는 서버 검사 API 확정 후 연결
-          onPress={() => {}}
+          onPress={() => {
+            saveNickname(trimmed);
+            router.push("/user-type");
+          }}
         />
       </View>
     </KeyboardAvoidingView>
