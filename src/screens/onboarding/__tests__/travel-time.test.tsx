@@ -28,12 +28,23 @@ describe("TravelTimeScreen", () => {
     expect(screen.getByRole("header").props.children).toContain(prefix);
   });
 
-  it("기본값 30분을 보여주고 슬라이더를 올리면 5분씩 늘린다", async () => {
+  it("기본값 30분을 보여주고, 30분 위로는 10분 단위로 늘린다", async () => {
     await render(<TravelTimeScreen />);
     expect(screen.getByText("30")).toBeOnTheScreen();
     await adjust("increment");
-    expect(useOnboardingStore.getState().travelMinutes).toBe(35);
-    expect(screen.getByText("35")).toBeOnTheScreen();
+    expect(useOnboardingStore.getState().travelMinutes).toBe(40);
+    expect(screen.getByText("40")).toBeOnTheScreen();
+  });
+
+  it("30분 아래로는 5분 단위로 줄인다", async () => {
+    await render(<TravelTimeScreen />);
+    await adjust("decrement");
+    expect(useOnboardingStore.getState().travelMinutes).toBe(25);
+  });
+
+  it("30분 손잡이가 슬라이더 정가운데 있다", async () => {
+    await render(<TravelTimeScreen />);
+    expect(slider().props.accessibilityValue).toMatchObject({ now: 5 });
   });
 
   it.each([

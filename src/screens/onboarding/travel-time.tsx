@@ -11,13 +11,14 @@ import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./constants";
 
-// 화면설계서 ONB-07: 범위 5~90분, 5분 단위
-const MIN_MINUTES = 5;
-const MAX_MINUTES = 90;
-const STEP_MINUTES = 5;
-const STEP_COUNT = (MAX_MINUTES - MIN_MINUTES) / STEP_MINUTES + 1;
-// 슬라이더 아래 가운데 눈금으로 보여줄 값
-const MIDDLE_LABEL_MINUTES = 30;
+// 손잡이가 멈추는 값. 같은 간격 눈금(5·30·90분)과 실제 값이 맞도록 30분을 정가운데(6번째) 둔다
+// 화면설계서 ONB-07은 5~90분 5분 단위지만, 30분 이후는 10~15분 단위로 둔다 (기획 합의 필요)
+const STOPS = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 90];
+const LABELS = [
+  STOPS[0],
+  STOPS[(STOPS.length - 1) / 2],
+  STOPS[STOPS.length - 1],
+];
 
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
 
@@ -28,8 +29,13 @@ const TITLE: Record<UserType, string> = {
   other: "이동 시간에 사용할 수 있는\n시간은 몇 분인가요?",
 };
 
-const toStep = (minutes: number) => (minutes - MIN_MINUTES) / STEP_MINUTES;
-const toMinutes = (step: number) => MIN_MINUTES + step * STEP_MINUTES;
+// 목록에 없는 값(예: 예전에 저장한 35분)은 가장 가까운 값의 위치에 둔다
+const toStep = (minutes: number) =>
+  STOPS.reduce(
+    (best, stop, i) =>
+      Math.abs(stop - minutes) < Math.abs(STOPS[best] - minutes) ? i : best,
+    0,
+  );
 
 // 화면설계서 ONB-07 이동 시간 설정
 export function TravelTimeScreen() {
@@ -78,22 +84,16 @@ export function TravelTimeScreen() {
               <View className="w-full gap-5">
                 <Slider
                   value={toStep(travelMinutes)}
-                  stepCount={STEP_COUNT}
-                  onValueChange={(step) => setTravelMinutes(toMinutes(step))}
+                  stepCount={STOPS.length}
+                  onValueChange={(step) => setTravelMinutes(STOPS[step])}
                   accessibilityLabel={`이동 시간 ${travelMinutes}분`}
                 />
-                {/* Figma처럼 5분·30분·90분 눈금을 같은 간격으로 둔다 */}
                 <View className="flex-row justify-between">
-                  {[MIN_MINUTES, MIDDLE_LABEL_MINUTES, MAX_MINUTES].map(
-                    (minutes) => (
-                      <Text
-                        key={minutes}
-                        className="text-secondary text-body3-m"
-                      >
-                        {minutes}분
-                      </Text>
-                    ),
-                  )}
+                  {LABELS.map((minutes) => (
+                    <Text key={minutes} className="text-secondary text-body3-m">
+                      {minutes}분
+                    </Text>
+                  ))}
                 </View>
               </View>
             </View>
