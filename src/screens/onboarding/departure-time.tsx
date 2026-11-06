@@ -19,18 +19,25 @@ import { ONBOARDING_STEPS } from "./constants";
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
 
 // 화면설계서 ONB-06 T1: 유형별 헤드라인·설명
-const COPY: Record<UserType, { title: string; description: string }> = {
+// notice: 알림 권한 안내(N1) 제목. 학생·기타에게 "출근"이 보이지 않게 유형별로 바꾼다
+const COPY: Record<
+  UserType,
+  { title: string; description: string; notice: string }
+> = {
   worker: {
     title: "출근은 보통 언제하시나요?",
     description: "출근하는 날 중 가장 일찍 출발하는 날 기준으로 알려주세요.",
+    notice: "출근 10분 전에 오늘의 노선을 알려드릴게요",
   },
   student: {
     title: "등교는 보통 언제하시나요?",
     description: "등교하는 날 중 가장 일찍 출발하는 날 기준으로 알려주세요.",
+    notice: "등교 10분 전에 오늘의 노선을 알려드릴게요",
   },
   other: {
     title: "보통 언제 출발하시나요?",
     description: "이동하는 날 중 가장 일찍 출발하는 날 기준으로 알려주세요.",
+    notice: "출발 10분 전에 오늘의 노선을 알려드릴게요",
   },
 };
 
@@ -126,7 +133,7 @@ export function DepartureTimeScreen() {
       {/* TODO: [알림 받기]는 OS 알림 권한 요청, 거부 시 "마이 > 알림에서 언제든 켤 수 있어요" 토스트 (expo-notifications 도입 후) */}
       <Dialog
         visible={isNoticeOpen}
-        title="출근 10분 전에 오늘의 노선을 알려드릴게요"
+        title={copy.notice}
         confirmLabel="알림 받기"
         onConfirm={goNext}
         cancelLabel="나중에"

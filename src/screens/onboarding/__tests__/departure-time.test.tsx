@@ -17,12 +17,13 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
 }));
 
-beforeEach(() =>
+beforeEach(() => {
+  jest.clearAllMocks();
   useOnboardingStore.setState({
     userType: "worker",
     departureTime: { hour: 8, minute: 0 },
-  }),
-);
+  });
+});
 
 describe("DepartureTimeScreen", () => {
   it.each([
@@ -58,16 +59,20 @@ describe("DepartureTimeScreen", () => {
     });
   });
 
-  it("다음을 누르면 알림 권한 안내를 띄운다", async () => {
-    const user = userEvent.setup();
-    await render(<DepartureTimeScreen />);
-    await user.press(screen.getByRole("button", { name: "다음으로" }));
-    expect(
-      screen.getByRole("header", {
-        name: "출근 10분 전에 오늘의 노선을 알려드릴게요",
-      }),
-    ).toBeOnTheScreen();
-  });
+  it.each([
+    ["worker", "출근 10분 전에 오늘의 노선을 알려드릴게요"],
+    ["student", "등교 10분 전에 오늘의 노선을 알려드릴게요"],
+    ["other", "출발 10분 전에 오늘의 노선을 알려드릴게요"],
+  ] as const)(
+    "%s 유형이면 다음을 눌렀을 때 '%s' 안내를 띄운다",
+    async (userType, title) => {
+      useOnboardingStore.setState({ userType });
+      const user = userEvent.setup();
+      await render(<DepartureTimeScreen />);
+      await user.press(screen.getByRole("button", { name: "다음으로" }));
+      expect(screen.getByRole("header", { name: title })).toBeOnTheScreen();
+    },
+  );
 
   it.each(["나중에", "알림 받기"])(
     "알림 안내에서 %s를 누르면 이동 시간 설정으로 넘어간다",
@@ -75,7 +80,10 @@ describe("DepartureTimeScreen", () => {
       const user = userEvent.setup();
       await render(<DepartureTimeScreen />);
       await user.press(screen.getByRole("button", { name: "다음으로" }));
+      // 다음으로는 안내만 띄우고 이동하지 않는다
+      expect(router.push).not.toHaveBeenCalled();
       await user.press(screen.getByRole("button", { name }));
+      expect(router.push).toHaveBeenCalledTimes(1);
       expect(router.push).toHaveBeenCalledWith("/travel-time");
     },
   );
