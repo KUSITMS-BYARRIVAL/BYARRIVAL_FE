@@ -16,6 +16,21 @@ export type Interest =
   | "science"
   | "culture";
 
+/** 직군 코드 12종 (화면설계서 ONB-09, users.job_group) */
+export type JobGroup =
+  | "planning_marketing"
+  | "hr_legal"
+  | "finance_accounting"
+  | "it_data"
+  | "design"
+  | "sales_service"
+  | "manufacturing_logistics"
+  | "medical"
+  | "research_education"
+  | "media_culture"
+  | "public_welfare"
+  | "etc";
+
 type OnboardingState = {
   nickname: string;
   userType: UserType | null;
@@ -25,11 +40,14 @@ type OnboardingState = {
   travelMinutes: number;
   /** 고른 관심 분야. 고른 순서를 유지한다 */
   interests: Interest[];
+  /** 직군. 학생은 희망 직군을 같은 코드로 저장한다 */
+  jobGroup: JobGroup | null;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
   setTravelMinutes: (travelMinutes: number) => void;
   toggleInterest: (interest: Interest) => void;
+  setJobGroup: (jobGroup: JobGroup) => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -42,6 +60,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   // 화면설계서 ONB-07 기본값 30분
   travelMinutes: 30,
   interests: [],
+  jobGroup: null,
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),
@@ -52,4 +71,5 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
         ? interests.filter((item) => item !== interest)
         : [...interests, interest],
     })),
+  setJobGroup: (jobGroup) => set({ jobGroup }),
 }));
