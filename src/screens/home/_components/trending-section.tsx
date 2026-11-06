@@ -67,6 +67,9 @@ export function TrendingSection({
               subtext={`오늘 출근길 직장인 ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
               isLive
               hasArrow={false}
+              rankTone="brand"
+              // 홈은 미리보기라 한 줄로 자르고 전체 제목은 '전체보기'에서 본다
+              titleNumberOfLines={1}
               onPress={() => onArticlePress(article.url)}
             />
           ))}

@@ -12,6 +12,10 @@ type RankingRowProps = Omit<PressableProps, "children"> & {
   /** 실시간 문구면 초록 점과 brand 색으로 표시한다 (예: 지금 128명이 보고 있어요) */
   isLive?: boolean;
   hasArrow?: boolean;
+  /** 순위 원 색  Mono(회색) · Brand(초록) */
+  rankTone?: "mono" | "brand";
+  /** 제목 최대 줄 수. 넘치면 말줄임(…). 없으면 줄 수 제한 없음 */
+  titleNumberOfLines?: number;
   className?: string;
 };
 
@@ -21,6 +25,8 @@ export function RankingRow({
   subtext,
   isLive = false,
   hasArrow = true,
+  rankTone = "mono",
+  titleNumberOfLines,
   className,
   ...props
 }: RankingRowProps) {
@@ -37,10 +43,29 @@ export function RankingRow({
             <View className="flex-row items-center justify-between">
               <View className="flex-1 flex-row items-center gap-2">
                 {/* Figma 순위 원은 1~3만 그림으로 있어 순위와 상관없이 쓰도록 원과 숫자로 그린다 */}
-                <View className="size-6 items-center justify-center rounded-full bg-icon-background">
-                  <Text className="text-secondary text-label2-sb">{rank}</Text>
+                <View
+                  className={cn(
+                    "size-6 items-center justify-center rounded-full",
+                    rankTone === "brand"
+                      ? "bg-green-500"
+                      : "bg-icon-background",
+                  )}
+                >
+                  <Text
+                    className={cn(
+                      "text-label2-sb",
+                      rankTone === "brand"
+                        ? "text-on-fill-default"
+                        : "text-secondary",
+                    )}
+                  >
+                    {rank}
+                  </Text>
                 </View>
-                <Text className="max-w-[245px] flex-1 text-strong text-body2-m">
+                <Text
+                  numberOfLines={titleNumberOfLines}
+                  className="max-w-[245px] flex-1 text-strong text-body2-m"
+                >
                   {title}
                 </Text>
               </View>
