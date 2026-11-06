@@ -1,6 +1,12 @@
 import { router } from "expo-router";
-import { useState } from "react";
-import { ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { useRef, useState } from "react";
+import {
+  ScrollView,
+  type ScrollViewInstance,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
@@ -18,6 +24,7 @@ export function SelectScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  const pagerRef = useRef<ScrollViewInstance>(null);
   const progress = index / Math.max(SELECT_ARTICLES.length - 1, 1);
 
   return (
@@ -34,10 +41,18 @@ export function SelectScreen() {
           </Text>
         </View>
         {/* 뉴스 카드와 AI 요약이 함께 넘어가도록 한 페이지에 묶는다 */}
+        {/* QA: 지나간 기사로는 돌아가지 않는다. 왼쪽으로 끌면 현재 기사 위치로 되돌린다 */}
         <ScrollView
+          ref={pagerRef}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            if (e.nativeEvent.contentOffset.x < index * width) {
+              pagerRef.current?.scrollTo({ x: index * width, animated: false });
+            }
+          }}
           onMomentumScrollEnd={(e) =>
             setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
           }
