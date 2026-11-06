@@ -28,6 +28,21 @@ export function SelectScreen() {
   const pagerRef = useRef<ScrollViewInstance>(null);
   const toggleArticle = useRideStore((state) => state.toggleArticle);
   const selected = useSelectedArticles();
+  // 다른 뉴스 더 탑승시키기는 UT용 화면이라 고른 기사를 이 화면에서만 기억한다. 나가면 사라지고 탑승권·정거장에는 반영하지 않는다
+  const [extraTitles, setExtraTitles] = useState<string[]>([]);
+  const extraSelected = EXTRA_ARTICLES.filter(({ title }) =>
+    extraTitles.includes(title),
+  );
+  const toggle = (title: string) =>
+    isExtra
+      ? setExtraTitles((prev) =>
+          prev.includes(title)
+            ? prev.filter((t) => t !== title)
+            : [...prev, title],
+        )
+      : toggleArticle(title);
+  const isSelected = (title: string) =>
+    (isExtra ? extraSelected : selected).some((a) => a.title === title);
   // 바는 넘긴 카드 순서만큼 차오르고(선택과 무관), 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
   const progress = index / Math.max(articles.length - 1, 1);
 
@@ -37,7 +52,7 @@ export function SelectScreen() {
       <ScrollView className="flex-1">
         <View className="mx-5 mt-5 flex-row items-center gap-2 rounded-full bg-card-white px-3 py-2">
           <Text className="text-primary text-caption1-m">
-            {getTotalMinutes(selected)}분
+            {getTotalMinutes(selected) + getTotalMinutes(extraSelected)}분
           </Text>
           <ProgressBar progress={progress} className="flex-1" />
           <Text className="text-secondary text-caption1-r">
@@ -74,10 +89,8 @@ export function SelectScreen() {
                   readMinutes={minutes}
                   title={title}
                   image={image}
-                  isSelected={selected.some(
-                    (article) => article.title === title,
-                  )}
-                  onPress={() => toggleArticle(title)}
+                  isSelected={isSelected(title)}
+                  onPress={() => toggle(title)}
                 />
                 <SummaryCard points={summary} />
               </View>
