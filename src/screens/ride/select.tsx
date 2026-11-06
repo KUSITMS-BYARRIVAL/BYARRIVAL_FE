@@ -67,8 +67,8 @@ export function SelectScreen() {
           label="시작하기"
           color="neutral"
           size="l"
-          // TODO: 보고 있는 기사를 노선에 추가하고, 탑승권 복귀 후 토스트 표시 (추후 작업)
-          onPress={() => router.back()}
+          // TODO: 보고 있는 기사를 노선에 추가하고, 탑승권에서 토스트 표시 (추후 작업)
+          onPress={() => router.push("/ride/boarding-pass")}
         />
       </View>
     </View>
