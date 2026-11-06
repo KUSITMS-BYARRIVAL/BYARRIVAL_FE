@@ -196,3 +196,36 @@ export const TRENDING_ARTICLES = [
     url: "https://www.hankyung.com/article/202611057825i",
   },
 ];
+
+export const HOME_NICKNAME = "출근러";
+export const HOME_REGION = "여의도";
+export const HOME_STREAK = { streakDays: 7, longestDays: 12 };
+export const COMMUTER_COUNT = 1284;
+
+//홈 탑승 버튼 상태- idle 시작 전 · paused 운행 중 이탈 · completed 오늘 완주
+export const HOME_RIDE_STATUS: "idle" | "paused" | "completed" = "idle";
+// 이탈한 정거장 번호 (1부터)
+export const RESUME_STOP = 3;
+
+// 새벽 4시 집계 전이면 false
+export const IS_TRENDING_READY = true;
+
+// 원문 링크가 있는 기존 기사를 재사용한다. 보고 있는 사람 수는 임시값이다
+export const HOME_TRENDING = {
+  region: BOARDING_ARTICLES.slice(0, 3).map((article, i) => ({
+    title: article.title,
+    url: article.url,
+    viewers: [128, 97, 64][i],
+  })),
+  all: TRENDING_ARTICLES.map((article) => ({
+    title: article.title,
+    url: article.url,
+    viewers: article.readers,
+  })),
+};
+
+export const HOME_SMALLTALK = {
+  place: "엘리베이터에서",
+  question: "“ 이번에 기준금리 동결됐다는데,\n대출 있으세요? “",
+  followUp: "하반기엔 내릴 가능성이 60%라던데요.",
+};
