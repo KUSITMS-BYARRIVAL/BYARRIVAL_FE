@@ -154,20 +154,11 @@ export const SELECT_ARTICLES = BOARDING_ARTICLES.map((article, i) => ({
 }));
 
 // 보딩패스 '다른 뉴스 더 탑승시키기'에서 보여주는 추가 기사. 이미지는 시안 원본이 없어 임시 이미지를 쓴다. 첫 기사는 시안 그대로다
-// 시안 예시 기사라 원문이 없어, 정거장 '원문 보기'는 제목 뉴스 검색으로 연결한다 (날짜·언론사·키워드도 임시값)
-const EXTRA_META = (title: string) => ({
-  date: "2026.11.04",
-  press: "뉴스 검색",
-  keywords: ["#오늘의 브리핑"],
-  url: `https://search.naver.com/search.naver?where=news&query=${encodeURIComponent(title)}`,
-});
-
-export const EXTRA_ARTICLES: (RideArticle & { summary: string[] })[] = [
+export const EXTRA_ARTICLES = [
   {
-    category: "economy",
+    category: "economy" as const,
     label: "경제",
     title: '한국은행, 기준금리 동결... "하반기 불확실성 여전"',
-    ...EXTRA_META('한국은행, 기준금리 동결... "하반기 불확실성 여전"'),
     minutes: 2,
     image: require("@/assets/images/news/select-1.jpg"),
     summary: [
@@ -177,10 +168,9 @@ export const EXTRA_ARTICLES: (RideArticle & { summary: string[] })[] = [
     ],
   },
   {
-    category: "tech",
+    category: "tech" as const,
     label: "테크",
     title: "온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다",
-    ...EXTRA_META("온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다"),
     minutes: 3,
     image: require("@/assets/images/news/select-2.jpg"),
     summary: [
@@ -190,10 +180,9 @@ export const EXTRA_ARTICLES: (RideArticle & { summary: string[] })[] = [
     ],
   },
   {
-    category: "career",
+    category: "career" as const,
     label: "커리어",
     title: "MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'",
-    ...EXTRA_META("MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'"),
     minutes: 2,
     image: require("@/assets/images/news/select-3.jpg"),
     summary: [
@@ -203,10 +192,9 @@ export const EXTRA_ARTICLES: (RideArticle & { summary: string[] })[] = [
     ],
   },
   {
-    category: "global",
+    category: "global" as const,
     label: "글로벌",
     title: "미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'",
-    ...EXTRA_META("미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'"),
     minutes: 4,
     image: require("@/assets/images/news/select-4.jpg"),
     summary: [
