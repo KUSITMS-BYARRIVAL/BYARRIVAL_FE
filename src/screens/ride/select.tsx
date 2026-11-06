@@ -12,20 +12,24 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressBar } from "@/components/progress-bar/progress-bar";
-import { BOARDING_ARTICLES, SELECT_ARTICLES } from "@/mocks/ride";
+import { SELECT_ARTICLES } from "@/mocks/ride";
 import { getTotalMinutes } from "@/screens/ride/_components/boarding-pass-card";
 import { NewsCard } from "@/screens/ride/_components/news-card";
 import { SummaryCard } from "@/screens/ride/_components/summary-card";
-
-// 탑승권 카드(boarding-pass-card)의 기사 읽는 시간 합계 함수 — 탑승권 '예상 시간'과 같은 값
-const BOARDING_MINUTES = getTotalMinutes(BOARDING_ARTICLES);
+import { useRideStore } from "@/stores/ride-store";
 
 export function SelectScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const [index, setIndex] = useState(0);
   const pagerRef = useRef<ScrollViewInstance>(null);
-  const progress = index / Math.max(SELECT_ARTICLES.length - 1, 1);
+  const selectedTitles = useRideStore((state) => state.selectedTitles);
+  const toggleArticle = useRideStore((state) => state.toggleArticle);
+  const selected = SELECT_ARTICLES.filter(({ title }) =>
+    selectedTitles.includes(title),
+  );
+  // 고른 기사 수만큼 차오르고, 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
+  const progress = selected.length / SELECT_ARTICLES.length;
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
@@ -33,7 +37,7 @@ export function SelectScreen() {
       <ScrollView className="flex-1">
         <View className="mx-5 mt-5 flex-row items-center gap-2 rounded-full bg-card-white px-3 py-2">
           <Text className="text-primary text-caption1-m">
-            {BOARDING_MINUTES + SELECT_ARTICLES[index].minutes}분
+            {getTotalMinutes(selected)}분
           </Text>
           <ProgressBar progress={progress} className="flex-1" />
           <Text className="text-secondary text-caption1-r">
@@ -70,6 +74,8 @@ export function SelectScreen() {
                   readMinutes={minutes}
                   title={title}
                   image={image}
+                  isSelected={selectedTitles.includes(title)}
+                  onPress={() => toggleArticle(title)}
                 />
                 <SummaryCard points={summary} />
               </View>
@@ -82,7 +88,7 @@ export function SelectScreen() {
           label="시작하기"
           color="neutral"
           size="l"
-          // TODO: 보고 있는 기사를 노선에 추가하고, 탑승권에서 토스트 표시 (추후 작업)
+          disabled={selected.length === 0}
           onPress={() => router.push("/ride/boarding-pass")}
         />
       </View>
