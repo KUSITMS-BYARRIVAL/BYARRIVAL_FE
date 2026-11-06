@@ -5,6 +5,17 @@ import type { Time } from "@/components/time-picker/time-picker";
 /** 이동 유형. 여기서 고른 값이 이후 화면 문구·캐릭터를 바꾼다 (화면설계서 ONB-05 · 98_유형별 변형) */
 export type UserType = "worker" | "student" | "other";
 
+/** 관심 뉴스 분야 (화면설계서 ONB-08) */
+export type Interest =
+  | "economy"
+  | "tech"
+  | "career"
+  | "society"
+  | "global"
+  | "life"
+  | "science"
+  | "culture";
+
 type OnboardingState = {
   nickname: string;
   userType: UserType | null;
@@ -12,10 +23,13 @@ type OnboardingState = {
   departureTime: Time;
   /** 이동하는 동안 뉴스를 읽을 수 있는 시간(분) */
   travelMinutes: number;
+  /** 고른 관심 분야. 고른 순서를 유지한다 */
+  interests: Interest[];
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
   setTravelMinutes: (travelMinutes: number) => void;
+  toggleInterest: (interest: Interest) => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -27,8 +41,15 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   departureTime: { hour: 8, minute: 0 },
   // 화면설계서 ONB-07 기본값 30분
   travelMinutes: 30,
+  interests: [],
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),
   setTravelMinutes: (travelMinutes) => set({ travelMinutes }),
+  toggleInterest: (interest) =>
+    set(({ interests }) => ({
+      interests: interests.includes(interest)
+        ? interests.filter((item) => item !== interest)
+        : [...interests, interest],
+    })),
 }));
