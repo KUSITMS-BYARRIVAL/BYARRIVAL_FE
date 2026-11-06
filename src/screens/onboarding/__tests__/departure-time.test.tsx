@@ -4,6 +4,7 @@ import {
   screen,
   userEvent,
 } from "@testing-library/react-native";
+import { router } from "expo-router";
 
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -12,7 +13,9 @@ import { DepartureTimeScreen } from "../departure-time";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), push: jest.fn() },
+}));
 
 beforeEach(() =>
   useOnboardingStore.setState({
@@ -65,4 +68,15 @@ describe("DepartureTimeScreen", () => {
       }),
     ).toBeOnTheScreen();
   });
+
+  it.each(["나중에", "알림 받기"])(
+    "알림 안내에서 %s를 누르면 이동 시간 설정으로 넘어간다",
+    async (name) => {
+      const user = userEvent.setup();
+      await render(<DepartureTimeScreen />);
+      await user.press(screen.getByRole("button", { name: "다음으로" }));
+      await user.press(screen.getByRole("button", { name }));
+      expect(router.push).toHaveBeenCalledWith("/travel-time");
+    },
+  );
 });

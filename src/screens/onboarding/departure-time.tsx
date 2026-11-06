@@ -53,8 +53,10 @@ export function DepartureTimeScreen() {
     setIsPickerOpen(true);
   };
 
-  // TODO: ONB-07 이동 시간 설정으로 이동 (다음 화면 퍼블리싱 후 연결)
-  const goNext = () => setIsNoticeOpen(false);
+  const goNext = () => {
+    setIsNoticeOpen(false);
+    router.push("/travel-time");
+  };
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
