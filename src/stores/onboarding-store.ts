@@ -31,6 +31,8 @@ export type JobGroup =
   | "public_welfare"
   | "etc";
 
+export type Region = { province: string; district: string | null };
+
 type OnboardingState = {
   nickname: string;
   userType: UserType | null;
@@ -42,12 +44,15 @@ type OnboardingState = {
   interests: Interest[];
   /** 직군. 학생은 희망 직군을 같은 코드로 저장한다 */
   jobGroup: JobGroup | null;
+  /** 근무(통학·이동) 지역. district가 null이면 시/도 전체 */
+  region: Region | null;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
   setTravelMinutes: (travelMinutes: number) => void;
   toggleInterest: (interest: Interest) => void;
   setJobGroup: (jobGroup: JobGroup) => void;
+  setRegion: (region: Region | null) => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -61,6 +66,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   travelMinutes: 30,
   interests: [],
   jobGroup: null,
+  region: null,
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),
@@ -72,4 +78,5 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
         : [...interests, interest],
     })),
   setJobGroup: (jobGroup) => set({ jobGroup }),
+  setRegion: (region) => set({ region }),
 }));
