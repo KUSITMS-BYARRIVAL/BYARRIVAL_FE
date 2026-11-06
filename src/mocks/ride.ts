@@ -1,4 +1,3 @@
-import type { BoardingArticle } from "@/screens/ride/_components/boarding-pass-card";
 import type { RideArticle } from "@/screens/ride/_components/stop-article";
 
 export const RIDE_DATE_LABEL = "10월 10일 토요일";
@@ -110,15 +109,54 @@ export const BOARDING_ARTICLES: RideArticle[] = [
   },
 ];
 
-type SelectArticle = BoardingArticle & {
-  image: number;
-  summary: string[];
-};
+// 뉴스 탑승하기 후보 7개. 탑승권 기사와 같은 기사이고, AI 요약은 각 원문(url)에서 뽑은 핵심 3줄이다
+const SUMMARIES = [
+  [
+    "빼빼로 연간 수출 1000억 원 달성 눈앞",
+    "상반기 수출 530억 원, 전년 대비 27% 증가",
+    "하반기 4% 안팎만 늘어도 연내 1000억 달성",
+  ],
+  [
+    "롯데웰푸드, 채널 전용 '프리미엄 가나' 4종 출시",
+    "세븐일레븐·CU·GS25·이마트마다 다른 맛 구성",
+    "포테토칩 이어 초콜릿도 채널별 '도장깨기' 확산",
+  ],
+  [
+    "국내 단백질 식품 시장 올해 8000억 원 전망",
+    "2030 세대 식사 대용으로 소비 저변 확대",
+    "일동후디스, 저당 파우치형 단백질 쉐이크 3종 출시",
+  ],
+  [
+    "리사 수 CEO, 한국을 AI 생태계 핵심국으로 평가",
+    "한국 기업과 개방형 AI 컴퓨팅 플랫폼 구축 추진",
+    "서울서 첫 'AMD 어드밴싱 AI 월드 투어' 개최",
+  ],
+  [
+    "구글, TPU 외부 판매 본격화…재고 5.5배 증가",
+    "차세대 추론용 TPU, HBM 용량 50% 증가",
+    "삼성·SK하이닉스 HBM 수요처 다변화 기대",
+  ],
+  [
+    "은행·증권·저축은행 16곳 해킹, 약 10만 건 유출",
+    "외곽 시스템 취약점과 부실한 보안 점검이 원인",
+    "점검 대상 555곳 중 130곳 미흡, 실효성 논란",
+  ],
+  [
+    "민주당, 생활비 불만 속 중간선거 압승",
+    "상·하원 모두 과반 확보, 상원 최소 53석",
+    "트럼프 정책 동력 상실 전망",
+  ],
+];
 
-// 이미지는 시안 원본이 없어 임시 이미지를 쓴다. 첫 기사는 시안 그대로다
-export const SELECT_ARTICLES: SelectArticle[] = [
+export const SELECT_ARTICLES = BOARDING_ARTICLES.map((article, i) => ({
+  ...article,
+  summary: SUMMARIES[i],
+}));
+
+// 보딩패스 '다른 뉴스 더 탑승시키기'에서 보여주는 추가 기사. 이미지는 시안 원본이 없어 임시 이미지를 쓴다. 첫 기사는 시안 그대로다
+export const EXTRA_ARTICLES = [
   {
-    category: "economy",
+    category: "economy" as const,
     label: "경제",
     title: '한국은행, 기준금리 동결... "하반기 불확실성 여전"',
     minutes: 2,
@@ -130,7 +168,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     ],
   },
   {
-    category: "tech",
+    category: "tech" as const,
     label: "테크",
     title: "온디바이스 AI 스마트폰, 올해 출하량 두 배로 늘어난다",
     minutes: 3,
@@ -142,7 +180,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     ],
   },
   {
-    category: "career",
+    category: "career" as const,
     label: "커리어",
     title: "MZ 직장인 10명 중 6명 '사이드 프로젝트 하고 있다'",
     minutes: 2,
@@ -154,7 +192,7 @@ export const SELECT_ARTICLES: SelectArticle[] = [
     ],
   },
   {
-    category: "global",
+    category: "global" as const,
     label: "글로벌",
     title: "미국 연준, 9월 금리 인하 시사... 시장은 '기대 반 우려 반'",
     minutes: 4,

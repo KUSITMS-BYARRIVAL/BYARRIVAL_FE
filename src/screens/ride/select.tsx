@@ -1,24 +1,50 @@
-import { router } from "expo-router";
-import { useState } from "react";
-import { ScrollView, Text, useWindowDimensions, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useRef, useState } from "react";
+import {
+  ScrollView,
+  type ScrollViewInstance,
+  Text,
+  useWindowDimensions,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressBar } from "@/components/progress-bar/progress-bar";
-import { BOARDING_ARTICLES, SELECT_ARTICLES } from "@/mocks/ride";
+import { EXTRA_ARTICLES, SELECT_ARTICLES } from "@/mocks/ride";
 import { getTotalMinutes } from "@/screens/ride/_components/boarding-pass-card";
 import { NewsCard } from "@/screens/ride/_components/news-card";
 import { SummaryCard } from "@/screens/ride/_components/summary-card";
-
-// 탑승권 카드(boarding-pass-card)의 기사 읽는 시간 합계 함수 — 탑승권 '예상 시간'과 같은 값
-const BOARDING_MINUTES = getTotalMinutes(BOARDING_ARTICLES);
+import { useRideStore, useSelectedArticles } from "@/stores/ride-store";
 
 export function SelectScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { width } = useWindowDimensions();
+  // 보딩패스 '다른 뉴스 더 탑승시키기'로 들어오면 추가 기사를 보여주고, 시작하기를 누르면 탑승권으로 돌아간다
+  const isExtra = useLocalSearchParams<{ extra?: string }>().extra === "1";
+  const articles = isExtra ? EXTRA_ARTICLES : SELECT_ARTICLES;
   const [index, setIndex] = useState(0);
-  const progress = index / Math.max(SELECT_ARTICLES.length - 1, 1);
+  const pagerRef = useRef<ScrollViewInstance>(null);
+  const toggleArticle = useRideStore((state) => state.toggleArticle);
+  const selected = useSelectedArticles();
+  // 다른 뉴스 더 탑승시키기는 UT용 화면이라 고른 기사를 이 화면에서만 기억한다. 나가면 사라지고 탑승권·정거장에는 반영하지 않는다
+  const [extraTitles, setExtraTitles] = useState<string[]>([]);
+  const extraSelected = EXTRA_ARTICLES.filter(({ title }) =>
+    extraTitles.includes(title),
+  );
+  const toggle = (title: string) =>
+    isExtra
+      ? setExtraTitles((prev) =>
+          prev.includes(title)
+            ? prev.filter((t) => t !== title)
+            : [...prev, title],
+        )
+      : toggleArticle(title);
+  const isSelected = (title: string) =>
+    (isExtra ? extraSelected : selected).some((a) => a.title === title);
+  // 바는 넘긴 카드 순서만큼 차오르고(선택과 무관), 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
+  const progress = index / Math.max(articles.length - 1, 1);
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
@@ -26,7 +52,7 @@ export function SelectScreen() {
       <ScrollView className="flex-1">
         <View className="mx-5 mt-5 flex-row items-center gap-2 rounded-full bg-card-white px-3 py-2">
           <Text className="text-primary text-caption1-m">
-            {BOARDING_MINUTES + SELECT_ARTICLES[index].minutes}분
+            {getTotalMinutes(selected) + getTotalMinutes(extraSelected)}분
           </Text>
           <ProgressBar progress={progress} className="flex-1" />
           <Text className="text-secondary text-caption1-r">
@@ -34,15 +60,23 @@ export function SelectScreen() {
           </Text>
         </View>
         {/* 뉴스 카드와 AI 요약이 함께 넘어가도록 한 페이지에 묶는다 */}
+        {/* QA: 지나간 기사로는 돌아가지 않는다. 왼쪽으로 끌면 현재 기사 위치로 되돌린다 */}
         <ScrollView
+          ref={pagerRef}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={(e) => {
+            if (e.nativeEvent.contentOffset.x < index * width) {
+              pagerRef.current?.scrollTo({ x: index * width, animated: false });
+            }
+          }}
           onMomentumScrollEnd={(e) =>
             setIndex(Math.round(e.nativeEvent.contentOffset.x / width))
           }
         >
-          {SELECT_ARTICLES.map(
+          {articles.map(
             ({ category, label, title, minutes, image, summary }) => (
               <View
                 key={title}
@@ -55,6 +89,8 @@ export function SelectScreen() {
                   readMinutes={minutes}
                   title={title}
                   image={image}
+                  isSelected={isSelected(title)}
+                  onPress={() => toggle(title)}
                 />
                 <SummaryCard points={summary} />
               </View>
@@ -67,8 +103,10 @@ export function SelectScreen() {
           label="시작하기"
           color="neutral"
           size="l"
-          // TODO: 보고 있는 기사를 노선에 추가하고, 탑승권 복귀 후 토스트 표시 (추후 작업)
-          onPress={() => router.back()}
+          disabled={!isExtra && selected.length === 0}
+          onPress={() =>
+            isExtra ? router.back() : router.push("/ride/boarding-pass")
+          }
         />
       </View>
     </View>
