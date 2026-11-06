@@ -108,8 +108,7 @@ export function TravelTimeScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          // TODO: ONB-08 관심 분야 선택으로 이동 (다음 화면 퍼블리싱 후 연결)
-          onPress={() => {}}
+          onPress={() => router.push("/interests")}
         />
       </View>
     </View>
