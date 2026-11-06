@@ -1,13 +1,18 @@
 import { create } from "zustand";
 
+import type { Time } from "@/components/time-picker/time-picker";
+
 /** 이동 유형. 여기서 고른 값이 이후 화면 문구·캐릭터를 바꾼다 (화면설계서 ONB-05 · 98_유형별 변형) */
 export type UserType = "worker" | "student" | "other";
 
 type OnboardingState = {
   nickname: string;
   userType: UserType | null;
+  /** 가장 일찍 출발하는 날의 출발 시각 (24시간제) */
+  departureTime: Time;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
+  setDepartureTime: (departureTime: Time) => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -15,6 +20,9 @@ type OnboardingState = {
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   nickname: "",
   userType: null,
+  // 화면설계서 ONB-06 기본값 08:00
+  departureTime: { hour: 8, minute: 0 },
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
+  setDepartureTime: (departureTime) => set({ departureTime }),
 }));
