@@ -11,16 +11,17 @@ import { Header } from "@/components/header/header";
 import { ShareButton } from "@/components/share-button/share-button";
 import {
   ARRIVAL_STREAK_DAYS,
-  BOARDING_ARTICLES,
   IS_QUIZ_SOLVED,
   TRENDING_ARTICLES,
 } from "@/mocks/ride";
 import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
 import { ArrivalResultCard } from "@/screens/ride/_components/arrival-result-card";
+import { useRideArticles } from "@/stores/ride-store";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { readCount } = useLocalSearchParams<{ readCount?: string }>();
+  const articles = useRideArticles();
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
@@ -47,7 +48,7 @@ export function ArrivalScreen() {
             <View className="gap-2">
               <ArrivalResultCard
                 readCount={Number(readCount) || 0}
-                total={BOARDING_ARTICLES.length}
+                total={articles.length}
                 streakDays={ARRIVAL_STREAK_DAYS}
               />
               <Button

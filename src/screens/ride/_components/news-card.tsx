@@ -35,9 +35,9 @@ export function NewsCard({
       onPress={onPress}
       accessibilityRole={onPress ? "checkbox" : undefined}
       accessibilityState={onPress ? { checked: isSelected } : undefined}
-      // 선택 여부와 관계없이 테두리 두께를 유지해 눌러도 카드 크기가 바뀌지 않게 한다
+      // 테두리는 AI 요약 카드(summary-card)와 같다. 선택 전에도 두께를 둬 눌러도 크기가 바뀌지 않게 한다
       className={cn(
-        "overflow-hidden rounded border-2",
+        "overflow-hidden rounded border",
         isSelected ? "border-brand" : "border-transparent",
         className,
       )}

@@ -28,8 +28,8 @@ export function SelectScreen() {
   const selected = SELECT_ARTICLES.filter(({ title }) =>
     selectedTitles.includes(title),
   );
-  // 고른 기사 수만큼 차오르고, 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
-  const progress = selected.length / SELECT_ARTICLES.length;
+  // 바는 넘긴 카드 순서만큼 차오르고(선택과 무관), 시간은 고른 기사의 예상 독서 시간 합계 (탑승권 '예상 시간'과 같은 값)
+  const progress = index / Math.max(SELECT_ARTICLES.length - 1, 1);
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
