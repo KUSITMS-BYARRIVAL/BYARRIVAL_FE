@@ -9,7 +9,7 @@ describe("BarChart", () => {
     expect(screen.getAllByText("10")).toHaveLength(2);
     expect(screen.getByText("50")).toBeOnTheScreen();
     expect(screen.getByText("118")).toBeOnTheScreen();
-    expect(screen.getByText("4주 전")).toBeOnTheScreen();
+    expect(screen.getByText("3주 전")).toBeOnTheScreen();
     expect(screen.getByText("이번주")).toBeOnTheScreen();
   });
 

@@ -24,7 +24,7 @@ export function BarChart({ weeklyMinutes, className }: BarChartProps) {
           const label = isThisWeek
             ? "이번주"
             : index === 0
-              ? `${weeklyMinutes.length}주 전`
+              ? `${lastIndex}주 전`
               : " ";
 
           return (
