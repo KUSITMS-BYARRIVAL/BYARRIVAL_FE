@@ -202,7 +202,7 @@ export const HOME_REGION = "여의도";
 export const HOME_STREAK = { streakDays: 7, longestDays: 12 };
 export const COMMUTER_COUNT = 1284;
 
-//홈 탑승 버튼 상태- idle 시작 전 · paused 운행 중 이탈 · completed 오늘 완주
+// 홈 탑승 버튼 상태. idle 시작 전 · paused 운행 중 이탈 · completed 오늘 완주
 export const HOME_RIDE_STATUS: "idle" | "paused" | "completed" = "idle";
 // 이탈한 정거장 번호 (1부터)
 export const RESUME_STOP = 3;
