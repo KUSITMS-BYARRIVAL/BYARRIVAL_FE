@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -19,8 +18,6 @@ const STEP_MINUTES = 5;
 const STEP_COUNT = (MAX_MINUTES - MIN_MINUTES) / STEP_MINUTES + 1;
 // 슬라이더 아래 가운데 눈금으로 보여줄 값
 const MIDDLE_LABEL_MINUTES = 30;
-// Slider 손잡이 지름. 눈금 라벨을 손잡이 중심에 맞출 때 쓴다
-const THUMB_SIZE = 24;
 
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
 
@@ -42,12 +39,6 @@ export function TravelTimeScreen() {
   const setTravelMinutes = useOnboardingStore(
     (state) => state.setTravelMinutes,
   );
-  const [trackWidth, setTrackWidth] = useState(0);
-  // 가운데 눈금 라벨을 실제 30분 위치(손잡이 중심)에 둔다
-  const middleLabelCenter =
-    THUMB_SIZE / 2 +
-    (toStep(MIDDLE_LABEL_MINUTES) / (STEP_COUNT - 1)) *
-      (trackWidth - THUMB_SIZE);
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -91,25 +82,18 @@ export function TravelTimeScreen() {
                   onValueChange={(step) => setTravelMinutes(toMinutes(step))}
                   accessibilityLabel={`이동 시간 ${travelMinutes}분`}
                 />
-                <View
-                  className="h-[18px]"
-                  onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
-                >
-                  <Text className="absolute left-0 text-secondary text-body3-m">
-                    {MIN_MINUTES}분
-                  </Text>
-                  {trackWidth > 0 && (
-                    <Text
-                      className="absolute text-secondary text-body3-m"
-                      // 라벨 너비의 절반만큼 왼쪽으로 당겨 가운데를 맞춘다
-                      style={{ left: middleLabelCenter - 14 }}
-                    >
-                      {MIDDLE_LABEL_MINUTES}분
-                    </Text>
+                {/* Figma처럼 5분·30분·90분 눈금을 같은 간격으로 둔다 */}
+                <View className="flex-row justify-between">
+                  {[MIN_MINUTES, MIDDLE_LABEL_MINUTES, MAX_MINUTES].map(
+                    (minutes) => (
+                      <Text
+                        key={minutes}
+                        className="text-secondary text-body3-m"
+                      >
+                        {minutes}분
+                      </Text>
+                    ),
                   )}
-                  <Text className="absolute right-0 text-secondary text-body3-m">
-                    {MAX_MINUTES}분
-                  </Text>
                 </View>
               </View>
             </View>
