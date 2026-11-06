@@ -63,6 +63,16 @@ describe("NicknameScreen", () => {
     expect(router.push).toHaveBeenCalledWith("/user-type");
   });
 
+  it("다음을 누르기 전에 화면을 떠났다 돌아와도 입력하던 닉네임이 남는다", async () => {
+    const user = userEvent.setup();
+    const { unmount } = await render(<NicknameScreen />);
+    await user.type(screen.getByLabelText("닉네임"), "초안");
+    await unmount();
+
+    await render(<NicknameScreen />);
+    expect(screen.getByLabelText("닉네임")).toHaveDisplayValue("초안");
+  });
+
   it("저장된 닉네임이 있으면 그 값으로 시작한다", async () => {
     useOnboardingStore.setState({ nickname: "출근요정" });
     await render(<NicknameScreen />);

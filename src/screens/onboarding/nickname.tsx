@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import { useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -33,10 +32,9 @@ function validateNickname(nickname: string): string | null {
 
 export function NicknameScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  // 뒤로 돌아와도 입력값이 남도록 스토어 값으로 시작한다
-  const savedNickname = useOnboardingStore((state) => state.nickname);
-  const saveNickname = useOnboardingStore((state) => state.setNickname);
-  const [nickname, setNickname] = useState(savedNickname);
+  // 입력하는 대로 스토어에 저장해, 다음으로를 누르기 전에 화면을 떠났다 와도 초안이 남는다
+  const nickname = useOnboardingStore((state) => state.nickname);
+  const setNickname = useOnboardingStore((state) => state.setNickname);
   const trimmed = nickname.trim();
   const errorMessage = trimmed ? validateNickname(trimmed) : null;
   // 공백만 입력한 경우도 통과시키지 않는다
@@ -103,7 +101,7 @@ export function NicknameScreen() {
           disabled={!isValid}
           // TODO: 금칙어("사용할 수 없는 닉네임이에요")는 서버 검사 API 확정 후 연결
           onPress={() => {
-            saveNickname(trimmed);
+            setNickname(trimmed);
             router.push("/user-type");
           }}
         />
