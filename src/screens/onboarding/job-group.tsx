@@ -137,19 +137,13 @@ const JOB_GROUPS: {
   },
 ];
 
-// 화면설계서 ONB-09 T1~T3: 학생만 희망 직군으로 묻고, 기타는 직장인 문구를 쓴다
-const WORKER_COPY = {
-  title: "어떤 일을 하고 계신가요?",
-  description: "직군에 맞는 뉴스와 출근길 콘텐츠를 추천해 드려요",
-};
-const COPY: Record<UserType, { title: string; description: string }> = {
-  worker: WORKER_COPY,
-  student: {
-    title: "어떤 직무를 희망하시나요?",
-    description:
-      "해당 직군에 재직 중인 사람들이 관심있게 보는 뉴스와 출근길 콘텐츠를 추천해 드려요",
-  },
-  other: WORKER_COPY,
+// 화면설계서 ONB-09 T1~T3: 학생만 희망 직무로 묻는다
+// 학생 설명은 설계서 T2의 긴 문구 대신 Figma(UT_Onboarding_Step6_직군)대로 직장인과 같은 문구를 쓴다
+const DESCRIPTION = "직군에 맞는 뉴스와 출근길 콘텐츠를 추천해 드려요";
+const TITLE: Record<UserType, string> = {
+  worker: "어떤 일을 하고 계신가요?",
+  student: "어떤 직무를 희망하시나요?",
+  other: "어떤 일을 하고 계신가요?",
 };
 
 // 화면설계서 ONB-09 직군 선택
@@ -158,7 +152,6 @@ export function JobGroupScreen() {
   const userType = useOnboardingStore((state) => state.userType);
   const jobGroup = useOnboardingStore((state) => state.jobGroup);
   const setJobGroup = useOnboardingStore((state) => state.setJobGroup);
-  const copy = COPY[userType ?? "worker"];
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -177,11 +170,9 @@ export function JobGroupScreen() {
               accessibilityRole="header"
               className="text-primary text-title1-sb"
             >
-              {copy.title}
+              {TITLE[userType ?? "worker"]}
             </Text>
-            <Text className="text-tertiary text-body2-m">
-              {copy.description}
-            </Text>
+            <Text className="text-tertiary text-body2-m">{DESCRIPTION}</Text>
           </View>
           <View>
             {/* 화면설계서 ONB-09 3: 미선택 안내 / 선택 시 초록 "1개 선택됨" */}
