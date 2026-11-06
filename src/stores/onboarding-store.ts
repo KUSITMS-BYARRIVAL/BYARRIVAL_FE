@@ -10,9 +10,12 @@ type OnboardingState = {
   userType: UserType | null;
   /** 가장 일찍 출발하는 날의 출발 시각 (24시간제) */
   departureTime: Time;
+  /** 이동하는 동안 뉴스를 읽을 수 있는 시간(분) */
+  travelMinutes: number;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
+  setTravelMinutes: (travelMinutes: number) => void;
 };
 
 // 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
@@ -22,7 +25,10 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   userType: null,
   // 화면설계서 ONB-06 기본값 08:00
   departureTime: { hour: 8, minute: 0 },
+  // 화면설계서 ONB-07 기본값 30분
+  travelMinutes: 30,
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),
+  setTravelMinutes: (travelMinutes) => set({ travelMinutes }),
 }));
