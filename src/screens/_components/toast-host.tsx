@@ -2,6 +2,7 @@ import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Toast } from "@/components/toast/toast";
+import { cn } from "@/lib/cn";
 import { useToastStore } from "@/stores/toast-store";
 
 // Figma 알림 화면 기준: 헤더(h-11) 바로 아래
@@ -16,7 +17,11 @@ export function ToastHost() {
   const { onLabelPress } = toast;
   return (
     <View
-      className="absolute inset-x-[17.5px]"
+      // 버튼 없는 토스트는 떠 있는 동안 아래 화면 터치를 막지 않는다
+      className={cn(
+        "absolute inset-x-[17.5px]",
+        !toast.label && "pointer-events-none",
+      )}
       style={{ top: top + HEADER_HEIGHT }}
     >
       <Toast

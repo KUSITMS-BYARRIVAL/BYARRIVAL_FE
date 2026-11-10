@@ -49,6 +49,7 @@ export function DepartureTimeScreen() {
   const setDepartureTime = useOnboardingStore(
     (state) => state.setDepartureTime,
   );
+  const openDialog = useDialogStore((state) => state.openDialog);
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   // 바텀시트에서 휠을 돌리는 동안의 값. 확인을 눌러야 저장한다
   const [draftTime, setDraftTime] = useState<Time>(departureTime);
@@ -59,7 +60,6 @@ export function DepartureTimeScreen() {
     setIsPickerOpen(true);
   };
 
-  const openDialog = useDialogStore((state) => state.openDialog);
   const goNext = () => router.push("/travel-time");
 
   return (
