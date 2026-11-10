@@ -6,6 +6,8 @@ import {
 } from "@testing-library/react-native";
 import { router } from "expo-router";
 
+import { DialogHost } from "@/screens/_components/dialog-host";
+import { useDialogStore } from "@/stores/dialog-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { DepartureTimeScreen } from "../departure-time";
@@ -17,8 +19,18 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
 }));
 
+// 알림 안내 다이얼로그는 앱 루트의 DialogHost가 띄운다
+const renderScreen = () =>
+  render(
+    <>
+      <DepartureTimeScreen />
+      <DialogHost />
+    </>,
+  );
+
 beforeEach(() => {
   jest.clearAllMocks();
+  useDialogStore.setState({ options: null, isVisible: false });
   useOnboardingStore.setState({
     userType: "worker",
     departureTime: { hour: 8, minute: 0 },
@@ -32,19 +44,19 @@ describe("DepartureTimeScreen", () => {
     ["other", "보통 언제 출발하시나요?"],
   ] as const)("%s 유형이면 '%s'로 묻는다", async (userType, title) => {
     useOnboardingStore.setState({ userType });
-    await render(<DepartureTimeScreen />);
+    await renderScreen();
     expect(screen.getByRole("header", { name: title })).toBeOnTheScreen();
   });
 
   it("기본 출발 시각 08:00을 보여주고, 시간 바텀시트는 닫힌 채로 시작한다", async () => {
-    await render(<DepartureTimeScreen />);
+    await renderScreen();
     expect(screen.getByRole("button", { name: "8시 0분" })).toBeOnTheScreen();
     expect(screen.queryByText("시간 설정")).toBeNull();
   });
 
   it("시각을 눌러 휠에서 바꾸고 확인하면 저장한다", async () => {
     const user = userEvent.setup();
-    await render(<DepartureTimeScreen />);
+    await renderScreen();
     await user.press(screen.getByRole("button", { name: "8시 0분" }));
     // 시 휠을 한 칸 올린다 (휠 조절은 접근성 동작으로 보낸다)
     await fireEvent(
@@ -68,7 +80,7 @@ describe("DepartureTimeScreen", () => {
     async (userType, title) => {
       useOnboardingStore.setState({ userType });
       const user = userEvent.setup();
-      await render(<DepartureTimeScreen />);
+      await renderScreen();
       await user.press(screen.getByRole("button", { name: "다음으로" }));
       expect(screen.getByRole("header", { name: title })).toBeOnTheScreen();
     },
@@ -78,7 +90,7 @@ describe("DepartureTimeScreen", () => {
     "알림 안내에서 %s를 누르면 이동 시간 설정으로 넘어간다",
     async (name) => {
       const user = userEvent.setup();
-      await render(<DepartureTimeScreen />);
+      await renderScreen();
       await user.press(screen.getByRole("button", { name: "다음으로" }));
       // 다음으로는 안내만 띄우고 이동하지 않는다
       expect(router.push).not.toHaveBeenCalled();

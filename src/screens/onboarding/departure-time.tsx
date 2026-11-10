@@ -6,11 +6,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OnboardingCommuteIllustration } from "@/assets/illustrations";
 import { BottomSheet } from "@/components/bottom-sheet/bottom-sheet";
 import { Button } from "@/components/button/button";
-import { Dialog } from "@/components/dialog/dialog";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { type Time, TimePicker } from "@/components/time-picker/time-picker";
 import { TimeSelector } from "@/components/time-selector/time-selector";
+import { useDialogStore } from "@/stores/dialog-store";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./constants";
@@ -52,7 +52,6 @@ export function DepartureTimeScreen() {
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   // 바텀시트에서 휠을 돌리는 동안의 값. 확인을 눌러야 저장한다
   const [draftTime, setDraftTime] = useState<Time>(departureTime);
-  const [isNoticeOpen, setIsNoticeOpen] = useState(false);
   const copy = COPY[userType ?? "worker"];
 
   const openPicker = () => {
@@ -60,10 +59,8 @@ export function DepartureTimeScreen() {
     setIsPickerOpen(true);
   };
 
-  const goNext = () => {
-    setIsNoticeOpen(false);
-    router.push("/travel-time");
-  };
+  const openDialog = useDialogStore((state) => state.openDialog);
+  const goNext = () => router.push("/travel-time");
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -112,7 +109,17 @@ export function DepartureTimeScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          onPress={() => setIsNoticeOpen(true)}
+          onPress={() =>
+            // 화면설계서 ONB-06 N1 알림 권한 사전 안내
+            // TODO: [알림 받기]는 OS 알림 권한 요청, 거부 시 "마이 > 알림에서 언제든 켤 수 있어요" 토스트 (expo-notifications 도입 후)
+            openDialog({
+              title: copy.notice,
+              confirmLabel: "알림 받기",
+              onConfirm: goNext,
+              cancelLabel: "나중에",
+              onCancel: goNext,
+            })
+          }
         />
       </View>
 
@@ -128,17 +135,6 @@ export function DepartureTimeScreen() {
       >
         <TimePicker value={draftTime} onChange={setDraftTime} />
       </BottomSheet>
-
-      {/* 화면설계서 ONB-06 N1 알림 권한 사전 안내 */}
-      {/* TODO: [알림 받기]는 OS 알림 권한 요청, 거부 시 "마이 > 알림에서 언제든 켤 수 있어요" 토스트 (expo-notifications 도입 후) */}
-      <Dialog
-        visible={isNoticeOpen}
-        title={copy.notice}
-        confirmLabel="알림 받기"
-        onConfirm={goNext}
-        cancelLabel="나중에"
-        onCancel={goNext}
-      />
     </View>
   );
 }
