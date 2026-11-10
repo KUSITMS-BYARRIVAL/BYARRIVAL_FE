@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
 import { DialogHost } from "@/screens/_components/dialog-host";
+import { ToastHost } from "@/screens/_components/toast-host";
 
 // 폰트 로딩이 끝날 때까지 스플래시를 유지한다 (컴포넌트 밖, 모듈 스코프에서 호출해야 함)
 SplashScreen.preventAutoHideAsync();
@@ -33,6 +34,7 @@ export default function RootLayout() {
     <>
       <Stack screenOptions={{ headerShown: false }} />
       <DialogHost />
+      <ToastHost />
     </>
   );
 }
