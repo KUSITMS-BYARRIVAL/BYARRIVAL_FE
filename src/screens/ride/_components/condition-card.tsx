@@ -24,13 +24,12 @@ export function ConditionCard({
   description,
   isSelected = false,
   className,
-  accessibilityState,
   ...props
 }: ConditionCardProps) {
   return (
     <Pressable
       accessibilityRole="radio"
-      accessibilityState={{ ...accessibilityState, checked: isSelected }}
+      accessibilityState={{ checked: isSelected }}
       className={cn(
         "flex-row items-center gap-3 rounded border px-5 py-4",
         isSelected

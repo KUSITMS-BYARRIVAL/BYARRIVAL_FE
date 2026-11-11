@@ -35,8 +35,8 @@ export function ConditionScreen() {
             ({ weather, name, description, Face, WeatherIcon }, index) => (
               <ConditionCard
                 key={weather}
-                face={<Face width={50} height={42.224} />}
-                weatherIcon={<WeatherIcon width={20} height={20} />}
+                face={<Face />}
+                weatherIcon={<WeatherIcon />}
                 weather={weather}
                 name={name}
                 description={description}
