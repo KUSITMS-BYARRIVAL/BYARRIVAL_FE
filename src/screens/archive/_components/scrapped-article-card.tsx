@@ -39,7 +39,7 @@ export function ScrappedArticleCard({
       accessibilityRole="button"
       accessibilityState={{ disabled: isDeleted }}
       onPress={isDeleted ? undefined : onPress}
-      className={cn("gap-3 rounded bg-white p-5", className)}
+      className={cn("rounded bg-white p-5", className)}
     >
       {/* shortcut: 흐림 정도 40%는 Figma 시안이 없어 임의로 정했다. 디자인 확인 중이라 값이 나오면 맞출 것 */}
       <View className={cn("gap-3", isDeleted && "opacity-40")}>
