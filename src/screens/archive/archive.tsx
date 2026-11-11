@@ -123,7 +123,6 @@ export function ArchiveScreen() {
                       categoryLabel={smalltalk.label}
                       newsTitle={smalltalk.newsTitle}
                       question={smalltalk.question}
-                      followUp={smalltalk.followUp}
                       isBookmarked
                       isDeleted={smalltalk.isDeleted}
                       onPress={() => WebBrowser.openBrowserAsync(smalltalk.url)}

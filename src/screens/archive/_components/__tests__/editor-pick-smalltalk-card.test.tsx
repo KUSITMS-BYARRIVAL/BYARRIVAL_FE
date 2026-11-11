@@ -7,7 +7,6 @@ const SMALLTALK = {
   categoryLabel: "경제",
   newsTitle: "한국은행, 기준금리 동결",
   question: "대출 있으세요?",
-  followUp: "하반기 인하 가능성이 60%래요.",
   isBookmarked: true,
 };
 
