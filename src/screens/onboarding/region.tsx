@@ -15,7 +15,7 @@ import {
   useOnboardingStore,
 } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./constants";
+import { ONBOARDING_STEPS } from "./_constants";
 import { PROVINCES, REGIONS, wholeProvince } from "./regions";
 
 // 화면설계서 ONB-10 T1~T3: 유형별 타이틀·서브

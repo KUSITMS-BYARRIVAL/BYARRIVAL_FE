@@ -41,7 +41,7 @@ import {
 } from "@/stores/onboarding-store";
 import { cn } from "@/lib/cn";
 
-import { ONBOARDING_STEPS } from "./constants";
+import { ONBOARDING_STEPS } from "./_constants";
 
 // 화면설계서 ONB-09 4: 12개 분류, 3열 × 4행
 const JOB_GROUPS: {

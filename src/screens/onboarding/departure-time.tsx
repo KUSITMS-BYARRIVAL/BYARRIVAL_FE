@@ -13,7 +13,7 @@ import { TimeSelector } from "@/components/time-selector/time-selector";
 import { useDialogStore } from "@/stores/dialog-store";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./constants";
+import { ONBOARDING_STEPS } from "./_constants";
 
 // Figma 지하철 좌석 일러스트(393×279) 비율
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
