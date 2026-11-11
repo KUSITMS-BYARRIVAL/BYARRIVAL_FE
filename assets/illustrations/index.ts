@@ -18,7 +18,3 @@ export { default as MyHomeTrainIllustration } from "./my-home-train.svg";
 export { default as OnboardingCommuteIllustration } from "./onboarding-commute.svg";
 export { default as OnboardingFinishIllustration } from "./onboarding-finish.svg";
 export { default as TimeDigitBackgroundIllustration } from "./time-digit-background.svg";
-export { default as WeatherCloudyIllustration } from "./weather-cloudy.svg";
-export { default as WeatherDefaultIllustration } from "./weather-default.svg";
-export { default as WeatherRainIllustration } from "./weather-rain.svg";
-export { default as WeatherSunnyIllustration } from "./weather-sunny.svg";
