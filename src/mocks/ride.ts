@@ -1,31 +1,5 @@
 import type { RideArticle } from "@/screens/ride/_components/stop-article";
 
-export const RIDE_DATE_LABEL = "10월 10일 토요일";
-
-// 맑음 외 3단계 문구는 시안이 없어 임시로 작성했다
-export const CONDITIONS = [
-  {
-    weather: "비",
-    name: "지쳤어요",
-    description: "오늘은 가볍게, 짧은 기사만 읽어요.",
-  },
-  {
-    weather: "흐림",
-    name: "조금 무거워요",
-    description: "부담 없는 기사로 천천히 시작해요.",
-  },
-  {
-    weather: "보통",
-    name: "평범해요",
-    description: "적당한 길이의 기사로 균형 있게 읽어요.",
-  },
-  {
-    weather: "맑음",
-    name: "가뿐해요",
-    description: "에너지 충만! 깊이 있는 기사도 거뜬해요.",
-  },
-];
-
 // 실제 기사 7개. 분야는 앱 카테고리로 매핑했고, 원본에 없는 읽는 시간(난이도 EASY 짧게 · HARD 길게, 시안 합계 20분) · 키워드 · 이미지는 임시값이다
 export const BOARDING_ARTICLES: RideArticle[] = [
   {
