@@ -8,7 +8,7 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { SelectionCard } from "@/screens/onboarding/_components/selection-card";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { DEFAULT_NICKNAME, ONBOARDING_STEPS, USER_TYPES } from "./constants";
+import { DEFAULT_NICKNAME, ONBOARDING_STEPS, USER_TYPES } from "./_constants";
 
 // 화면설계서 ONB-05 이동 유형 선택
 export function UserTypeScreen() {

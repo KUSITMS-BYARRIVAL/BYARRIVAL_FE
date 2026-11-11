@@ -97,3 +97,7 @@ export { default as TabHomeIcon } from "./tab-home.svg";
 export { default as TabHomeSelectedIcon } from "./tab-home-selected.svg";
 export { default as TabMyIcon } from "./tab-my.svg";
 export { default as TabMySelectedIcon } from "./tab-my-selected.svg";
+export { default as WeatherCloudyIcon } from "./weather-cloudy.svg";
+export { default as WeatherDefaultIcon } from "./weather-default.svg";
+export { default as WeatherRainIcon } from "./weather-rain.svg";
+export { default as WeatherSunnyIcon } from "./weather-sunny.svg";

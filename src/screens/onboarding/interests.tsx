@@ -8,7 +8,7 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { SelectionTile } from "@/screens/onboarding/_components/selection-tile";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { INTERESTS, ONBOARDING_STEPS } from "./constants";
+import { INTERESTS, ONBOARDING_STEPS } from "./_constants";
 
 // 화면설계서 ONB-08 관심 분야 선택
 export function InterestsScreen() {

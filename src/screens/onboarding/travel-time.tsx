@@ -9,7 +9,7 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { Slider } from "@/components/slider/slider";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./constants";
+import { ONBOARDING_STEPS } from "./_constants";
 
 // 손잡이가 멈추는 값. 같은 간격 눈금(5·30·90분)과 실제 값이 맞도록 30분을 정가운데(6번째) 둔다
 // 화면설계서 ONB-07은 5~90분 5분 단위지만, 30분 이후는 10~15분 단위로 둔다 (기획 합의 필요)

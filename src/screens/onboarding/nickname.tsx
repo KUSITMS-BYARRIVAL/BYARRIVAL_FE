@@ -15,7 +15,7 @@ import { TextField } from "@/components/text-field/text-field";
 import { NicknamePreviewCard } from "@/screens/onboarding/_components/nickname-preview-card";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./constants";
+import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
 
 const NICKNAME_MAX_LENGTH = 10;
 const NICKNAME_MIN_LENGTH = 2;

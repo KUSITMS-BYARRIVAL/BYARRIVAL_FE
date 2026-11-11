@@ -169,7 +169,8 @@ const SEMANTIC = {
     white: PALETTE.white,
     brand: PALETTE.green[500],
     black: PALETTE.grey[800],
-    green: PALETTE.green[50],
+    green: PALETTE.green[100],
+    gray: PALETTE.grey[100],
     pressed: PALETTE["grey-opacity"][100],
     "pressed-2": PALETTE["grey-opacity"][200],
     wrong: PALETTE.red[100],
@@ -193,7 +194,7 @@ const SEMANTIC = {
     background: PALETTE.white,
   },
   border: {
-    brand: PALETTE.green[300],
+    brand: PALETTE.green[500],
     red: PALETTE.red[200],
     default: PALETTE["grey-opacity"][200],
     "grey-200": PALETTE.grey[200],
