@@ -39,7 +39,6 @@ export default function TabsLayout() {
         <TabBar
           items={TAB_ITEMS}
           selectedKey={state.routes[state.index].name}
-          // 보관함은 아직 라우트가 없어 눌러도 반응하지 않는다
           onSelect={(key) => {
             const route = state.routes.find((r) => r.name === key);
             if (route) navigateToTab(route.key);
@@ -47,8 +46,9 @@ export default function TabsLayout() {
         />
       )}
     >
-      {/* SDK 58부터 레이아웃에 선언한 화면만 그려진다. 보관함은 퍼블리싱 후 추가 */}
+      {/* SDK 58부터 레이아웃에 선언한 화면만 그려진다 */}
       <Tabs.Screen name="index" />
+      <Tabs.Screen name="archive" />
       <Tabs.Screen name="my" />
     </Tabs>
   );
