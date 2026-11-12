@@ -5,8 +5,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { TextButton } from "@/components/button/text-button";
 import { Header } from "@/components/header/header";
-import { Notification } from "@/components/notification/notification";
 import { NOTIFICATION_GROUPS } from "@/mocks/notification";
+import { Notification } from "@/screens/notifications/_components/notification";
 import { NOTIFICATION_TYPES } from "@/screens/notifications/_constants";
 import { useNotificationStore } from "@/stores/notification-store";
 import { useToastStore } from "@/stores/toast-store";
