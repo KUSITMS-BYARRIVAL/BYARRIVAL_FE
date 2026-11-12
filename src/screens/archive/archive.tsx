@@ -2,7 +2,7 @@ import { type Dispatch, type SetStateAction, useState } from "react";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AlarmIcon } from "@/assets/icons";
+import { AlarmButton } from "@/screens/_components/alarm-button";
 import { Header } from "@/components/header/header";
 import { Tabs } from "@/components/tabs/tabs";
 import { ARCHIVE_ARTICLES, ARCHIVE_SMALLTALKS } from "@/mocks/archive";
@@ -40,8 +40,7 @@ export function ArchiveScreen() {
   return (
     <View className="flex-1 bg-default">
       <View className="bg-white" style={{ paddingTop: top }}>
-        {/* TODO: 알림 화면 이동 */}
-        <Header title="보관함" right={<AlarmIcon width={24} height={24} />} />
+        <Header title="보관함" right={<AlarmButton />} />
         <Tabs
           items={[
             { value: "article", label: "기사", count: articles.length },

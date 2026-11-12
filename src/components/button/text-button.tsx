@@ -29,7 +29,15 @@ export function TextButton({
       {({ pressed }) => (
         <>
           {pressed && <View className="absolute inset-0 bg-btn-pressed" />}
-          <Text className="text-secondary text-label2-sb">{label}</Text>
+          <Text
+            className={cn(
+              "text-label2-sb",
+              // shortcut: 비활성 글자색이 Figma에 없어 tertiary로 가정, 디자인 확정 시 교체
+              props.disabled ? "text-tertiary" : "text-secondary",
+            )}
+          >
+            {label}
+          </Text>
           {hasArrow && <ArrowRightSIcon color={SEMANTIC.icon.secondary} />}
         </>
       )}

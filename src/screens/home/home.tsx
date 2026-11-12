@@ -3,8 +3,9 @@ import * as WebBrowser from "expo-web-browser";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AlarmIcon, SubwaySideIcon } from "@/assets/icons";
+import { SubwaySideIcon } from "@/assets/icons";
 import { LogoIllustration } from "@/assets/illustrations";
+import { AlarmButton } from "@/screens/_components/alarm-button";
 import { Button } from "@/components/button/button";
 import {
   BOARDING_ARTICLES,
@@ -52,8 +53,7 @@ export function HomeScreen() {
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
       <View className="mt-3.5 h-[30px] flex-row items-center justify-between px-5">
         <LogoIllustration />
-        {/* TODO: 새 알림이 있으면 점 표시 · 알림 화면 이동 (UT 이후) */}
-        <AlarmIcon width={30} height={30} />
+        <AlarmButton size={30} />
       </View>
       <ScrollView className="flex-1" contentContainerClassName="gap-9 p-5">
         <View className="gap-3.5">
