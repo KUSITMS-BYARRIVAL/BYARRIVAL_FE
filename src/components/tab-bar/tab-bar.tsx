@@ -50,9 +50,10 @@ export function TabBar({
             onPress={() => onSelect(key)}
           >
             {isSelected ? <SelectedIcon /> : <Icon />}
+            {/* Android가 한글 라벨 폭을 좁게 재 끝 글자('보관함'의 '함')가 잘리므로 탭 너비로 늘려 가운데 정렬한다 */}
             <Text
               className={cn(
-                "text-label3-sb",
+                "self-stretch text-center text-label3-sb",
                 isSelected ? "text-green-800" : "text-grey-400",
               )}
             >
