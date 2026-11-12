@@ -11,7 +11,7 @@ import {
   BOARDING_ARTICLES,
   COMMUTER_COUNT,
   HOME_NICKNAME,
-  HOME_REGION,
+  HOME_JOB_GROUP,
   HOME_RIDE_STATUS,
   HOME_SMALLTALK,
   HOME_STREAK,
@@ -78,7 +78,7 @@ export function HomeScreen() {
           />
         </View>
         <TrendingSection
-          region={HOME_REGION}
+          jobGroup={HOME_JOB_GROUP}
           articles={HOME_TRENDING}
           isReady={IS_TRENDING_READY}
           onSeeAllPress={() => router.push("/trending")}

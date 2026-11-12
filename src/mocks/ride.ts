@@ -210,7 +210,7 @@ export const TRENDING_ARTICLES = [
 ];
 
 export const HOME_NICKNAME = "출근러";
-export const HOME_REGION = "여의도";
+export const HOME_JOB_GROUP = "마케팅";
 export const HOME_STREAK = { streakDays: 7, longestDays: 12 };
 export const COMMUTER_COUNT = 1284;
 
@@ -224,7 +224,7 @@ export const IS_TRENDING_READY = true;
 
 // 원문 링크가 있는 기존 기사를 재사용한다. 보고 있는 사람 수는 임시값이다
 export const HOME_TRENDING = {
-  region: BOARDING_ARTICLES.slice(0, 3).map((article, i) => ({
+  jobGroup: BOARDING_ARTICLES.slice(0, 3).map((article, i) => ({
     title: article.title,
     url: article.url,
     viewers: [128, 97, 64][i],

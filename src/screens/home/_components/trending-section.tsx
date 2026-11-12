@@ -8,7 +8,7 @@ import { Chip } from "@/components/chip/chip";
 import { cn } from "@/lib/cn";
 import { AchievementCard } from "@/screens/_components/achievement-card";
 
-type TrendingScope = "region" | "all";
+type TrendingScope = "jobGroup" | "all";
 
 type TrendingArticle = {
   title: string;
@@ -17,8 +17,8 @@ type TrendingArticle = {
 };
 
 type TrendingSectionProps = {
-  /** 내 지역 칩에 붙는 지역 이름 (예: 여의도) */
-  region: string;
+  /** 내 직군 칩에 붙는 직군 이름 (예: 기획·마케팅) */
+  jobGroup: string;
   articles: Record<TrendingScope, TrendingArticle[]>;
   /** 새벽 4시 집계 전이면 false — 목록 자리에 집계중 카드를 보여준다 */
   isReady: boolean;
@@ -28,14 +28,14 @@ type TrendingSectionProps = {
 };
 
 export function TrendingSection({
-  region,
+  jobGroup,
   articles,
   isReady,
   onSeeAllPress,
   onArticlePress,
   className,
 }: TrendingSectionProps) {
-  const [scope, setScope] = useState<TrendingScope>("region");
+  const [scope, setScope] = useState<TrendingScope>("jobGroup");
 
   return (
     <View className={cn("gap-3.5", className)}>
@@ -47,9 +47,9 @@ export function TrendingSection({
       </View>
       <View className="flex-row gap-2">
         <Chip
-          label={`내 지역 · ${region}`}
-          selected={scope === "region"}
-          onPress={() => setScope("region")}
+          label={`내 직군 · ${jobGroup}`}
+          selected={scope === "jobGroup"}
+          onPress={() => setScope("jobGroup")}
         />
         <Chip
           label="전체"
