@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -13,27 +13,18 @@ import { useToastStore } from "@/stores/toast-store";
 
 export function NotificationsScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  const [readIds, setReadIds] = useState(
-    () =>
-      new Set(
-        NOTIFICATION_GROUPS.flatMap((group) => group.items)
-          .filter((item) => item.isRead)
-          .map((item) => item.id),
-      ),
-  );
+  const readIds = useNotificationStore((state) => state.readIds);
 
   useEffect(() => {
     useNotificationStore.getState().clearNewNotification();
   }, []);
 
-  const allIds = NOTIFICATION_GROUPS.flatMap((group) =>
-    group.items.map((item) => item.id),
+  const hasUnread = NOTIFICATION_GROUPS.some((group) =>
+    group.items.some((item) => !readIds.includes(item.id)),
   );
-  // 읽지 않은 알림이 있는지 확인
-  const hasUnread = allIds.some((id) => !readIds.has(id));
 
   const handleReadAll = () => {
-    setReadIds(new Set(allIds));
+    useNotificationStore.getState().markAllRead();
     useToastStore.getState().showToast({ message: "모두 읽음 처리했어요" });
   };
 
@@ -70,9 +61,9 @@ export function NotificationsScreen() {
                     title={item.title}
                     body={item.body}
                     time={item.time}
-                    isUnread={!readIds.has(item.id)}
+                    isUnread={!readIds.includes(item.id)}
                     onPress={() => {
-                      setReadIds((current) => new Set(current).add(item.id));
+                      useNotificationStore.getState().markRead(item.id);
                       router.push(href);
                     }}
                   />
