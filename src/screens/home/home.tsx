@@ -51,9 +51,9 @@ export function HomeScreen() {
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      <View className="mt-3.5 h-[30px] flex-row items-center justify-between px-5">
+      <View className="mt-3.5 h-6 flex-row items-center justify-between px-5">
         <LogoIllustration />
-        <AlarmButton size={30} />
+        <AlarmButton />
       </View>
       <ScrollView className="flex-1" contentContainerClassName="gap-9 p-5">
         <View className="gap-3.5">
@@ -71,9 +71,9 @@ export function HomeScreen() {
           <CommuterCountCard count={COMMUTER_COUNT} />
           <Button
             label={rideButton.label}
+            size="l"
             color="neutral"
-            leadingIcon={<SubwaySideIcon width={24} height={24} />}
-            className="gap-1 px-4"
+            leadingIcon={<SubwaySideIcon width={30} height={30} />}
             onPress={rideButton.onPress}
           />
         </View>
