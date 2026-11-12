@@ -13,11 +13,11 @@ export function Bubble({ text, className }: BubbleProps) {
   return (
     <View
       className={cn(
-        "rounded-xl rounded-tl-none bg-green-500 px-5 py-4",
+        "rounded-xl rounded-tl-none bg-green-100 px-5 py-4",
         className,
       )}
     >
-      <Text className="text-on-fill-default text-body2-sb">{text}</Text>
+      <Text className="text-primary text-body2-sb">{text}</Text>
     </View>
   );
 }
