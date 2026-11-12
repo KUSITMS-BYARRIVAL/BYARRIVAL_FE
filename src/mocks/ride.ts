@@ -237,9 +237,8 @@ export const HOME_TRENDING = {
 };
 
 export const HOME_SMALLTALK = {
-  place: "엘리베이터에서",
-  question:
-    "“ 자기 1시간 전에 폰만 꺼도 수면 효율이 18% 올라간대요. 해보셨어요? “",
-  followUp:
-    "카페인은 오후 2시 이후에 줄이는 게 좋대요. 방금 마신 커피는 어쩌죠?",
+  category: "economy" as const,
+  categoryLabel: "경제",
+  newsTitle: "한국은행, 기준금리 동결... “하반기 인하 가능성 열어둬”",
+  question: "“ 이번에 기준금리 동결됐다는데, 대출 있으세요? ”",
 };
