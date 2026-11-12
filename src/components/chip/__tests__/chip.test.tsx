@@ -6,18 +6,20 @@ const chip = () => screen.getByRole("button", { name: "텍스트" });
 const container = () => chip().parent!;
 
 describe("Chip", () => {
-  it("기본은 선택 상태로 초록 배경과 brand 글자를 쓴다", async () => {
+  it("기본은 선택 상태로 초록 배경과 흰 글자를 쓴다", async () => {
     await render(<Chip label="텍스트" />);
-    expect(container().props.className).toContain("bg-green-opacity-100");
-    expect(screen.getByText("텍스트").props.className).toContain("text-brand");
+    expect(container().props.className).toContain("bg-green-500");
+    expect(screen.getByText("텍스트").props.className).toContain(
+      "text-on-fill-default",
+    );
     expect(chip()).toBeSelected();
   });
 
-  it("미선택이면 흰 배경과 tertiary 글자를 쓴다", async () => {
+  it("미선택이면 흰 배경과 secondary 글자를 쓴다", async () => {
     await render(<Chip label="텍스트" selected={false} />);
     expect(container().props.className).toContain("bg-white");
     expect(screen.getByText("텍스트").props.className).toContain(
-      "text-tertiary",
+      "text-secondary",
     );
   });
 

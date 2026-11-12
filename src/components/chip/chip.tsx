@@ -25,7 +25,7 @@ export function Chip({
     <View
       className={cn(
         "h-8 flex-row items-center gap-1.5 overflow-hidden rounded-full",
-        selected ? "bg-green-opacity-100" : "bg-white",
+        selected ? "bg-green-500" : "bg-white",
         className,
       )}
     >
@@ -39,7 +39,7 @@ export function Chip({
         <Text
           className={cn(
             "text-label2-sb",
-            selected ? "text-brand" : "text-tertiary",
+            selected ? "text-on-fill-default" : "text-secondary",
           )}
         >
           {label}
@@ -53,7 +53,7 @@ export function Chip({
           disabled={disabled}
           onPress={onDelete}
         >
-          <DeleteIcon color={SEMANTIC.icon.brand} />
+          <DeleteIcon color={SEMANTIC.icon["on-fill-default"]} />
         </Pressable>
       )}
     </View>
