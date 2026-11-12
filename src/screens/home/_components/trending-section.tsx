@@ -19,6 +19,8 @@ type TrendingArticle = {
 type TrendingSectionProps = {
   /** 내 직군 칩에 붙는 직군 이름 (예: 기획·마케팅) */
   jobGroup: string;
+  /** 유형별 길 이름 (출근길 · 등굣길 · 이동길) */
+  route: string;
   articles: Record<TrendingScope, TrendingArticle[]>;
   /** 새벽 4시 집계 전이면 false — 목록 자리에 집계중 카드를 보여준다 */
   isReady: boolean;
@@ -29,6 +31,7 @@ type TrendingSectionProps = {
 
 export function TrendingSection({
   jobGroup,
+  route,
   articles,
   isReady,
   onSeeAllPress,
@@ -41,7 +44,7 @@ export function TrendingSection({
     <View className={cn("gap-3.5", className)}>
       <View className="flex-row items-start justify-between">
         <Text className="text-primary text-title2-sb">
-          지금 출근길에서 많이 봐요
+          지금 {route}에서 많이 봐요
         </Text>
         <TextButton label="전체보기" onPress={onSeeAllPress} />
       </View>
@@ -64,7 +67,8 @@ export function TrendingSection({
               key={article.url}
               rank={i + 1}
               title={article.title}
-              subtext={`오늘 출근길 직장인 ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
+              // TODO: 유형별 사람 호칭(직장인·학생 등)이 정해지면 "오늘 {route} {호칭} N명" 형태로 다시 넣는다
+              subtext={`오늘 ${route} ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
               isLive
               hasArrow={false}
               rankTone="brand"

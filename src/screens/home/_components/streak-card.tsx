@@ -8,6 +8,8 @@ import { cn } from "@/lib/cn";
 
 type StreakCardProps = Omit<PressableProps, "children"> & {
   nickname: string;
+  /** 유형별 길 이름 (출근길 · 등굣길 · 이동길) */
+  route: string;
   streakDays: number;
   longestDays: number;
   className?: string;
@@ -15,6 +17,7 @@ type StreakCardProps = Omit<PressableProps, "children"> & {
 
 export function StreakCard({
   nickname,
+  route,
   streakDays,
   longestDays,
   className,
@@ -41,7 +44,7 @@ export function StreakCard({
           <View className="flex-1 justify-between p-5">
             <View className="gap-2">
               <Text className="text-on-fill-default text-title3-sb">
-                {nickname}님과의 출근길
+                {nickname}님과의 {route}
               </Text>
               <View className="flex-row items-center gap-px">
                 <Text className="text-on-fill-default text-display1-b">

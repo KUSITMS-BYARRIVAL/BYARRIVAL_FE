@@ -16,6 +16,7 @@ const renderSection = (
   render(
     <TrendingSection
       jobGroup="기획·마케팅"
+      route="출근길"
       articles={ARTICLES}
       isReady
       onSeeAllPress={jest.fn()}
@@ -58,10 +59,15 @@ describe("TrendingSection", () => {
     expect(screen.queryByText("전체 기사 1")).toBeNull();
   });
 
+  it("유형별 길 이름을 제목에 넣는다", async () => {
+    await renderSection({ route: "이동길" });
+    expect(screen.getByText("지금 이동길에서 많이 봐요")).toBeOnTheScreen();
+  });
+
   it("보고 있는 사람 수를 천 단위로 구분해 보여준다", async () => {
     await renderSection();
     expect(
-      screen.getByText("오늘 출근길 직장인 1,234명이 보고 있어요"),
+      screen.getByText("오늘 출근길 1,234명이 보고 있어요"),
     ).toBeOnTheScreen();
   });
 
