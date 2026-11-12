@@ -1,4 +1,9 @@
-import { render, screen, userEvent } from "@testing-library/react-native";
+import {
+  render,
+  screen,
+  userEvent,
+  within,
+} from "@testing-library/react-native";
 
 import { EditorPickSmalltalkCard } from "../editor-pick-smalltalk-card";
 
@@ -55,5 +60,12 @@ describe("EditorPickSmalltalkCard", () => {
     expect(onPress).not.toHaveBeenCalled();
     await user.press(screen.getByRole("button", { name: "북마크" }));
     expect(onBookmarkPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("북마크는 카드 버튼 밖에 있어 스크린리더가 카드와 따로 읽는다", async () => {
+    await render(<EditorPickSmalltalkCard {...SMALLTALK} />);
+    const card = screen.getByRole("button", { name: /한국은행/ });
+    expect(within(card).queryByRole("button", { name: "북마크" })).toBeNull();
+    expect(screen.getByRole("button", { name: "북마크" })).toBeOnTheScreen();
   });
 });
