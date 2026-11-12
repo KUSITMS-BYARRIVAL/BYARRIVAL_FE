@@ -11,12 +11,14 @@ type EditorPickSectionProps = {
     "category" | "categoryLabel" | "newsTitle" | "question"
   >;
   onMorePress: () => void;
+  onSmalltalkPress: () => void;
   className?: string;
 };
 
 export function EditorPickSection({
   smalltalk,
   onMorePress,
+  onSmalltalkPress,
   className,
 }: EditorPickSectionProps) {
   return (
@@ -25,7 +27,7 @@ export function EditorPickSection({
         <Text className="text-primary text-title2-sb">스몰토크 추천</Text>
         <TextButton label="더보기" onPress={onMorePress} />
       </View>
-      <EditorPickSmalltalkCard {...smalltalk} />
+      <EditorPickSmalltalkCard {...smalltalk} onPress={onSmalltalkPress} />
     </View>
   );
 }

@@ -236,9 +236,11 @@ export const HOME_TRENDING = {
   })),
 };
 
+// 원문이 실제로 열리도록 탑승 기사를 재사용한다. 대화 문구는 보관함 목데이터와 같은 임시값이다
 export const HOME_SMALLTALK = {
-  category: "economy" as const,
-  categoryLabel: "경제",
-  newsTitle: "한국은행, 기준금리 동결... “하반기 인하 가능성 열어둬”",
-  question: "“ 이번에 기준금리 동결됐다는데, 대출 있으세요? ”",
+  category: BOARDING_ARTICLES[0].category,
+  categoryLabel: BOARDING_ARTICLES[0].label,
+  newsTitle: BOARDING_ARTICLES[0].title,
+  url: BOARDING_ARTICLES[0].url,
+  question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? “",
 };

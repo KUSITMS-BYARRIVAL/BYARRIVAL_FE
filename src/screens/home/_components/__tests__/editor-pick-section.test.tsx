@@ -12,7 +12,11 @@ const SMALLTALK = {
 describe("EditorPickSection", () => {
   it("제목과 받은 스몰토크의 뉴스 제목·대화 문구를 보여준다", async () => {
     await render(
-      <EditorPickSection smalltalk={SMALLTALK} onMorePress={jest.fn()} />,
+      <EditorPickSection
+        smalltalk={SMALLTALK}
+        onMorePress={jest.fn()}
+        onSmalltalkPress={jest.fn()}
+      />,
     );
     expect(screen.getByText("스몰토크 추천")).toBeOnTheScreen();
     expect(screen.getByText(SMALLTALK.newsTitle)).toBeOnTheScreen();
@@ -21,7 +25,11 @@ describe("EditorPickSection", () => {
 
   it("홈 카드에는 북마크 버튼이 없다", async () => {
     await render(
-      <EditorPickSection smalltalk={SMALLTALK} onMorePress={jest.fn()} />,
+      <EditorPickSection
+        smalltalk={SMALLTALK}
+        onMorePress={jest.fn()}
+        onSmalltalkPress={jest.fn()}
+      />,
     );
     expect(
       screen.queryByRole("button", { name: "북마크" }),
@@ -32,9 +40,27 @@ describe("EditorPickSection", () => {
     const user = userEvent.setup();
     const onMorePress = jest.fn();
     await render(
-      <EditorPickSection smalltalk={SMALLTALK} onMorePress={onMorePress} />,
+      <EditorPickSection
+        smalltalk={SMALLTALK}
+        onMorePress={onMorePress}
+        onSmalltalkPress={jest.fn()}
+      />,
     );
     await user.press(screen.getByRole("button", { name: "더보기" }));
     expect(onMorePress).toHaveBeenCalledTimes(1);
+  });
+
+  it("스몰토크 카드를 누르면 onSmalltalkPress를 호출한다", async () => {
+    const user = userEvent.setup();
+    const onSmalltalkPress = jest.fn();
+    await render(
+      <EditorPickSection
+        smalltalk={SMALLTALK}
+        onMorePress={jest.fn()}
+        onSmalltalkPress={onSmalltalkPress}
+      />,
+    );
+    await user.press(screen.getByText(SMALLTALK.question));
+    expect(onSmalltalkPress).toHaveBeenCalledTimes(1);
   });
 });

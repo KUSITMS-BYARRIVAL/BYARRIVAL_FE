@@ -92,6 +92,9 @@ export function HomeScreen() {
         <EditorPickSection
           smalltalk={HOME_SMALLTALK}
           onMorePress={() => router.push("/smalltalk")}
+          onSmalltalkPress={() =>
+            WebBrowser.openBrowserAsync(HOME_SMALLTALK.url)
+          }
         />
       </ScrollView>
     </View>
