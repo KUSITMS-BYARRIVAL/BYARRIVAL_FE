@@ -3,7 +3,8 @@ import * as WebBrowser from "expo-web-browser";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AlarmIcon, SmallTalkIcon } from "@/assets/icons";
+import { SmallTalkIcon } from "@/assets/icons";
+import { AlarmButton } from "@/screens/_components/alarm-button";
 import { Button } from "@/components/button/button";
 import { ButtonCard } from "@/components/button-card/button-card";
 import { RankingRow } from "@/components/button-card/ranking-row";
@@ -25,8 +26,7 @@ export function ArrivalScreen() {
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
-      {/* TODO: 알림 화면 연결 (UT 범위에서는 동작 없음) */}
-      <Header title="도착까지" right={<AlarmIcon />} />
+      <Header title="도착까지" right={<AlarmButton />} />
       <ScrollView className="flex-1">
         <ArrivalHero />
         <View className="gap-9 p-5">
