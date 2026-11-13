@@ -210,7 +210,6 @@ export const TRENDING_ARTICLES = [
 ];
 
 export const HOME_NICKNAME = "출근러";
-export const HOME_JOB_GROUP = "마케팅";
 export const HOME_STREAK = { streakDays: 7, longestDays: 12 };
 export const COMMUTER_COUNT = 1284;
 

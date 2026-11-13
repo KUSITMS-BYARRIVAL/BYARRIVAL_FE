@@ -11,7 +11,6 @@ import {
   BOARDING_ARTICLES,
   COMMUTER_COUNT,
   HOME_NICKNAME,
-  HOME_JOB_GROUP,
   HOME_RIDE_STATUS,
   HOME_SMALLTALK,
   HOME_STREAK,
@@ -19,12 +18,12 @@ import {
   IS_TRENDING_READY,
   RESUME_STOP,
 } from "@/mocks/ride";
+import { MY_PROFILE } from "@/mocks/profile";
 import { CommuterCountCard } from "@/screens/home/_components/commuter-count-card";
 import { EditorPickSection } from "@/screens/home/_components/editor-pick-section";
 import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
 import { COMMUTE_WORDS } from "@/screens/_constants";
-import { useOnboardingStore } from "@/stores/onboarding-store";
 
 // TODO: 쉬는 날(프로필 0분) '오늘은 쉬는 날이에요. 그래도 읽어볼까요?' 상태 (UT 이후)
 const RIDE_BUTTON = {
@@ -50,9 +49,7 @@ const RIDE_BUTTON = {
 export function HomeScreen() {
   const { top } = useSafeAreaInsets();
   const rideButton = RIDE_BUTTON[HOME_RIDE_STATUS];
-  // 온보딩을 거치지 않고 홈에 온 경우(개발 중 새로고침 등)는 직장인 문구로 보여준다
-  const userType = useOnboardingStore((state) => state.userType) ?? "worker";
-  const { commute, route, person } = COMMUTE_WORDS[userType];
+  const { commute, route, person } = COMMUTE_WORDS[MY_PROFILE.userType];
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -82,7 +79,7 @@ export function HomeScreen() {
           />
         </View>
         <TrendingSection
-          jobGroup={HOME_JOB_GROUP}
+          jobGroup={MY_PROFILE.jobGroup}
           route={route}
           person={person}
           articles={HOME_TRENDING}
