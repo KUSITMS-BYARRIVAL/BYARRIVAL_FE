@@ -1,4 +1,5 @@
 import type { CalendarStatus } from "@/screens/my/_components/calendar-cell";
+import type { StripLevel } from "@/screens/my/_components/year-strips-card";
 
 export const TOTAL_HOURS = 142;
 export const MONTH_MINUTES = 60 * 60 + 32;
@@ -72,3 +73,25 @@ export const RECORD_SUMMARY = {
   readHours: 24,
   longestStreakDays: 15,
 };
+
+const STRIP_LEVEL_PATTERN: StripLevel[] = [
+  "complete",
+  "partial",
+  "visit",
+  "partial",
+  "none",
+  "complete",
+  "partial",
+];
+
+// 2026-01-01 ~ 2026-11-13 평일에 패턴을 돌려 채운 잔디 목데이터
+export const STRIP_LEVELS: Record<string, StripLevel> = {};
+for (
+  let date = new Date(2026, 0, 1), i = 0;
+  date <= new Date(2026, 10, 13);
+  date.setDate(date.getDate() + 1)
+) {
+  if (date.getDay() === 0 || date.getDay() === 6) continue;
+  const key = `2026-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  STRIP_LEVELS[key] = STRIP_LEVEL_PATTERN[i++ % STRIP_LEVEL_PATTERN.length];
+}
