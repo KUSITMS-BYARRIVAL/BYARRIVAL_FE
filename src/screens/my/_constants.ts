@@ -10,3 +10,6 @@ export type ConditionCounts = Record<
   (typeof CONDITION_SEGMENTS)[number]["key"],
   number
 >;
+
+/** none: 앱 미접속 / visit: 접속만 / partial: 일부 완독 / complete: 전체 완독(노선 완주) */
+export type StripLevel = "none" | "visit" | "partial" | "complete";

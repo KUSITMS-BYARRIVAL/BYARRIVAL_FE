@@ -1,4 +1,4 @@
-import type { StripLevel } from "@/screens/my/_components/year-strips-card";
+import type { StripLevel } from "@/screens/my/_constants";
 
 export const TOTAL_HOURS = 142;
 export const MONTH_MINUTES = 60 * 60 + 32;

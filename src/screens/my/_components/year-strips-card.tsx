@@ -2,11 +2,9 @@ import { useRef } from "react";
 import { ScrollView, type ScrollViewInstance, Text, View } from "react-native";
 
 import { cn } from "@/lib/cn";
+import type { StripLevel } from "@/screens/my/_constants";
 
 import { getYearStripColumns } from "./helpers";
-
-/** none: 앱 미접속 / visit: 접속만 / partial: 일부 완독 / complete: 전체 완독(노선 완주) */
-export type StripLevel = "none" | "visit" | "partial" | "complete";
 
 const LEVEL_CLASS: Record<StripLevel, string> = {
   none: "bg-grey-200",
