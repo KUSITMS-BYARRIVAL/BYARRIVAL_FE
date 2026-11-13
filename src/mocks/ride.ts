@@ -210,7 +210,7 @@ export const TRENDING_ARTICLES = [
 ];
 
 export const HOME_NICKNAME = "출근러";
-export const HOME_REGION = "여의도";
+export const HOME_JOB_GROUP = "마케팅";
 export const HOME_STREAK = { streakDays: 7, longestDays: 12 };
 export const COMMUTER_COUNT = 1284;
 
@@ -224,7 +224,7 @@ export const IS_TRENDING_READY = true;
 
 // 원문 링크가 있는 기존 기사를 재사용한다. 보고 있는 사람 수는 임시값이다
 export const HOME_TRENDING = {
-  region: BOARDING_ARTICLES.slice(0, 3).map((article, i) => ({
+  jobGroup: BOARDING_ARTICLES.slice(0, 3).map((article, i) => ({
     title: article.title,
     url: article.url,
     viewers: [128, 97, 64][i],
@@ -236,10 +236,11 @@ export const HOME_TRENDING = {
   })),
 };
 
+// 원문이 실제로 열리도록 탑승 기사를 재사용한다. 대화 문구는 보관함 목데이터와 같은 임시값이다
 export const HOME_SMALLTALK = {
-  place: "엘리베이터에서",
-  question:
-    "“ 자기 1시간 전에 폰만 꺼도 수면 효율이 18% 올라간대요. 해보셨어요? “",
-  followUp:
-    "카페인은 오후 2시 이후에 줄이는 게 좋대요. 방금 마신 커피는 어쩌죠?",
+  category: BOARDING_ARTICLES[0].category,
+  categoryLabel: BOARDING_ARTICLES[0].label,
+  newsTitle: BOARDING_ARTICLES[0].title,
+  url: BOARDING_ARTICLES[0].url,
+  question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? “",
 };

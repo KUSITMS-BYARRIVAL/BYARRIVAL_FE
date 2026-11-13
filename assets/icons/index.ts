@@ -10,6 +10,7 @@ export { default as ArrowRightLIcon } from "./arrow-right-l.svg";
 export { default as ArrowRightSIcon } from "./arrow-right-s.svg";
 export { default as BagIcon } from "./bag.svg";
 export { default as BookmarkIcon } from "./bookmark.svg";
+export { default as BusIcon } from "./bus.svg";
 export { default as CallIcon } from "./call.svg";
 export { default as CategoryCareerIcon } from "./category/career.svg";
 export { default as CategoryCareerSelectedIcon } from "./category/career-selected.svg";

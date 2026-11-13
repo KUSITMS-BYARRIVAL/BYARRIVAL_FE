@@ -157,7 +157,7 @@ const SEMANTIC = {
   btn: {
     brand: PALETTE.green[500],
     "neutral-weak": PALETTE.grey[200],
-    neutral: PALETTE.grey[700],
+    neutral: PALETTE.grey[800],
     disabled: PALETTE.grey[300],
     danger: PALETTE.red[500],
     pressed: PALETTE["grey-opacity"][100],

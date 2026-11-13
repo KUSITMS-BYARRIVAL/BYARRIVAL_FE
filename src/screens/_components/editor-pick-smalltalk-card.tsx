@@ -11,7 +11,7 @@ type EditorPickSmalltalkCardProps = {
   categoryLabel: string;
   newsTitle: string;
   question: string;
-  isBookmarked: boolean;
+  isBookmarked?: boolean;
   /** 연결된 뉴스 원문이 삭제된 상태. 흐리게 보이고 눌러도 열리지 않는다 (북마크로 삭제만 가능) */
   isDeleted?: boolean;
   onPress?: () => void;
@@ -24,7 +24,7 @@ export function EditorPickSmalltalkCard({
   categoryLabel,
   newsTitle,
   question,
-  isBookmarked,
+  isBookmarked = false,
   isDeleted = false,
   onPress,
   onBookmarkPress,
@@ -59,12 +59,15 @@ export function EditorPickSmalltalkCard({
           <Bubble text={question} />
         </View>
       </Pressable>
-      {/* 카드 버튼 안에 두면 스크린리더가 카드를 한 덩어리로 읽어 북마크에 닿지 못하므로 형제로 겹쳐 둔다 */}
-      <BookmarkButton
-        bookmarked={isBookmarked}
-        onPress={onBookmarkPress}
-        className={cn("absolute right-5 top-5", isDeleted && "opacity-40")}
-      />
+      {/* 카드 버튼 안에 두면 스크린리더가 카드를 한 덩어리로 읽어 북마크에 닿지 못하므로 형제로 겹쳐 둔다.
+          홈 카드는 Figma에 북마크가 없어 onBookmarkPress가 없으면 숨긴다 */}
+      {onBookmarkPress && (
+        <BookmarkButton
+          bookmarked={isBookmarked}
+          onPress={onBookmarkPress}
+          className={cn("absolute right-5 top-5", isDeleted && "opacity-40")}
+        />
+      )}
     </View>
   );
 }

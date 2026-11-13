@@ -4,7 +4,7 @@ import { ScrollView, Text, View } from "react-native";
 
 import type { ARCHIVE_ARTICLES, ARCHIVE_SMALLTALKS } from "@/mocks/archive";
 import { CategoryFilter } from "@/screens/archive/_components/category-filter";
-import { EditorPickSmalltalkCard } from "@/screens/archive/_components/editor-pick-smalltalk-card";
+import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { ScrappedArticleCard } from "@/screens/archive/_components/scrapped-article-card";
 import {
   ARCHIVE_CATEGORIES,

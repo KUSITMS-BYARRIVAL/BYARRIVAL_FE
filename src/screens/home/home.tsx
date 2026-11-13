@@ -11,7 +11,7 @@ import {
   BOARDING_ARTICLES,
   COMMUTER_COUNT,
   HOME_NICKNAME,
-  HOME_REGION,
+  HOME_JOB_GROUP,
   HOME_RIDE_STATUS,
   HOME_SMALLTALK,
   HOME_STREAK,
@@ -23,6 +23,8 @@ import { CommuterCountCard } from "@/screens/home/_components/commuter-count-car
 import { EditorPickSection } from "@/screens/home/_components/editor-pick-section";
 import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
+import { COMMUTE_WORDS } from "@/screens/home/_constants";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
 // TODO: 쉬는 날(프로필 0분) '오늘은 쉬는 날이에요. 그래도 읽어볼까요?' 상태 (UT 이후)
 const RIDE_BUTTON = {
@@ -48,12 +50,15 @@ const RIDE_BUTTON = {
 export function HomeScreen() {
   const { top } = useSafeAreaInsets();
   const rideButton = RIDE_BUTTON[HOME_RIDE_STATUS];
+  // 온보딩을 거치지 않고 홈에 온 경우(개발 중 새로고침 등)는 직장인 문구로 보여준다
+  const userType = useOnboardingStore((state) => state.userType) ?? "worker";
+  const { commute, route } = COMMUTE_WORDS[userType];
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      <View className="mt-3.5 h-[30px] flex-row items-center justify-between px-5">
+      <View className="mt-3.5 h-6 flex-row items-center justify-between px-5">
         <LogoIllustration />
-        <AlarmButton size={30} />
+        <AlarmButton />
       </View>
       <ScrollView className="flex-1" contentContainerClassName="gap-9 p-5">
         <View className="gap-3.5">
@@ -62,23 +67,23 @@ export function HomeScreen() {
             <Text className="text-primary text-heading2-b">
               {HOME_NICKNAME}님 좋은 아침이에요!
             </Text>
-            {/* TODO: 사용자 유형(직장·학생·기타)별 문구 (미정) */}
             <Text className="text-secondary text-body2-m">
-              오늘도 우리 모두 출근 중이에요
+              오늘도 우리 모두 {commute} 중이에요
             </Text>
           </View>
-          <StreakCard nickname={HOME_NICKNAME} {...HOME_STREAK} />
-          <CommuterCountCard count={COMMUTER_COUNT} />
+          <StreakCard nickname={HOME_NICKNAME} route={route} {...HOME_STREAK} />
+          <CommuterCountCard count={COMMUTER_COUNT} commute={commute} />
           <Button
             label={rideButton.label}
+            size="l"
             color="neutral"
-            leadingIcon={<SubwaySideIcon width={24} height={24} />}
-            className="gap-1 px-4"
+            leadingIcon={<SubwaySideIcon width={30} height={30} />}
             onPress={rideButton.onPress}
           />
         </View>
         <TrendingSection
-          region={HOME_REGION}
+          jobGroup={HOME_JOB_GROUP}
+          route={route}
           articles={HOME_TRENDING}
           isReady={IS_TRENDING_READY}
           onSeeAllPress={() => router.push("/trending")}
@@ -87,6 +92,9 @@ export function HomeScreen() {
         <EditorPickSection
           smalltalk={HOME_SMALLTALK}
           onMorePress={() => router.push("/smalltalk")}
+          onSmalltalkPress={() =>
+            WebBrowser.openBrowserAsync(HOME_SMALLTALK.url)
+          }
         />
       </ScrollView>
     </View>

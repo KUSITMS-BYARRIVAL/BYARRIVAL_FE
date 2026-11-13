@@ -13,6 +13,7 @@ const SMALLTALK = {
   newsTitle: "한국은행, 기준금리 동결",
   question: "대출 있으세요?",
   isBookmarked: true,
+  onBookmarkPress: jest.fn(),
 };
 
 describe("EditorPickSmalltalkCard", () => {

@@ -8,7 +8,7 @@ import { Chip } from "@/components/chip/chip";
 import { cn } from "@/lib/cn";
 import { AchievementCard } from "@/screens/_components/achievement-card";
 
-type TrendingScope = "region" | "all";
+type TrendingScope = "jobGroup" | "all";
 
 type TrendingArticle = {
   title: string;
@@ -17,8 +17,10 @@ type TrendingArticle = {
 };
 
 type TrendingSectionProps = {
-  /** 내 지역 칩에 붙는 지역 이름 (예: 여의도) */
-  region: string;
+  /** 내 직군 칩에 붙는 직군 이름 (예: 기획·마케팅) */
+  jobGroup: string;
+  /** 유형별 길 이름 (출근길 · 등굣길 · 이동길) */
+  route: string;
   articles: Record<TrendingScope, TrendingArticle[]>;
   /** 새벽 4시 집계 전이면 false — 목록 자리에 집계중 카드를 보여준다 */
   isReady: boolean;
@@ -28,28 +30,29 @@ type TrendingSectionProps = {
 };
 
 export function TrendingSection({
-  region,
+  jobGroup,
+  route,
   articles,
   isReady,
   onSeeAllPress,
   onArticlePress,
   className,
 }: TrendingSectionProps) {
-  const [scope, setScope] = useState<TrendingScope>("region");
+  const [scope, setScope] = useState<TrendingScope>("jobGroup");
 
   return (
     <View className={cn("gap-3.5", className)}>
       <View className="flex-row items-start justify-between">
         <Text className="text-primary text-title2-sb">
-          지금 출근길에서 많이 봐요
+          지금 {route}에서 많이 봐요
         </Text>
         <TextButton label="전체보기" onPress={onSeeAllPress} />
       </View>
       <View className="flex-row gap-2">
         <Chip
-          label={`내 지역 · ${region}`}
-          selected={scope === "region"}
-          onPress={() => setScope("region")}
+          label={`내 직군 · ${jobGroup}`}
+          selected={scope === "jobGroup"}
+          onPress={() => setScope("jobGroup")}
         />
         <Chip
           label="전체"
@@ -64,7 +67,8 @@ export function TrendingSection({
               key={article.url}
               rank={i + 1}
               title={article.title}
-              subtext={`오늘 출근길 직장인 ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
+              // TODO: 유형별 사람 호칭(직장인·학생 등)이 정해지면 "오늘 {route} {호칭} N명" 형태로 다시 넣는다
+              subtext={`오늘 ${route} ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
               isLive
               hasArrow={false}
               rankTone="brand"
