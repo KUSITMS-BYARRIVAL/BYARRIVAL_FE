@@ -10,7 +10,7 @@ import {
   MONTH_STATUSES_BY_YEAR,
   TOTAL_HOURS,
   WEEKLY_MINUTES,
-} from "@/mocks/stats";
+} from "@/mocks/my";
 import { MySummaryHero } from "@/screens/my/_components/my-summary-hero";
 import { RecordCalendar } from "@/screens/my/_components/record-calendar";
 import { WeeklyRecordCard } from "@/screens/my/_components/weekly-record-card";
