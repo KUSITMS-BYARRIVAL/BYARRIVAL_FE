@@ -23,7 +23,7 @@ import { CommuterCountCard } from "@/screens/home/_components/commuter-count-car
 import { EditorPickSection } from "@/screens/home/_components/editor-pick-section";
 import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
-import { COMMUTE_WORDS } from "@/screens/home/_constants";
+import { COMMUTE_WORDS } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 // TODO: 쉬는 날(프로필 0분) '오늘은 쉬는 날이에요. 그래도 읽어볼까요?' 상태 (UT 이후)

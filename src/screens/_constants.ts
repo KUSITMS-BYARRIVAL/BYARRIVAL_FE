@@ -1,6 +1,6 @@
 import type { UserType } from "@/stores/onboarding-store";
 
-// 사용자 유형별로 홈의 '출근' · '출근길' 문구를 바꾼다
+// 사용자 유형별로 '출근' · '출근길' 문구를 바꾼다
 export const COMMUTE_WORDS: Record<
   UserType,
   { commute: string; route: string }
