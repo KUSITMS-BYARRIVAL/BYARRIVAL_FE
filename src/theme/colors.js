@@ -15,6 +15,7 @@ const PALETTE = {
   // 소셜 로그인 버튼용 브랜드 색. 각 사 디자인 가이드에서 정한 값이라 바꾸지 않는다
   black: "#000000",
   "kakao-yellow": "#FEE500",
+  yellow: "#FFC35C",
   green: {
     50: "#EEFAF4",
     100: "#D6F2E4",
