@@ -1,4 +1,5 @@
 import { type Dispatch, type SetStateAction, useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -31,7 +32,9 @@ function removeWithUndo<T>(
 
 export function ArchiveScreen() {
   const { top } = useSafeAreaInsets();
-  const [tab, setTab] = useState<ArchiveTab>("article");
+  // 다른 화면에서 특정 탭으로 열 수 있도록 탭을 URL 파라미터로 둔다 (예: 마이홈 전체보기 → 기사)
+  const params = useLocalSearchParams<{ tab?: string }>();
+  const tab: ArchiveTab = params.tab === "smalltalk" ? "smalltalk" : "article";
   const [articles, setArticles] = useState(ARCHIVE_ARTICLES);
   const [smalltalks, setSmalltalks] = useState(ARCHIVE_SMALLTALKS);
 
@@ -47,7 +50,7 @@ export function ArchiveScreen() {
             { value: "smalltalk", label: "스몰토크", count: smalltalks.length },
           ]}
           value={tab}
-          onChange={(value) => setTab(value as ArchiveTab)}
+          onChange={(value) => router.setParams({ tab: value })}
           className="px-5"
         />
       </View>
