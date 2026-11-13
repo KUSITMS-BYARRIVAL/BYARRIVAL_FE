@@ -4,8 +4,6 @@ import { ScrollView, View } from "react-native";
 
 import { ARCHIVE_ARTICLES } from "@/mocks/archive";
 import {
-  CONDITION_COUNTS,
-  CONDITION_MESSAGE,
   LAST_WEEK_DIFF_MINUTES,
   MONTH_MINUTES,
   MONTH_READ_COUNT,
@@ -14,7 +12,6 @@ import {
   TOTAL_HOURS,
   WEEKLY_MINUTES,
 } from "@/mocks/my";
-import { ConditionCard } from "@/screens/my/_components/condition-card";
 import { MySummaryHero } from "@/screens/my/_components/my-summary-hero";
 import { RecordSummaryCard } from "@/screens/my/_components/record-summary-card";
 import { RecentSavedArticlesCard } from "@/screens/my/_components/recent-saved-articles-card";
@@ -40,7 +37,7 @@ export function MyScreen() {
       <View className="gap-3.5 px-5 pb-[30px] pt-5">
         <RecordSummaryCard {...RECORD_SUMMARY} />
         <YearStripsCard levels={STRIP_LEVELS} today={new Date()} />
-        <ConditionCard counts={CONDITION_COUNTS} message={CONDITION_MESSAGE} />
+        {/* 컨디션 기록 카드(ConditionCard)는 기획 확정 후 이 자리에 추가 */}
         <WeeklyRecordCard
           weeklyMinutes={WEEKLY_MINUTES}
           lastWeekDiff={LAST_WEEK_DIFF_MINUTES}
