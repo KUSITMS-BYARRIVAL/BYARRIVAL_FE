@@ -95,3 +95,13 @@ for (
   const key = `2026-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   STRIP_LEVELS[key] = STRIP_LEVEL_PATTERN[i++ % STRIP_LEVEL_PATTERN.length];
 }
+
+export const CONDITION_COUNTS = {
+  sunny: 62,
+  default: 54,
+  cloudy: 32,
+  rain: 16,
+};
+// [임시] 기간이 올해인지 이번 달인지 미정
+export const CONDITION_MESSAGE =
+  "올해는 맑은 날이 가장 많았어요!\n컨디션이 좋아 보여요";
