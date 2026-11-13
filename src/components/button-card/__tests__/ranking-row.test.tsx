@@ -68,4 +68,15 @@ describe("RankingRow", () => {
     expect(screen.getByText("제목").props.numberOfLines).toBe(1);
     expect(screen.getByText("보조 문구").props.numberOfLines).toBeUndefined();
   });
+
+  it("화살표가 있으면 제목 최대 너비가 245, 없으면 제한이 없다", async () => {
+    const { rerender } = await render(
+      <RankingRow rank={1} title="제목" subtext="보조 문구" />,
+    );
+    expect(screen.getByText("제목").props.className).toContain("max-w-[245px]");
+    await rerender(
+      <RankingRow rank={1} title="제목" subtext="보조 문구" hasArrow={false} />,
+    );
+    expect(screen.getByText("제목").props.className).not.toContain("max-w");
+  });
 });
