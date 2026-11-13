@@ -52,7 +52,7 @@ export function HomeScreen() {
   const rideButton = RIDE_BUTTON[HOME_RIDE_STATUS];
   // 온보딩을 거치지 않고 홈에 온 경우(개발 중 새로고침 등)는 직장인 문구로 보여준다
   const userType = useOnboardingStore((state) => state.userType) ?? "worker";
-  const { commute, route } = COMMUTE_WORDS[userType];
+  const { commute, route, person } = COMMUTE_WORDS[userType];
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -84,6 +84,7 @@ export function HomeScreen() {
         <TrendingSection
           jobGroup={HOME_JOB_GROUP}
           route={route}
+          person={person}
           articles={HOME_TRENDING}
           isReady={IS_TRENDING_READY}
           onSeeAllPress={() => router.push("/trending")}
