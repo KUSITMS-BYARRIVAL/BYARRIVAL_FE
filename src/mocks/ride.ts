@@ -236,6 +236,20 @@ export const HOME_TRENDING = {
   })),
 };
 
+// '지금 출근길에서 많이 봐요' 전체보기 TOP10. 원문 링크가 있는 기사 10개를 재사용하고 사람 수는 임시값이다
+const TOP10_VIEWERS = [128, 97, 64, 58, 51, 44, 39, 33, 27, 21];
+const toTop10 = (articles: { title: string; url: string }[]) =>
+  articles.map((article, i) => ({
+    title: article.title,
+    url: article.url,
+    viewers: TOP10_VIEWERS[i],
+  }));
+export const TRENDING_TOP10 = {
+  jobGroup: toTop10([...BOARDING_ARTICLES, ...TRENDING_ARTICLES]),
+  all: toTop10([...TRENDING_ARTICLES, ...BOARDING_ARTICLES]),
+};
+export const TRENDING_UPDATED_AT = "오전 8:42";
+
 // 원문이 실제로 열리도록 탑승 기사를 재사용한다. 대화 문구는 보관함 목데이터와 같은 임시값이다
 export const HOME_SMALLTALK = {
   category: BOARDING_ARTICLES[0].category,
