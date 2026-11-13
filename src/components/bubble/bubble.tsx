@@ -5,11 +5,12 @@ import { cn } from "@/lib/cn";
 type BubbleProps = {
   text: string;
   className?: string;
+  textClassName?: string;
 };
 
 // 현재는 카드 안에서만 쓰여 카드가 누르기를 맡으므로 View로 구현
 // 말풍선만 따로 눌러야 하거나 눌림 효과가 필요해지면 Pressable로 바꾼다
-export function Bubble({ text, className }: BubbleProps) {
+export function Bubble({ text, className, textClassName }: BubbleProps) {
   return (
     <View
       className={cn(
@@ -17,7 +18,9 @@ export function Bubble({ text, className }: BubbleProps) {
         className,
       )}
     >
-      <Text className="text-primary text-body2-sb">{text}</Text>
+      <Text className={cn("text-primary text-body2-sb", textClassName)}>
+        {text}
+      </Text>
     </View>
   );
 }
