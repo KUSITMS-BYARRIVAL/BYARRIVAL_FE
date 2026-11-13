@@ -17,6 +17,7 @@ const renderSection = (
     <TrendingSection
       jobGroup="기획·마케팅"
       route="출근길"
+      person="직장인"
       articles={ARTICLES}
       isReady
       onSeeAllPress={jest.fn()}
@@ -67,7 +68,7 @@ describe("TrendingSection", () => {
   it("보고 있는 사람 수를 천 단위로 구분해 보여준다", async () => {
     await renderSection();
     expect(
-      screen.getByText("오늘 출근길 1,234명이 보고 있어요"),
+      screen.getByText("오늘 출근길 직장인 1,234명이 보고 있어요"),
     ).toBeOnTheScreen();
   });
 

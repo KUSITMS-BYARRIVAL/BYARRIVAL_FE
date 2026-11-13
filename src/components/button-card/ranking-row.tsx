@@ -64,7 +64,11 @@ export function RankingRow({
                 </View>
                 <Text
                   numberOfLines={titleNumberOfLines}
-                  className="max-w-[245px] flex-1 text-strong text-body2-m"
+                  // Figma 최대 너비 245는 화살표 자리를 남긴 값이라, 화살표가 없으면 끝까지 쓴다
+                  className={cn(
+                    "flex-1 text-strong text-body2-m",
+                    hasArrow && "max-w-[245px]",
+                  )}
                 >
                   {title}
                 </Text>
