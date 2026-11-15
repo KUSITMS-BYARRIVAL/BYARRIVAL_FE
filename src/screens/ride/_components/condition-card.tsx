@@ -15,7 +15,7 @@ type ConditionCardProps = Omit<PressableProps, "children"> & {
   className?: string;
 };
 
-// Figma Condition Card (Default·Selected). 컨디션 선택지 하나를 보여주는 공통 컴포넌트
+// Figma Condition Card (Default·Selected). 컨디션 선택 화면에서만 쓰여 ride/_components에 둔다
 export function ConditionCard({
   face,
   weatherIcon,
