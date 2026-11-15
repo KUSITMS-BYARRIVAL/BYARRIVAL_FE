@@ -2,14 +2,13 @@ import { router } from "expo-router";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { OnboardingCommuteIllustration } from "@/assets/illustrations";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { Slider } from "@/components/slider/slider";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./_constants";
+import { COMMUTE_ILLUSTRATIONS, ONBOARDING_STEPS } from "./_constants";
 
 // 손잡이가 멈추는 값. 같은 간격 눈금(5·30·90분)과 실제 값이 맞도록 30분을 정가운데(6번째) 둔다
 // 화면설계서 ONB-07은 5~90분 5분 단위지만, 30분 이후는 10~15분 단위로 둔다 (기획 합의 필요)
@@ -41,6 +40,7 @@ const toStep = (minutes: number) =>
 export function TravelTimeScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const userType = useOnboardingStore((state) => state.userType);
+  const CommuteIllustration = COMMUTE_ILLUSTRATIONS[userType ?? "worker"];
   const travelMinutes = useOnboardingStore((state) => state.travelMinutes);
   const setTravelMinutes = useOnboardingStore(
     (state) => state.setTravelMinutes,
@@ -58,9 +58,9 @@ export function TravelTimeScreen() {
           className="mx-5"
         />
         <View className="gap-9">
-          {/* 화면설계서 ONB-07 T2: ONB-06과 같은 일러스트. 학생·기타 버전은 디자인이 나오면 교체 */}
+          {/* 화면설계서 ONB-07 T2: ONB-06과 같은 유형별 일러스트 */}
           <View style={{ aspectRatio: ILLUSTRATION_ASPECT_RATIO }}>
-            <OnboardingCommuteIllustration width="100%" height="100%" />
+            <CommuteIllustration width="100%" height="100%" />
           </View>
           <View className="gap-5">
             <View className="gap-1.5 px-5">
