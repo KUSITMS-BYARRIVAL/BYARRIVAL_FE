@@ -36,8 +36,7 @@ export function Dialog({
       // Android 뒤로가기는 취소로, 버튼이 하나면 확인으로 닫는다
       onRequestClose={onCancel ?? onConfirm}
     >
-      {/* TODO: 딤 색은 Figma에 없어 임시 값. 디자인 확정 후 토큰으로 교체 */}
-      <View className="flex-1 items-center justify-center bg-grey-opacity-500">
+      <View className="flex-1 items-center justify-center bg-dim">
         <View
           accessibilityViewIsModal
           className="w-[313px] items-center rounded bg-white"

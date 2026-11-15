@@ -33,11 +33,10 @@ export function BottomSheet({
       onRequestClose={onClose}
     >
       <View className="flex-1 justify-end">
-        {/* TODO: 딤 색은 Figma에 없어 Dialog와 같은 임시 값. 디자인 확정 후 토큰으로 교체 */}
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="배경 닫기"
-          className="absolute inset-0 bg-grey-opacity-500"
+          className="absolute inset-0 bg-dim"
           onPress={onClose}
         />
         {/* 스크린리더는 딤에 닿지 않으므로 iOS 이스케이프 제스처와 손잡이 닫기 버튼으로 닫는다 */}
