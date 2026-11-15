@@ -10,11 +10,13 @@ describe("NewsCard", () => {
         categoryLabel="경제"
         readMinutes={2}
         title="한국은행, 기준금리 동결"
+        aiSummary="기준금리 연 3.00% 동결 결정"
         image="https://example.com/a.png"
       />,
     );
     expect(screen.getByText("2분")).toBeOnTheScreen();
     expect(screen.getByText("한국은행, 기준금리 동결")).toBeOnTheScreen();
+    expect(screen.getByText("기준금리 연 3.00% 동결 결정")).toBeOnTheScreen();
   });
 });
 
@@ -28,6 +30,7 @@ describe("NewsCard 선택", () => {
         categoryLabel="경제"
         readMinutes={2}
         title="한국은행, 기준금리 동결"
+        aiSummary="기준금리 연 3.00% 동결 결정"
         image="https://example.com/a.png"
         isSelected
         onPress={onPress}

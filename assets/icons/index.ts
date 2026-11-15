@@ -88,7 +88,6 @@ export { default as Step2RedIcon } from "./step/step-2-red.svg";
 export { default as Step3BrandIcon } from "./step/step-3-brand.svg";
 export { default as Step3MonoIcon } from "./step/step-3-mono.svg";
 export { default as Step3RedIcon } from "./step/step-3-red.svg";
-export { default as SubwayIcon } from "./subway.svg";
 export { default as SubwayLineIcon } from "./subway-line.svg";
 export { default as SubwayMonoIcon } from "./subway-mono.svg";
 export { default as SubwaySideIcon } from "./subway-side.svg";

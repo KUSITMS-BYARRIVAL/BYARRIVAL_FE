@@ -3,7 +3,6 @@ import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { OnboardingCommuteIllustration } from "@/assets/illustrations";
 import { BottomSheet } from "@/components/bottom-sheet/bottom-sheet";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
@@ -13,7 +12,7 @@ import { TimeSelector } from "@/components/time-selector/time-selector";
 import { useDialogStore } from "@/stores/dialog-store";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./_constants";
+import { COMMUTE_ILLUSTRATIONS, ONBOARDING_STEPS } from "./_constants";
 
 // Figma 지하철 좌석 일러스트(393×279) 비율
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
@@ -45,6 +44,7 @@ const COPY: Record<
 export function DepartureTimeScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const userType = useOnboardingStore((state) => state.userType);
+  const CommuteIllustration = COMMUTE_ILLUSTRATIONS[userType ?? "worker"];
   const departureTime = useOnboardingStore((state) => state.departureTime);
   const setDepartureTime = useOnboardingStore(
     (state) => state.setDepartureTime,
@@ -74,9 +74,9 @@ export function DepartureTimeScreen() {
           className="mx-5"
         />
         <View className="gap-9">
-          {/* TODO: 학생·기타 유형 캐릭터 일러스트는 디자인이 나오면 교체 (화면설계서 ONB-06 T2) */}
+          {/* 화면설계서 ONB-06 T2: 고른 유형의 캐릭터 일러스트 */}
           <View style={{ aspectRatio: ILLUSTRATION_ASPECT_RATIO }}>
-            <OnboardingCommuteIllustration width="100%" height="100%" />
+            <CommuteIllustration width="100%" height="100%" />
           </View>
           <View className="gap-9">
             <View className="gap-1.5 px-5">

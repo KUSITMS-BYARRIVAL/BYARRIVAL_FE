@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View } from "react-native";
 
-import { SubwayIcon } from "@/assets/icons";
+import { SubwaySideIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
 
 const DOT_SIZE = 14;
@@ -74,7 +74,7 @@ export function ProgressStepper({
             height: VEHICLE_BOX,
           }}
         >
-          <SubwayIcon />
+          <SubwaySideIcon />
         </View>
       )}
     </View>

@@ -23,6 +23,9 @@ import {
   AssetBagIllustration,
   AssetSubwayIllustration,
   AssetSuitIllustration,
+  OnboardingCommuteOtherIllustration,
+  OnboardingCommuteStudentIllustration,
+  OnboardingCommuteWorkerIllustration,
 } from "@/assets/illustrations";
 import type { Interest, UserType } from "@/stores/onboarding-store";
 
@@ -60,6 +63,16 @@ export const USER_TYPES: {
     Asset: AssetSubwayIllustration,
   },
 ];
+
+// 지하철 좌석 일러스트 (Figma Onboarding_CommuteTime, 393×279). 출근 시각·이동 시간 화면에서 유형별로 함께 쓴다
+export const COMMUTE_ILLUSTRATIONS: Record<
+  UserType,
+  ComponentType<SvgProps>
+> = {
+  worker: OnboardingCommuteWorkerIllustration,
+  student: OnboardingCommuteStudentIllustration,
+  other: OnboardingCommuteOtherIllustration,
+};
 
 // 관심 분야 선택지 (화면설계서 ONB-08). 관심 분야 선택·온보딩 완료 요약에서 함께 쓴다
 export const INTERESTS: {

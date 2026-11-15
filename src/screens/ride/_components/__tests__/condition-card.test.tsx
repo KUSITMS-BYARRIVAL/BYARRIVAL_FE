@@ -16,7 +16,7 @@ const CONDITION = {
 describe("ConditionCard", () => {
   it("날씨·이름·설명을 보여주고 선택 여부를 checked로 알린다", async () => {
     await render(<ConditionCard {...CONDITION} isSelected />);
-    expect(screen.getByText("맑음")).toBeOnTheScreen();
+    expect(screen.getByText("맑음 · 오늘의 기분")).toBeOnTheScreen();
     expect(screen.getByText("가뿐해요")).toBeOnTheScreen();
     expect(
       screen.getByText("에너지 충만! 깊이 있는 기사도 거뜬해요!"),

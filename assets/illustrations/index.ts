@@ -15,6 +15,8 @@ export { default as HomeStreakBackgroundIllustration } from "./home-streak-backg
 export { default as IntroBackgroundIllustration } from "./intro-background.svg";
 export { default as LogoIllustration } from "./logo.svg";
 export { default as MyHomeTrainIllustration } from "./my-home-train.svg";
-export { default as OnboardingCommuteIllustration } from "./onboarding-commute.svg";
+export { default as OnboardingCommuteOtherIllustration } from "./onboarding-commute-other.svg";
+export { default as OnboardingCommuteStudentIllustration } from "./onboarding-commute-student.svg";
+export { default as OnboardingCommuteWorkerIllustration } from "./onboarding-commute-worker.svg";
 export { default as OnboardingFinishIllustration } from "./onboarding-finish.svg";
 export { default as TimeDigitBackgroundIllustration } from "./time-digit-background.svg";

@@ -14,7 +14,7 @@ function TimeDigit({ digit }: { digit: string }) {
       style={{ width: DIGIT_WIDTH, height: DIGIT_HEIGHT }}
     >
       <TimeDigitBackgroundIllustration style={{ position: "absolute" }} />
-      <Text className="text-primary text-digit-b">{digit}</Text>
+      <Text className="text-on-fill-default text-digit-b">{digit}</Text>
     </View>
   );
 }
@@ -41,20 +41,21 @@ export function TimeSelector({
       accessibilityRole="button"
       accessibilityLabel={`${hour}시 ${minute}분`}
       className={cn(
-        "flex-row items-center gap-1.5 overflow-hidden rounded-sm bg-white p-5",
+        "flex-row items-center gap-1.5 overflow-hidden rounded bg-white p-5",
         className,
       )}
       {...props}
     >
       {({ pressed }) => (
         <>
+          {/* 시안의 Pressed는 배경만 어두워지므로 숫자판보다 먼저 깐다 */}
+          {pressed && <View className="absolute inset-0 bg-card-pressed-2" />}
           <TimeDigit digit={h1!} />
           <TimeDigit digit={h2!} />
           <Text className="text-primary text-body2-m">시</Text>
           <TimeDigit digit={m1!} />
           <TimeDigit digit={m2!} />
           <Text className="text-primary text-body2-m">분</Text>
-          {pressed && <View className="absolute inset-0 bg-card-pressed-2" />}
         </>
       )}
     </Pressable>

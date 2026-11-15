@@ -19,7 +19,7 @@ export function ProgressBar({ progress, className }: ProgressBarProps) {
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: percent }}
       className={cn(
-        "h-[6px] overflow-hidden rounded-full bg-icon-background",
+        "h-2 overflow-hidden rounded-full bg-icon-background",
         className,
       )}
     >
