@@ -99,6 +99,7 @@ export function ProfileScreen() {
               icon={<IdentificationColorIcon />}
               label="직군"
               subtext={jobGroupLabel}
+              onPress={() => router.push("/profile/job-group")}
             />
             <ListRow
               icon={<LocationColorIcon />}
