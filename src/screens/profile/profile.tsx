@@ -5,17 +5,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   AlarmIcon,
-  BagColorIcon,
-  CallColorIcon,
-  CategoryColorIcon,
-  ClockColorIcon,
-  IdentificationColorIcon,
-  LocationColorIcon,
-  LogoutColorIcon,
-  PaperColorIcon,
-  PenColorIcon,
+  BagIcon,
+  CallIcon,
+  CategoryMonoIcon,
+  ClockMIcon,
+  IdentificationIcon,
+  LocationIcon,
+  LogoutIcon,
+  PaperIcon,
+  PenIcon,
   ProfileLargeIcon,
-  SubwayColorIcon,
+  SubwayMonoIcon,
 } from "@/assets/icons";
 import { ButtonCard } from "@/components/button-card/button-card";
 import { ListRow } from "@/components/button-card/list-row";
@@ -63,18 +63,18 @@ export function ProfileScreen() {
           {/* TODO: 닉네임 수정 화면은 시안이 없어 연필 아이콘만 둔다 */}
           <View className="flex-row items-center gap-0.5">
             <Text className="text-strong text-title1-sb">{nickname}</Text>
-            <PenColorIcon />
+            <PenIcon />
           </View>
         </View>
         <View className="gap-9">
           <ButtonCard>
             <ListRow
-              icon={<ClockColorIcon />}
+              icon={<ClockMIcon />}
               label="요일별 이동 시간"
               onPress={() => router.push("/profile/travel-time")}
             />
             <ListRow
-              icon={<BagColorIcon />}
+              icon={<BagIcon />}
               label="요일별 출근 시간"
               onPress={() => router.push("/profile/departure-time")}
             />
@@ -87,25 +87,25 @@ export function ProfileScreen() {
               subtext="아침 · 저녁"
             />
             <ListRow
-              icon={<SubwayColorIcon />}
+              icon={<SubwayMonoIcon />}
               label="이동 상황"
               subtext={userTypeLabel}
               onPress={() => router.push("/profile/user-type")}
             />
             <ListRow
-              icon={<IdentificationColorIcon />}
+              icon={<IdentificationIcon />}
               label="직군"
               subtext={jobGroupLabel}
               onPress={() => router.push("/profile/job-group")}
             />
             <ListRow
-              icon={<LocationColorIcon />}
+              icon={<LocationIcon />}
               label="근무 지역"
               subtext={region ? regionLabel(region) : undefined}
               onPress={() => router.push("/profile/region")}
             />
             <ListRow
-              icon={<CategoryColorIcon />}
+              icon={<CategoryMonoIcon />}
               label="관심 카테고리"
               subtext={interestLabels}
               onPress={() => router.push("/profile/interests")}
@@ -113,10 +113,10 @@ export function ProfileScreen() {
           </Section>
           {/* TODO: 고객센터·개인정보 처리방침 링크와 로그아웃은 연동 방식이 정해지면 연결 */}
           <Section title="기타">
-            <ListRow icon={<CallColorIcon />} label="고객센터" />
-            <ListRow icon={<PaperColorIcon />} label="개인정보 처리방침" />
+            <ListRow icon={<CallIcon />} label="고객센터" />
+            <ListRow icon={<PaperIcon />} label="개인정보 처리방침" />
             <ListRow
-              icon={<LogoutColorIcon />}
+              icon={<LogoutIcon />}
               label="로그아웃"
               tone="danger"
               hasArrow={false}
