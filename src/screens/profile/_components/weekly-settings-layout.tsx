@@ -1,9 +1,7 @@
-import { router } from "expo-router";
 import type { ReactNode } from "react";
-import { ScrollView, Text, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Text, View } from "react-native";
 
-import { Header } from "@/components/header/header";
+import { SettingsLayout } from "./settings-layout";
 
 type WeeklySettingsLayoutProps = {
   title: string;
@@ -22,27 +20,18 @@ export function WeeklySettingsLayout({
   children,
   overlay,
 }: WeeklySettingsLayoutProps) {
-  const { top, bottom } = useSafeAreaInsets();
-
   return (
-    <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      <Header title={title} onBack={router.back} />
-      <ScrollView
-        contentContainerClassName="gap-9 p-5"
-        contentContainerStyle={{ paddingBottom: Math.max(bottom, 30) }}
-      >
-        {base}
-        <View className="gap-2">
-          <Text
-            accessibilityRole="header"
-            className="text-primary text-title3-sb"
-          >
-            요일별 설정
-          </Text>
-          {children}
-        </View>
-      </ScrollView>
-      {overlay}
-    </View>
+    <SettingsLayout title={title} contentClassName="gap-9" overlay={overlay}>
+      {base}
+      <View className="gap-2">
+        <Text
+          accessibilityRole="header"
+          className="text-primary text-title3-sb"
+        >
+          요일별 설정
+        </Text>
+        {children}
+      </View>
+    </SettingsLayout>
   );
 }

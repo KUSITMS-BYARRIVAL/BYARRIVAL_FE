@@ -93,6 +93,7 @@ export function ProfileScreen() {
               icon={<SubwayColorIcon />}
               label="이동 상황"
               subtext={userTypeLabel}
+              onPress={() => router.push("/profile/user-type")}
             />
             <ListRow
               icon={<IdentificationColorIcon />}
