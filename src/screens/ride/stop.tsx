@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BookmarkIcon, ShareIcon } from "@/assets/icons";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
-import { ProgressStepperSmall } from "@/components/progress-stepper/progress-stepper-small";
+import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { StopArticle } from "@/screens/ride/_components/stop-article";
 import { useRideArticles } from "@/stores/ride-store";
 import { SEMANTIC } from "@/theme/colors";
@@ -73,11 +73,8 @@ export function StopScreen() {
       />
       <ScrollView className="flex-1">
         <View className="mx-5 mt-5 gap-2 rounded-md bg-card-green px-5 py-2.5">
-          <ProgressStepperSmall
-            tone="brand"
-            total={total}
-            current={index + 1}
-          />
+          {/* Figma Progress Stepper 7 steps(차량 없음). Small의 brand 톤은 시안에서 삭제됨 */}
+          <ProgressStepper total={total} current={index + 1} />
           <View className="flex-row items-center justify-between">
             <Text className="text-tertiary text-caption1-m">출발</Text>
             <Text className="text-primary text-caption1-m">
