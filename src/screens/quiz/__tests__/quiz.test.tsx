@@ -35,4 +35,19 @@ describe("QuizScreen", () => {
     await user.press(screen.getByRole("button", { name: "다음 문제" }));
     expect(screen.getByText(second!.question)).toBeOnTheScreen();
   });
+
+  it("오답을 고르면 고른 보기는 흐리게, 정답은 초록으로 두고 해설을 보여준다", async () => {
+    const user = userEvent.setup();
+    await render(<QuizScreen />);
+    const wrongIndex = first!.answerIndex === 0 ? 1 : 0;
+    await user.press(screen.getByText(first!.options[wrongIndex]!));
+    expect(screen.getByText("아쉬워요, 오답이에요.")).toBeOnTheScreen();
+    expect(screen.getByText(first!.explanation)).toBeOnTheScreen();
+    const answer = first!.options[first!.answerIndex]!;
+    expect(
+      screen.getByRole("button", {
+        name: `${first!.answerIndex + 1} ${answer}`,
+      }),
+    ).toHaveAccessibilityValue({ text: "정답" });
+  });
 });

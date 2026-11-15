@@ -27,6 +27,7 @@ export function QuizScreen() {
   const [picked, setPicked] = useState<number | null>(null);
   const quiz = TODAY_QUIZ[index]!;
   const isLast = index === TODAY_QUIZ.length - 1;
+  const isWrong = picked !== null && picked !== quiz.answerIndex;
 
   const goNext = () => {
     if (isLast) return;
@@ -72,18 +73,34 @@ export function QuizScreen() {
               </Text>
             </View>
           </View>
-          <View className="gap-2">
-            {quiz.options.map((option, i) => (
-              <QuizOptionButton
-                key={option}
-                number={i + 1}
-                label={option}
-                state={optionState(i, picked, quiz.answerIndex)}
-                // 한 번 답하면 바꿀 수 없다
-                disabled={picked !== null}
-                onPress={() => setPicked(i)}
-              />
-            ))}
+          <View className="gap-3.5">
+            <View className="gap-2">
+              {quiz.options.map((option, i) => (
+                <QuizOptionButton
+                  key={option}
+                  number={i + 1}
+                  label={option}
+                  state={optionState(i, picked, quiz.answerIndex)}
+                  // 한 번 답하면 바꿀 수 없다
+                  disabled={picked !== null}
+                  onPress={() => setPicked(i)}
+                />
+              ))}
+            </View>
+            {/* Figma 도착·퀴즈 - 오답: 틀렸을 때만 해설을 보여준다 */}
+            {isWrong && (
+              <View
+                accessibilityLiveRegion="polite"
+                className="gap-1 rounded-md bg-card-wrong px-5 py-4"
+              >
+                <Text className="text-primary text-body2-m">
+                  아쉬워요, 오답이에요.
+                </Text>
+                <Text className="text-danger text-body2-m">
+                  {quiz.explanation}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
