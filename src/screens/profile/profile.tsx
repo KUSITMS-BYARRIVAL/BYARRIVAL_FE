@@ -71,7 +71,11 @@ export function ProfileScreen() {
         </View>
         <View className="gap-9">
           <ButtonCard>
-            <ListRow icon={<ClockColorIcon />} label="요일별 이동 시간" />
+            <ListRow
+              icon={<ClockColorIcon />}
+              label="요일별 이동 시간"
+              onPress={() => router.push("/profile/travel-time")}
+            />
             <ListRow icon={<BagColorIcon />} label="요일별 출근 시간" />
           </ButtonCard>
           <Section title="개인 설정">
