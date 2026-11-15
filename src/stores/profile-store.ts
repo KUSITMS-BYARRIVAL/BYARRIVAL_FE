@@ -17,7 +17,8 @@ type ProfileState = {
   nickname: string;
   userType: UserType;
   jobGroup: JobGroup;
-  region: Region;
+  /** 근무(통학·이동) 지역. null이면 아직 고르지 않음 */
+  region: Region | null;
   interests: Interest[];
   /** 기본 이동 시간(분)과 요일별 이동 시간. 0분이면 쉬는 날 */
   travelMinutes: { base: number; byWeekday: ByWeekday<number> };
@@ -25,7 +26,7 @@ type ProfileState = {
   departureTimes: { base: Time; byWeekday: ByWeekday<Time | null> };
   setUserType: (userType: UserType) => void;
   setJobGroup: (jobGroup: JobGroup) => void;
-  setRegion: (region: Region) => void;
+  setRegion: (region: Region | null) => void;
   toggleInterest: (interest: Interest) => void;
   setBaseTravelMinutes: (minutes: number) => void;
   setTravelMinutes: (weekday: Weekday, minutes: number) => void;

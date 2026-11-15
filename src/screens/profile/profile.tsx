@@ -104,7 +104,8 @@ export function ProfileScreen() {
             <ListRow
               icon={<LocationColorIcon />}
               label="근무 지역"
-              subtext={regionLabel(region)}
+              subtext={region ? regionLabel(region) : undefined}
+              onPress={() => router.push("/profile/region")}
             />
             <ListRow
               icon={<CategoryColorIcon />}
