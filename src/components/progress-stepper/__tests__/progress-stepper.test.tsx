@@ -39,9 +39,11 @@ describe("ProgressStepper", () => {
 });
 
 describe("ProgressStepperSmall", () => {
-  it("단계 수만큼 점을 그린다", async () => {
+  it("전체 단계 수를 progressbar 값으로 알린다", async () => {
     await render(<ProgressStepperSmall total={5} />);
-    const dots = child(screen.getByRole("progressbar"), 0).children as Node[];
-    expect(dots).toHaveLength(5);
+    expect(screen.getByRole("progressbar")).toHaveAccessibilityValue({
+      min: 1,
+      max: 5,
+    });
   });
 });

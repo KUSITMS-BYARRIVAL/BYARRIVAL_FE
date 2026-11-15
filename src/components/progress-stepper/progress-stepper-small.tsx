@@ -16,6 +16,8 @@ export function ProgressStepperSmall({
     <View
       accessible
       accessibilityRole="progressbar"
+      // 진행 단계 없이 전체 단계 수만 알린다
+      accessibilityValue={{ min: 1, max: total }}
       className={cn("py-2.5", className)}
     >
       <View className="h-[3px] flex-row items-center justify-between rounded-full bg-white">
