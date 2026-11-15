@@ -6,9 +6,10 @@ import { OnboardingFinishIllustration } from "@/assets/illustrations";
 import { Button } from "@/components/button/button";
 import type { Time } from "@/components/time-picker/time-picker";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
+import { INTERESTS, USER_TYPES } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { INTERESTS, ONBOARDING_STEPS, USER_TYPES } from "./_constants";
+import { ONBOARDING_STEPS } from "./_constants";
 
 // 예: 8:00 → "오전 8:00", 18:30 → "오후 6:30"
 const formatTime = ({ hour, minute }: Time) =>

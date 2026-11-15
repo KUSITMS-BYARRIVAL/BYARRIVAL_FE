@@ -9,6 +9,8 @@ import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { SearchField } from "@/components/search-field/search-field";
 import { RegionPanel } from "@/screens/_components/region-panel";
+import { regionLabel } from "@/screens/_constants";
+import { PROVINCES, REGIONS, wholeProvince } from "@/screens/_regions";
 import {
   type Region,
   type UserType,
@@ -16,7 +18,6 @@ import {
 } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
-import { PROVINCES, REGIONS, wholeProvince } from "./regions";
 
 // 화면설계서 ONB-10 T1~T3: 유형별 타이틀·서브
 const COPY: Record<UserType, { title: string; description: string }> = {
@@ -34,10 +35,6 @@ const COPY: Record<UserType, { title: string; description: string }> = {
     description: "자주 이동하는 곳과 가까운 지역을 하나만 골라 주세요",
   },
 };
-
-// 화면설계서 MY-04: "○○전체"는 시/도명만 보여준다
-const regionLabel = ({ province, district }: Region) =>
-  district ? `${province} ${district}` : province;
 
 // 시/도·시/군/구 통합 검색 대상 (예: "강남" → 서울 강남구)
 const ALL_REGIONS: Region[] = PROVINCES.flatMap((province) => [
