@@ -1,5 +1,7 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
 
+import { router } from "expo-router";
+
 import { TODAY_QUIZ } from "@/mocks/quiz";
 
 import { QuizScreen } from "../quiz";
@@ -7,7 +9,9 @@ import { QuizScreen } from "../quiz";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), replace: jest.fn() },
+}));
 
 const [first, second] = TODAY_QUIZ;
 
@@ -49,5 +53,21 @@ describe("QuizScreen", () => {
         name: `${first!.answerIndex + 1} ${answer}`,
       }),
     ).toHaveAccessibilityValue({ text: "정답" });
+  });
+
+  it("마지막 문제까지 풀면 맞힌 개수를 들고 결과 화면으로 넘어간다", async () => {
+    const user = userEvent.setup();
+    await render(<QuizScreen />);
+    // 1번은 틀리고 나머지는 맞힌다
+    for (const [i, quiz] of TODAY_QUIZ.entries()) {
+      const option = i === 0 ? (quiz.answerIndex + 1) % 3 : quiz.answerIndex;
+      await user.press(screen.getByText(quiz.options[option]!));
+      const label = i === TODAY_QUIZ.length - 1 ? "결과 보기" : "다음 문제";
+      await user.press(screen.getByRole("button", { name: label }));
+    }
+    expect(router.replace).toHaveBeenCalledWith({
+      pathname: "/quiz/result",
+      params: { correct: 2, total: 3 },
+    });
   });
 });

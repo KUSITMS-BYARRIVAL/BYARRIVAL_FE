@@ -25,12 +25,25 @@ export function QuizScreen() {
   const [index, setIndex] = useState(0);
   // 고른 보기 위치. null이면 아직 답하지 않음
   const [picked, setPicked] = useState<number | null>(null);
+  const [correctCount, setCorrectCount] = useState(0);
   const quiz = TODAY_QUIZ[index]!;
   const isLast = index === TODAY_QUIZ.length - 1;
   const isWrong = picked !== null && picked !== quiz.answerIndex;
 
+  const pick = (option: number) => {
+    setPicked(option);
+    if (option === quiz.answerIndex) setCorrectCount((count) => count + 1);
+  };
+
   const goNext = () => {
-    if (isLast) return;
+    if (isLast) {
+      // 결과 화면에서 뒤로 가도 이미 푼 퀴즈로 돌아오지 않도록 교체한다
+      router.replace({
+        pathname: "/quiz/result",
+        params: { correct: correctCount, total: TODAY_QUIZ.length },
+      });
+      return;
+    }
     setIndex(index + 1);
     setPicked(null);
   };
@@ -83,7 +96,7 @@ export function QuizScreen() {
                   state={optionState(i, picked, quiz.answerIndex)}
                   // 한 번 답하면 바꿀 수 없다
                   disabled={picked !== null}
-                  onPress={() => setPicked(i)}
+                  onPress={() => pick(i)}
                 />
               ))}
             </View>
@@ -106,7 +119,8 @@ export function QuizScreen() {
       </ScrollView>
       <View className="px-5" style={{ paddingBottom: Math.max(bottom, 30) }}>
         <Button
-          label="다음 문제"
+          // shortcut: 마지막 문제 버튼은 시안이 없어 '결과 보기'로 정했다
+          label={isLast ? "결과 보기" : "다음 문제"}
           size="l"
           color="neutral"
           disabled={picked === null}
