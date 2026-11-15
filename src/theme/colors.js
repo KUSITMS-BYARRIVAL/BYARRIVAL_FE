@@ -121,6 +121,8 @@ const SEMANTIC = {
     default: PALETTE.grey[50],
     black: PALETTE.grey[900],
     white: PALETTE.white,
+    // 다이얼로그·바텀시트 뒤를 가리는 딤
+    dim: PALETTE["grey-opacity"][800],
   },
   text: {
     strong: PALETTE.grey[900],
