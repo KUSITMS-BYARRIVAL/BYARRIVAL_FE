@@ -25,31 +25,31 @@ export const ARCHIVE_SMALLTALKS = [
   {
     index: 3,
     question:
-      "“ AMD가 한국을 AI 핵심 국가로 꼽았대요. 요즘 AI 얘기 정말 많죠? “",
+      "“ AMD가 한국을 AI 핵심 국가로 꼽았대요. 요즘 AI 얘기 정말 많죠? ”",
   },
   {
     index: 0,
-    question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? “",
+    question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? ”",
   },
   {
     index: 2,
-    question: "“ 요즘 물만 부으면 되는 단백질 음료가 인기래요. 드셔보셨어요? “",
+    question: "“ 요즘 물만 부으면 되는 단백질 음료가 인기래요. 드셔보셨어요? ”",
   },
   {
     index: 5,
-    question: "“ 요즘 금융권 해킹 소식이 많네요. 비밀번호 자주 바꾸세요? “",
+    question: "“ 요즘 금융권 해킹 소식이 많네요. 비밀번호 자주 바꾸세요? ”",
   },
   {
     index: 6,
-    question: "“ 미국 선거 결과 보셨어요? 분위기가 많이 바뀌었대요. “",
+    question: "“ 미국 선거 결과 보셨어요? 분위기가 많이 바뀌었대요. ”",
   },
   {
     index: 4,
-    question: "“ 구글이 AI 칩을 직접 판다는데, 반도체 주식 괜찮을까요? “",
+    question: "“ 구글이 AI 칩을 직접 판다는데, 반도체 주식 괜찮을까요? ”",
   },
   {
     index: 1,
-    question: "“ 편의점마다 초콜릿 맛이 다르대요. 다 드셔보실 거예요? “",
+    question: "“ 편의점마다 초콜릿 맛이 다르대요. 다 드셔보실 거예요? ”",
   },
 ].map(({ index, question }, i, list) => {
   const { category, label, title, url } = BOARDING_ARTICLES[index];
