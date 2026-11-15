@@ -1,3 +1,5 @@
+import { View } from "react-native";
+
 import { NumericSpinner } from "@/components/numeric-spinner/numeric-spinner";
 import { useProfileStore } from "@/stores/profile-store";
 
@@ -33,20 +35,22 @@ export function ProfileTravelTimeScreen() {
         />
       }
     >
-      {WEEKDAYS.map(({ value, label }) => {
-        const minutes = travelMinutes.byWeekday[value];
-        return (
-          <NumericSpinner
-            key={value}
-            label={label}
-            description={describe(minutes)}
-            value={minutes}
-            onChange={(next) => setTravelMinutes(value, next)}
-            step={STEP}
-            max={MAX_MINUTES}
-          />
-        );
-      })}
+      <View className="gap-3 rounded bg-white p-5">
+        {WEEKDAYS.map(({ value, label }) => {
+          const minutes = travelMinutes.byWeekday[value];
+          return (
+            <NumericSpinner
+              key={value}
+              label={label}
+              description={describe(minutes)}
+              value={minutes}
+              onChange={(next) => setTravelMinutes(value, next)}
+              step={STEP}
+              max={MAX_MINUTES}
+            />
+          );
+        })}
+      </View>
     </WeeklySettingsLayout>
   );
 }

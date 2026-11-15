@@ -9,8 +9,10 @@ type WeeklySettingsLayoutProps = {
   title: string;
   /** 맨 위 '기본' 줄 */
   base: ReactNode;
-  /** 흰 카드 안 요일별 줄 */
+  /** 요일별 줄을 담은 흰 카드 */
   children: ReactNode;
+  /** 바텀시트처럼 화면 위에 겹쳐 띄울 요소 */
+  overlay?: ReactNode;
 };
 
 // Figma 마이 - 설정(요일별 이동 시간·출근 시간): 기본 줄 + '요일별 설정' 카드
@@ -18,6 +20,7 @@ export function WeeklySettingsLayout({
   title,
   base,
   children,
+  overlay,
 }: WeeklySettingsLayoutProps) {
   const { top, bottom } = useSafeAreaInsets();
 
@@ -36,9 +39,10 @@ export function WeeklySettingsLayout({
           >
             요일별 설정
           </Text>
-          <View className="gap-3 rounded bg-white p-5">{children}</View>
+          {children}
         </View>
       </ScrollView>
+      {overlay}
     </View>
   );
 }

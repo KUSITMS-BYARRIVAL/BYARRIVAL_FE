@@ -76,7 +76,11 @@ export function ProfileScreen() {
               label="요일별 이동 시간"
               onPress={() => router.push("/profile/travel-time")}
             />
-            <ListRow icon={<BagColorIcon />} label="요일별 출근 시간" />
+            <ListRow
+              icon={<BagColorIcon />}
+              label="요일별 출근 시간"
+              onPress={() => router.push("/profile/departure-time")}
+            />
           </ButtonCard>
           <Section title="개인 설정">
             {/* TODO: 알림·위젯 설정 화면은 시안이 없어 이동을 연결하지 않았다 */}
