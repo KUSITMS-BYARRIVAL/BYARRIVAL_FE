@@ -1,37 +1,43 @@
 import { View } from "react-native";
 
-import { SelectionTile } from "@/screens/_components/selection-tile";
-import { INTERESTS } from "@/screens/_constants";
 import { useProfileStore } from "@/stores/profile-store";
 
+import { InterestTile } from "./_components/interest-tile";
 import { SettingsLayout } from "./_components/settings-layout";
+import { PROFILE_INTERESTS } from "./_constants";
 
-// Figma 마이 - 설정(관심 카테고리): 2열 그리드, 여러 개 고를 수 있고 누르면 바로 저장된다
-// 시안의 분야 이름(경제·금융 등)은 앱 전체 분야와 달라 온보딩과 같은 INTERESTS를 쓰고, 시안처럼 영문 부제는 뺀다
+// 2개씩 한 줄로 나눈다 (Figma 2열 · 간격 8px)
+const ROWS = Array.from(
+  { length: Math.ceil(PROFILE_INTERESTS.length / 2) },
+  (_, i) => PROFILE_INTERESTS.slice(i * 2, i * 2 + 2),
+);
+
+// Figma 마이 - 설정(관심 카테고리): 여러 개 고를 수 있고 누르면 바로 저장된다
 export function ProfileInterestsScreen() {
   const interests = useProfileStore((state) => state.interests);
   const toggleInterest = useProfileStore((state) => state.toggleInterest);
 
   return (
-    <SettingsLayout title="관심 카테고리">
-      <View className="flex-row flex-wrap justify-between gap-y-2">
-        {INTERESTS.map(({ value, title, Icon, SelectedIcon }) => {
-          const isSelected = interests.includes(value);
-          const TileIcon = isSelected ? SelectedIcon : Icon;
-          return (
-            <SelectionTile
-              key={value}
-              icon={<TileIcon />}
-              title={title}
-              isSelected={isSelected}
-              // 마지막 하나는 빼지 못하게 해 관심 분야가 비지 않도록 한다 (온보딩 '1개 이상')
-              disabled={isSelected && interests.length === 1}
-              className="w-[49%]"
-              onPress={() => toggleInterest(value)}
-            />
-          );
-        })}
-      </View>
+    <SettingsLayout title="관심 카테고리" contentClassName="gap-2">
+      {ROWS.map((row) => (
+        <View key={row[0]!.value} className="flex-row gap-2">
+          {row.map(({ value, title, Icon, SelectedIcon }) => {
+            const isSelected = interests.includes(value);
+            return (
+              <InterestTile
+                key={value}
+                Icon={isSelected ? SelectedIcon : Icon}
+                title={title}
+                isSelected={isSelected}
+                // 마지막 하나는 빼지 못하게 해 관심 분야가 비지 않도록 한다
+                disabled={isSelected && interests.length === 1}
+                onPress={() => toggleInterest(value)}
+                className="flex-1"
+              />
+            );
+          })}
+        </View>
+      ))}
     </SettingsLayout>
   );
 }

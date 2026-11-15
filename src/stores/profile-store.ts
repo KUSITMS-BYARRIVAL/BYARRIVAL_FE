@@ -1,12 +1,18 @@
 import { create } from "zustand";
 
 import type { Time } from "@/components/time-picker/time-picker";
-import type {
-  Interest,
-  JobGroup,
-  Region,
-  UserType,
-} from "@/stores/onboarding-store";
+import type { JobGroup, Region, UserType } from "@/stores/onboarding-store";
+
+/** 마이 관심 카테고리 (Figma 마이 - 설정 기준 8개 분야. 온보딩 Interest와 구성이 다르다) */
+export type ProfileInterest =
+  | "economy"
+  | "health"
+  | "entertainment"
+  | "politics"
+  | "science"
+  | "tech"
+  | "global"
+  | "sports";
 
 export type Weekday = "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun";
 
@@ -19,7 +25,7 @@ type ProfileState = {
   jobGroup: JobGroup;
   /** 근무(통학·이동) 지역. null이면 아직 고르지 않음 */
   region: Region | null;
-  interests: Interest[];
+  interests: ProfileInterest[];
   /** 기본 이동 시간(분)과 요일별 이동 시간. 0분이면 쉬는 날 */
   travelMinutes: { base: number; byWeekday: ByWeekday<number> };
   /** 기본 출근 시각과 요일별 출근 시각. null이면 쉬는 날 */
@@ -27,7 +33,7 @@ type ProfileState = {
   setUserType: (userType: UserType) => void;
   setJobGroup: (jobGroup: JobGroup) => void;
   setRegion: (region: Region | null) => void;
-  toggleInterest: (interest: Interest) => void;
+  toggleInterest: (interest: ProfileInterest) => void;
   setBaseTravelMinutes: (minutes: number) => void;
   setTravelMinutes: (weekday: Weekday, minutes: number) => void;
   setBaseDepartureTime: (time: Time) => void;
@@ -41,7 +47,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
   userType: "worker",
   jobGroup: "it_data",
   region: { province: "서울", district: "강남구" },
-  interests: ["economy", "tech"],
+  interests: ["economy", "health"],
   travelMinutes: {
     base: 30,
     byWeekday: { mon: 30, tue: 30, wed: 30, thu: 40, fri: 50, sat: 0, sun: 0 },

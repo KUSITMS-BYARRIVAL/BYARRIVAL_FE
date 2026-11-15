@@ -14,19 +14,26 @@ const initial = useProfileStore.getState();
 describe("ProfileInterestsScreen", () => {
   beforeEach(() => useProfileStore.setState(initial, true));
 
-  it("누르면 관심 분야를 더하고 빼며, 마지막 하나는 뺄 수 없다", async () => {
+  it("시안의 8개 분야를 보여주고 현재 관심 분야를 선택해 둔다", async () => {
+    await render(<ProfileInterestsScreen />);
+    expect(screen.getAllByRole("checkbox")).toHaveLength(8);
+    expect(screen.getByRole("checkbox", { name: "경제·금융" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "건강·생활" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "스포츠" })).not.toBeChecked();
+  });
+
+  it("누르면 더하고 빼며, 마지막 하나는 뺄 수 없다", async () => {
     const user = userEvent.setup();
     await render(<ProfileInterestsScreen />);
-    await user.press(screen.getByText("문화"));
+    await user.press(screen.getByRole("checkbox", { name: "스포츠" }));
     expect(useProfileStore.getState().interests).toEqual([
       "economy",
-      "tech",
-      "culture",
+      "health",
+      "sports",
     ]);
-    await user.press(screen.getByText("경제"));
-    await user.press(screen.getByText("테크"));
-    expect(useProfileStore.getState().interests).toEqual(["culture"]);
-    await user.press(screen.getByText("문화"));
-    expect(useProfileStore.getState().interests).toEqual(["culture"]);
+    await user.press(screen.getByRole("checkbox", { name: "경제·금융" }));
+    await user.press(screen.getByRole("checkbox", { name: "건강·생활" }));
+    await user.press(screen.getByRole("checkbox", { name: "스포츠" }));
+    expect(useProfileStore.getState().interests).toEqual(["sports"]);
   });
 });

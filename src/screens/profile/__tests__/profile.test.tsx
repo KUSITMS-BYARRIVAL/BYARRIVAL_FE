@@ -16,7 +16,7 @@ describe("ProfileScreen", () => {
     expect(screen.getByText("직장인")).toBeOnTheScreen();
     expect(screen.getByText("IT개발·데이터")).toBeOnTheScreen();
     expect(screen.getByText("서울 강남구")).toBeOnTheScreen();
-    expect(screen.getByText("경제, 테크")).toBeOnTheScreen();
+    expect(screen.getByText("경제·금융, 건강·생활")).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "로그아웃" })).toBeOnTheScreen();
   });
 });

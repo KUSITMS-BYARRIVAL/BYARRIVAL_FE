@@ -20,13 +20,10 @@ import {
 import { ButtonCard } from "@/components/button-card/button-card";
 import { ListRow } from "@/components/button-card/list-row";
 import { Header } from "@/components/header/header";
-import {
-  INTERESTS,
-  JOB_GROUPS,
-  regionLabel,
-  USER_TYPES,
-} from "@/screens/_constants";
+import { JOB_GROUPS, regionLabel, USER_TYPES } from "@/screens/_constants";
 import { useProfileStore } from "@/stores/profile-store";
+
+import { PROFILE_INTERESTS } from "./_constants";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -48,7 +45,7 @@ export function ProfileScreen() {
   const jobGroupLabel = JOB_GROUPS.find(
     ({ value }) => value === jobGroup,
   )?.title;
-  const interestLabels = INTERESTS.filter(({ value }) =>
+  const interestLabels = PROFILE_INTERESTS.filter(({ value }) =>
     interests.includes(value),
   )
     .map(({ title }) => title)
