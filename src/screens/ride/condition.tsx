@@ -7,7 +7,7 @@ import { Badge } from "@/components/badge/badge";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 
-import { ConditionCard } from "./_components/condition-card";
+import { ConditionCard } from "@/components/condition-card/condition-card";
 import { CONDITIONS } from "./_constants";
 
 export function ConditionScreen() {
