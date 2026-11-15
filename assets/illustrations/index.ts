@@ -19,4 +19,5 @@ export { default as OnboardingCommuteOtherIllustration } from "./onboarding-comm
 export { default as OnboardingCommuteStudentIllustration } from "./onboarding-commute-student.svg";
 export { default as OnboardingCommuteWorkerIllustration } from "./onboarding-commute-worker.svg";
 export { default as OnboardingFinishIllustration } from "./onboarding-finish.svg";
+export { default as QuizCompleteBearIllustration } from "./quiz-complete-bear.svg";
 export { default as TimeDigitBackgroundIllustration } from "./time-digit-background.svg";
