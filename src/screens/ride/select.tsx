@@ -139,6 +139,7 @@ export function SelectScreen() {
                     categoryLabel={label}
                     readMinutes={minutes}
                     title={title}
+                    aiSummary={summary[0] ?? ""}
                     image={image}
                     isSelected={!discard}
                     onPress={() => toggle(title)}
