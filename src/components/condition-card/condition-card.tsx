@@ -42,7 +42,9 @@ export function ConditionCard({
       {face}
       <View className="flex-1 gap-1">
         <View>
-          <Text className="text-tertiary text-caption1-m">{weather}</Text>
+          <Text className="text-tertiary text-caption1-m">
+            {weather} · 오늘의 기분
+          </Text>
           <View className="flex-row items-center gap-1">
             <Text className="text-primary text-title3-sb">{name}</Text>
             {weatherIcon}
