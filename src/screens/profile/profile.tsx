@@ -111,6 +111,7 @@ export function ProfileScreen() {
               icon={<CategoryColorIcon />}
               label="관심 카테고리"
               subtext={interestLabels}
+              onPress={() => router.push("/profile/interests")}
             />
           </Section>
           {/* TODO: 고객센터·개인정보 처리방침 링크와 로그아웃은 연동 방식이 정해지면 연결 */}
