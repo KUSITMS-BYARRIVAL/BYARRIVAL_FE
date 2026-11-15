@@ -183,9 +183,9 @@ const SEMANTIC = {
     brand: PALETTE.green[500],
     secondary: PALETTE["grey-opacity"][700],
     "on-fill-default": PALETTE.white,
-    "on-fill-muted": PALETTE.grey[300],
+    "on-fill-muted": PALETTE.grey[200],
     warning: PALETTE.red[500],
-    background: PALETTE.grey[200],
+    background: PALETTE.grey[100],
     "background-brand": PALETTE.green[100],
   },
   navigationBar: {
