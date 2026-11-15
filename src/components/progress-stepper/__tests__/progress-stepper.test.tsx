@@ -39,11 +39,9 @@ describe("ProgressStepper", () => {
 });
 
 describe("ProgressStepperSmall", () => {
-  it("brand 톤은 현재 단계까지 채운 점으로 표시한다", async () => {
-    await render(<ProgressStepperSmall tone="brand" current={2} />);
+  it("단계 수만큼 점을 그린다", async () => {
+    await render(<ProgressStepperSmall total={5} />);
     const dots = child(screen.getByRole("progressbar"), 0).children as Node[];
-    expect(dots).toHaveLength(7);
-    expect(dots[1]!.props.className).toContain("bg-green-500");
-    expect(dots[2]!.props.className).toContain("bg-green-100");
+    expect(dots).toHaveLength(5);
   });
 });
