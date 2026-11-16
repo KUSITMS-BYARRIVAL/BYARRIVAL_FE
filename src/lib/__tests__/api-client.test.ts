@@ -161,6 +161,14 @@ describe("baseApi 401 토큰 재발급", () => {
           .reply(503, { code: "SERVER_ERROR", message: "점검 중" }),
       { status: 503, code: "SERVER_ERROR" },
     ],
+    [
+      "429",
+      () =>
+        reissue
+          .onPost(REISSUE_URL)
+          .reply(429, { code: "TOO_MANY_REQUESTS", message: "잠시 후" }),
+      { status: 429, code: "TOO_MANY_REQUESTS" },
+    ],
   ])(
     "재발급이 %s로 실패하면 세션을 유지하고 401 대신 그 에러를 reject한다",
     async (_, mockReissueFailure, expected) => {

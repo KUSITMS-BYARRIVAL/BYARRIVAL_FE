@@ -42,9 +42,17 @@ async function reissueTokens(refreshToken: string) {
   }
 }
 
+// 서버 에러 계약(거절 코드)이 Swagger에 없어 4xx 전체로 보되, 일시적인 408 · 429는 제외한다
+const TRANSIENT_4XX = [408, 429];
+
 function isTokenRejected(error: unknown) {
   const status = isAxiosError(error) ? error.response?.status : undefined;
-  return status !== undefined && status >= 400 && status < 500;
+  return (
+    status !== undefined &&
+    status >= 400 &&
+    status < 500 &&
+    !TRANSIENT_4XX.includes(status)
+  );
 }
 
 type RetryableConfig = InternalAxiosRequestConfig & { isRetried?: boolean };
