@@ -5,10 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
-import { SelectionTile } from "@/screens/onboarding/_components/selection-tile";
+import { SelectionTile } from "@/screens/_components/selection-tile";
+import { INTERESTS } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { INTERESTS, ONBOARDING_STEPS } from "./_constants";
+import { ONBOARDING_STEPS } from "./_constants";
 
 // 화면설계서 ONB-08 관심 분야 선택
 export function InterestsScreen() {

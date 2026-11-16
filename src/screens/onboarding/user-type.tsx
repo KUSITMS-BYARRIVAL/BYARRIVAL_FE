@@ -5,10 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
-import { SelectionCard } from "@/screens/onboarding/_components/selection-card";
+import { SelectionCard } from "@/screens/_components/selection-card";
+import { USER_TYPES } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
-import { DEFAULT_NICKNAME, ONBOARDING_STEPS, USER_TYPES } from "./_constants";
+import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
 
 // 화면설계서 ONB-05 이동 유형 선택
 export function UserTypeScreen() {
