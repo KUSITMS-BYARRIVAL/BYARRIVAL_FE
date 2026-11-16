@@ -50,23 +50,20 @@ export function InterestsScreen() {
               {count > 0 ? `${count}개 선택됨` : "1개 이상 골라주세요"}
             </Text>
             <View className="flex-row flex-wrap justify-between gap-y-2 px-5 pb-3">
-              {INTERESTS.map(
-                ({ value, title, subtitle, Icon, SelectedIcon }) => {
-                  const isSelected = interests.includes(value);
-                  const TileIcon = isSelected ? SelectedIcon : Icon;
-                  return (
-                    <SelectionTile
-                      key={value}
-                      icon={<TileIcon />}
-                      title={title}
-                      subtitle={subtitle}
-                      isSelected={isSelected}
-                      className="w-[49%]"
-                      onPress={() => toggleInterest(value)}
-                    />
-                  );
-                },
-              )}
+              {INTERESTS.map(({ value, title, Icon, SelectedIcon }) => {
+                const isSelected = interests.includes(value);
+                const TileIcon = isSelected ? SelectedIcon : Icon;
+                return (
+                  <SelectionTile
+                    key={value}
+                    icon={<TileIcon />}
+                    title={title}
+                    isSelected={isSelected}
+                    className="w-[49%]"
+                    onPress={() => toggleInterest(value)}
+                  />
+                );
+              })}
             </View>
           </View>
         </View>

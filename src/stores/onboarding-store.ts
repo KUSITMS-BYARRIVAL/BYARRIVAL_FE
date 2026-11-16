@@ -5,16 +5,16 @@ import type { Time } from "@/components/time-picker/time-picker";
 /** 이동 유형. 여기서 고른 값이 이후 화면 문구·캐릭터를 바꾼다 (화면설계서 ONB-05 · 98_유형별 변형) */
 export type UserType = "worker" | "student" | "other";
 
-/** 관심 뉴스 분야 (화면설계서 ONB-08) */
+/** 관심 뉴스 분야 8개 (Figma 온보딩_수정_최최종 Step5 · 마이 관심 카테고리 공통) */
 export type Interest =
   | "economy"
-  | "tech"
-  | "career"
-  | "society"
-  | "global"
-  | "life"
+  | "health"
+  | "entertainment"
+  | "politics"
   | "science"
-  | "culture";
+  | "tech"
+  | "global"
+  | "sports";
 
 /** 직군 코드 12종 (화면설계서 ONB-09, users.job_group) */
 export type JobGroup =

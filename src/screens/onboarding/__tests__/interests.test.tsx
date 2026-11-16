@@ -23,7 +23,7 @@ describe("InterestsScreen", () => {
     await render(<InterestsScreen />);
 
     await user.press(screen.getByRole("checkbox", { name: /경제/ }));
-    await user.press(screen.getByRole("checkbox", { name: /테크/ }));
+    await user.press(screen.getByRole("checkbox", { name: /IT·기술/ }));
     expect(screen.getByText("2개 선택됨")).toBeOnTheScreen();
     expect(screen.getByRole("checkbox", { name: /경제/ })).toBeChecked();
     expect(screen.getByRole("button", { name: "다음으로" })).toBeEnabled();
