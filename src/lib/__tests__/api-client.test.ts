@@ -147,6 +147,22 @@ describe("baseApi 401 토큰 재발급", () => {
     expect(useAuthStore.getState().refreshToken).toBeNull();
   });
 
+  it.each([
+    ["네트워크 끊김", () => reissue.onPost(REISSUE_URL).networkError()],
+    ["5xx", () => reissue.onPost(REISSUE_URL).reply(503, {})],
+  ])(
+    "재발급이 %s로 실패하면 세션을 유지하고 원래 401을 reject한다",
+    async (_, mockReissueFailure) => {
+      api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
+      mockReissueFailure();
+
+      const error = await caught(baseApi.get("/me"));
+
+      expect(error).toMatchObject({ status: 401, code: "EXPIRED" });
+      expect(useAuthStore.getState().refreshToken).not.toBeNull();
+    },
+  );
+
   it("재시도한 요청이 또 401이면 재발급을 반복하지 않고 reject된다", async () => {
     api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
     reissue.onPost(REISSUE_URL).reply(200, { data: newTokens });

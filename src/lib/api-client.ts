@@ -3,6 +3,10 @@ import axios, { isAxiosError, type InternalAxiosRequestConfig } from "axios";
 import { type Tokens, useAuthStore } from "@/stores/auth-store";
 import { type ApiResponse, toApiError } from "@/types/api";
 
+// 값이 없으면 "undefined/api/v1"로 요청이 나가 원인을 찾기 어려우므로 시작 시점에 바로 알린다
+if (!process.env.EXPO_PUBLIC_API_BASE_URL) {
+  throw new Error("EXPO_PUBLIC_API_BASE_URL이 .env에 없습니다.");
+}
 // .env에는 호스트만 두고 Swagger 경로의 공통 접두사는 여기서 붙인다
 const API_BASE_URL = `${process.env.EXPO_PUBLIC_API_BASE_URL}/api/v1`;
 const TIMEOUT_MS = 10000;
@@ -32,7 +36,11 @@ async function reissueTokens(refreshToken: string) {
     );
     await useAuthStore.getState().setTokens(res.data.data);
   } catch (error) {
-    await useAuthStore.getState().clearSession();
+    // refreshToken이 거절된 4xx만 로그아웃 — 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 한다
+    const status = isAxiosError(error) ? error.response?.status : undefined;
+    if (status !== undefined && status >= 400 && status < 500) {
+      await useAuthStore.getState().clearSession();
+    }
     throw error;
   }
 }
