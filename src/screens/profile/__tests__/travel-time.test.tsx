@@ -28,5 +28,9 @@ describe("ProfileTravelTimeScreen", () => {
     const { byWeekday, base } = useProfileStore.getState().travelMinutes;
     expect(byWeekday.mon).toBe(35);
     expect(base).toBe(30);
+    // 월요일만 35분이 되고, 기본·화·수(30분)와 목(40분)은 그대로 보인다
+    expect(screen.getByText("약 35분")).toBeOnTheScreen();
+    expect(screen.getAllByText("약 30분")).toHaveLength(3);
+    expect(screen.getByText("약 40분")).toBeOnTheScreen();
   });
 });
