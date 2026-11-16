@@ -31,9 +31,22 @@ describe("ProfileInterestsScreen", () => {
       "health",
       "sports",
     ]);
+    expect(screen.getByRole("checkbox", { name: "스포츠" })).toBeChecked();
+
     await user.press(screen.getByRole("checkbox", { name: "경제·금융" }));
     await user.press(screen.getByRole("checkbox", { name: "건강·생활" }));
-    await user.press(screen.getByRole("checkbox", { name: "스포츠" }));
+    expect(
+      screen.getByRole("checkbox", { name: "경제·금융" }),
+    ).not.toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: "건강·생활" }),
+    ).not.toBeChecked();
+    const sports = screen.getByRole("checkbox", { name: "스포츠" });
+    expect(sports).toBeChecked();
+    expect(sports).toBeDisabled();
+
+    await user.press(sports);
     expect(useProfileStore.getState().interests).toEqual(["sports"]);
+    expect(sports).toBeChecked();
   });
 });
