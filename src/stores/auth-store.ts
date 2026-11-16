@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 import { queryClient } from "@/lib/query-client";
 
-const ACCESS_TOKEN_KEY = "accessToken";
-const REFRESH_TOKEN_KEY = "refreshToken";
+// 두 토큰을 한 항목에 묶어 저장 — 따로 저장하다 하나만 실패해 짝이 어긋나는 일을 막는다
+const TOKENS_KEY = "tokens";
 
 export type Tokens = { accessToken: string; refreshToken: string };
 
@@ -20,18 +20,15 @@ export const useAuthStore = create<AuthState>()((set) => ({
   accessToken: null,
   refreshToken: null,
   setTokens: async ({ accessToken, refreshToken }) => {
-    await Promise.all([
-      SecureStore.setItemAsync(ACCESS_TOKEN_KEY, accessToken),
-      SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken),
-    ]);
+    await SecureStore.setItemAsync(
+      TOKENS_KEY,
+      JSON.stringify({ accessToken, refreshToken }),
+    );
     set({ accessToken, refreshToken });
   },
   // 이전 사용자 데이터가 남지 않게 캐시까지 비운다
   clearSession: async () => {
-    await Promise.all([
-      SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY),
-      SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
-    ]);
+    await SecureStore.deleteItemAsync(TOKENS_KEY);
     set({ accessToken: null, refreshToken: null });
     queryClient.clear();
   },

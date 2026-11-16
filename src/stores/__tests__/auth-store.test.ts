@@ -26,11 +26,13 @@ describe("useAuthStore", () => {
   afterAll(() => queryClient.clear());
 
   describe("setTokens", () => {
-    it("두 토큰을 SecureStore에 저장한다", async () => {
+    it("두 토큰을 SecureStore 한 항목에 함께 저장한다", async () => {
       await useAuthStore.getState().setTokens(tokens);
 
-      expect(setItemAsync).toHaveBeenCalledWith("accessToken", "access-1");
-      expect(setItemAsync).toHaveBeenCalledWith("refreshToken", "refresh-1");
+      expect(setItemAsync).toHaveBeenCalledTimes(1);
+      const [key, value] = setItemAsync.mock.calls[0]!;
+      expect(key).toBe("tokens");
+      expect(JSON.parse(value)).toEqual(tokens);
     });
 
     it("저장이 끝나면 스토어 상태에 토큰이 반영된다", async () => {
@@ -52,11 +54,10 @@ describe("useAuthStore", () => {
   });
 
   describe("clearSession", () => {
-    it("두 토큰을 SecureStore에서 삭제한다", async () => {
+    it("SecureStore의 토큰 항목을 삭제한다", async () => {
       await useAuthStore.getState().clearSession();
 
-      expect(deleteItemAsync).toHaveBeenCalledWith("accessToken");
-      expect(deleteItemAsync).toHaveBeenCalledWith("refreshToken");
+      expect(deleteItemAsync).toHaveBeenCalledWith("tokens");
     });
 
     it("스토어 토큰을 null로 되돌린다", async () => {

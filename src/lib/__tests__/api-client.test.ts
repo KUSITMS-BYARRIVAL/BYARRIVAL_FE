@@ -148,17 +148,28 @@ describe("baseApi 401 토큰 재발급", () => {
   });
 
   it.each([
-    ["네트워크 끊김", () => reissue.onPost(REISSUE_URL).networkError()],
-    ["5xx", () => reissue.onPost(REISSUE_URL).reply(503, {})],
+    [
+      "네트워크 끊김",
+      () => reissue.onPost(REISSUE_URL).networkError(),
+      { status: null, code: "NETWORK_ERROR" },
+    ],
+    [
+      "5xx",
+      () =>
+        reissue
+          .onPost(REISSUE_URL)
+          .reply(503, { code: "SERVER_ERROR", message: "점검 중" }),
+      { status: 503, code: "SERVER_ERROR" },
+    ],
   ])(
-    "재발급이 %s로 실패하면 세션을 유지하고 원래 401을 reject한다",
-    async (_, mockReissueFailure) => {
+    "재발급이 %s로 실패하면 세션을 유지하고 401 대신 그 에러를 reject한다",
+    async (_, mockReissueFailure, expected) => {
       api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
       mockReissueFailure();
 
       const error = await caught(baseApi.get("/me"));
 
-      expect(error).toMatchObject({ status: 401, code: "EXPIRED" });
+      expect(error).toMatchObject(expected);
       expect(useAuthStore.getState().refreshToken).not.toBeNull();
     },
   );

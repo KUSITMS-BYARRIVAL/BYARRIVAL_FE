@@ -36,13 +36,15 @@ async function reissueTokens(refreshToken: string) {
     );
     await useAuthStore.getState().setTokens(res.data.data);
   } catch (error) {
-    // refreshToken이 거절된 4xx만 로그아웃 — 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 한다
-    const status = isAxiosError(error) ? error.response?.status : undefined;
-    if (status !== undefined && status >= 400 && status < 500) {
-      await useAuthStore.getState().clearSession();
-    }
+    // 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 거절(4xx)일 때만 로그아웃한다
+    if (isTokenRejected(error)) await useAuthStore.getState().clearSession();
     throw error;
   }
+}
+
+function isTokenRejected(error: unknown) {
+  const status = isAxiosError(error) ? error.response?.status : undefined;
+  return status !== undefined && status >= 400 && status < 500;
 }
 
 type RetryableConfig = InternalAxiosRequestConfig & { isRetried?: boolean };
@@ -67,8 +69,11 @@ baseApi.interceptors.response.use(
     });
     try {
       await reissuePromise;
-    } catch {
-      return Promise.reject(toApiError(error));
+    } catch (reissueError) {
+      // 토큰 거절이면 원래 401을, 일시적 실패면 재시도 정책이 알 수 있게 그 에러(네트워크 · 5xx)를 넘긴다
+      return Promise.reject(
+        toApiError(isTokenRejected(reissueError) ? error : reissueError),
+      );
     }
     // 요청 인터셉터가 새 accessToken을 다시 붙인다
     return baseApi(config);
