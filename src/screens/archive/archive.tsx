@@ -7,6 +7,7 @@ import { AlarmButton } from "@/screens/_components/alarm-button";
 import { Header } from "@/components/header/header";
 import { Tabs } from "@/components/tabs/tabs";
 import { ARCHIVE_ARTICLES, ARCHIVE_SMALLTALKS } from "@/mocks/archive";
+import { HOME_NICKNAME } from "@/mocks/ride";
 import { ArchiveList } from "@/screens/archive/_components/archive-list";
 import { ARCHIVE_TABS, type ArchiveTab } from "@/screens/archive/_constants";
 import { useToastStore } from "@/stores/toast-store";
@@ -43,7 +44,8 @@ export function ArchiveScreen() {
   return (
     <View className="flex-1 bg-default">
       <View className="bg-white" style={{ paddingTop: top }}>
-        <Header title="보관함" right={<AlarmButton />} />
+        {/* Figma 보관함_스몰토크: 헤더 제목은 사용자 닉네임 */}
+        <Header title={HOME_NICKNAME} right={<AlarmButton />} />
         <Tabs
           items={[
             { value: "article", label: "기사", count: articles.length },

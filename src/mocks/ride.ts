@@ -255,5 +255,5 @@ export const HOME_SMALLTALK = {
   categoryLabel: BOARDING_ARTICLES[0].label,
   newsTitle: BOARDING_ARTICLES[0].title,
   url: BOARDING_ARTICLES[0].url,
-  question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? “",
+  question: "“ 빼빼로가 해외에서 1000억 어치나 팔린대요. 신기하지 않아요? ”",
 };

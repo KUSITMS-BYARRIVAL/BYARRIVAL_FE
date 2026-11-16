@@ -35,26 +35,31 @@ export function ArchiveList({
 
   const items: { category: Category }[] =
     tab === "article" ? articles : smalltalks;
-  const chips = ARCHIVE_CATEGORIES.filter(({ value }) =>
-    items.some((item) => item.category === value),
-  );
-  // 고른 분야의 마지막 항목을 지우면 칩이 사라지므로 '전체'로 보여준다
-  const category = chips.some(({ value }) => value === selectedCategory)
-    ? selectedCategory
-    : "all";
+  // Figma 보관함_스몰토크: 담은 항목이 없는 분야도 칩을 모두 보여준다
   const isVisible = (item: { category: Category }) =>
-    category === "all" || item.category === category;
+    selectedCategory === "all" || item.category === selectedCategory;
+  const isEmpty = !items.some(isVisible);
 
   return (
     // shortcut: 목데이터 4~7개 기준이라 ScrollView + map. API 연결로 항목이 많아지면 FlatList로 바꿀 것
     <ScrollView contentContainerClassName="gap-5 py-5">
       <View className="gap-3.5">
         <Text className="px-5 text-strong text-heading2-sb">
-          내가 직접 담은 {items.length}개의 {ARCHIVE_TABS[tab].label}
+          스크랩한 {items.length}개의 {ARCHIVE_TABS[tab].label}
         </Text>
-        <CategoryFilter chips={chips} value={category} onChange={setCategory} />
+        <CategoryFilter
+          chips={ARCHIVE_CATEGORIES}
+          value={selectedCategory}
+          onChange={setCategory}
+        />
       </View>
       <View className="gap-3.5 px-5">
+        {/* shortcut: 고른 분야에 담은 항목이 없을 때 시안이 없어 탭 빈 문구를 그대로 쓴다 */}
+        {isEmpty && (
+          <Text className="py-10 text-center text-secondary text-body2-m">
+            {ARCHIVE_TABS[tab].empty}
+          </Text>
+        )}
         {tab === "article"
           ? articles
               .filter(isVisible)
