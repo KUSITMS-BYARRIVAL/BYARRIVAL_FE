@@ -76,9 +76,7 @@ export function TravelTimeScreen() {
             </View>
             <View className="items-center gap-5 px-[33.5px]">
               <View className="flex-row items-center gap-0.5">
-                <Text className="text-primary text-digit-b">
-                  {travelMinutes}
-                </Text>
+                <Text className="text-brand text-digit-b">{travelMinutes}</Text>
                 <Text className="text-secondary text-heading2-sb">분</Text>
               </View>
               <View className="w-full gap-5">
