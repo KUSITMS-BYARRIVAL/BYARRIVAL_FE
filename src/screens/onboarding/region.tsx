@@ -17,7 +17,7 @@ import {
   useOnboardingStore,
 } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./_constants";
+import { ONBOARDING_STEPS, PRIVACY_NOTE } from "./_constants";
 
 // 화면설계서 ONB-10 T1~T3: 유형별 타이틀·서브
 const COPY: Record<UserType, { title: string; description: string }> = {
@@ -73,7 +73,7 @@ export function RegionScreen() {
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
       {/* 화면설계서: 뒤로 → ONB-09 */}
       <Header onBack={() => router.back()} />
-      <View className="flex-1 gap-5 pt-3.5">
+      <View className="flex-1 gap-3.5 pt-3.5">
         <ProgressStepper
           total={ONBOARDING_STEPS}
           current={7}
@@ -88,9 +88,14 @@ export function RegionScreen() {
             >
               {copy.title}
             </Text>
-            <Text className="text-tertiary text-body2-m">
-              {copy.description}
-            </Text>
+            <View className="gap-3.5">
+              <Text className="text-tertiary text-body2-m">
+                {copy.description}
+              </Text>
+              <Text className="text-tertiary text-caption1-r">
+                {PRIVACY_NOTE}
+              </Text>
+            </View>
           </View>
           <SearchField
             value={query}
@@ -158,11 +163,6 @@ export function RegionScreen() {
             className="ml-5 self-start"
           />
         )}
-        <Text className="px-5 text-center text-tertiary text-caption1-r">
-          {
-            "같은 지역·직군 분들이 많이 보는 콘텐츠를 보여드리는 데만 써요.\n프로필에서 언제든 바꿀 수 있어요."
-          }
-        </Text>
         <View className="px-5">
           <Button
             label="다음으로"

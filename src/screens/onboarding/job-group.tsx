@@ -10,7 +10,7 @@ import { SelectionTile } from "@/screens/_components/selection-tile";
 import { JOB_GROUPS } from "@/screens/_constants";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
-import { ONBOARDING_STEPS } from "./_constants";
+import { ONBOARDING_STEPS, PRIVACY_NOTE } from "./_constants";
 
 // 화면설계서 ONB-09 T1~T3: 학생만 희망 직무로 묻는다
 // 학생 설명은 설계서 T2의 긴 문구 대신 Figma(UT_Onboarding_Step6_직군)대로 직장인과 같은 문구를 쓴다
@@ -32,15 +32,18 @@ export function JobGroupScreen() {
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
       {/* 화면설계서: 뒤로 → ONB-08 */}
       <Header onBack={() => router.back()} />
-      <ScrollView className="flex-1" contentContainerClassName="gap-5 pt-3.5">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-3.5 pt-3.5 pb-3"
+      >
         <ProgressStepper
           total={ONBOARDING_STEPS}
           current={6}
           showVehicle
           className="mx-5"
         />
-        <View className="gap-3.5">
-          <View className="gap-1.5 px-5">
+        <View className="gap-3.5 px-5">
+          <View className="gap-1.5">
             <Text
               accessibilityRole="header"
               className="text-primary text-title1-sb"
@@ -49,49 +52,41 @@ export function JobGroupScreen() {
             </Text>
             <Text className="text-tertiary text-body2-m">{DESCRIPTION}</Text>
           </View>
-          <View>
-            {/* 화면설계서 ONB-09 3: 미선택 안내 / 선택 시 초록 "1개 선택됨" */}
-            <Text
-              accessibilityLiveRegion="polite"
-              className={cn(
-                "h-[31px] px-5 text-body2-m",
-                jobGroup ? "text-brand" : "text-tertiary",
-              )}
-            >
-              {jobGroup ? "1개 선택됨" : "직군을 하나 골라 주세요"}
-            </Text>
-            <View className="gap-9 px-5 pb-3">
-              {/* 단일 선택: 다른 직군을 누르면 선택이 바뀐다 */}
-              <View
-                accessibilityRole="radiogroup"
-                className="flex-row flex-wrap justify-between gap-y-2"
-              >
-                {JOB_GROUPS.map(
-                  ({ value, title, example, Icon, SelectedIcon }) => {
-                    const isSelected = jobGroup === value;
-                    const TileIcon = isSelected ? SelectedIcon : Icon;
-                    return (
-                      <SelectionTile
-                        key={value}
-                        accessibilityRole="radio"
-                        size="s"
-                        icon={<TileIcon />}
-                        title={title}
-                        subtitle={example}
-                        isSelected={isSelected}
-                        className="w-[32%]"
-                        onPress={() => setJobGroup(value)}
-                      />
-                    );
-                  },
-                )}
-              </View>
-              <Text className="text-center text-tertiary text-caption1-r">
-                {
-                  "같은 지역·직군 분들이 많이 보는 콘텐츠를 보여드리는 데만 써요.\n프로필에서 언제든 바꿀 수 있어요."
-                }
-              </Text>
-            </View>
+          <Text className="text-tertiary text-caption1-r">{PRIVACY_NOTE}</Text>
+        </View>
+        <View className="gap-2 px-5">
+          {/* 화면설계서 ONB-09 3: 미선택 안내 / 선택 시 초록 "1개 선택됨" */}
+          <Text
+            accessibilityLiveRegion="polite"
+            className={cn(
+              "text-body2-m",
+              jobGroup ? "text-brand" : "text-tertiary",
+            )}
+          >
+            {jobGroup ? "1개 선택됨" : "직군을 하나 골라 주세요"}
+          </Text>
+          {/* 단일 선택: 다른 직군을 누르면 선택이 바뀐다 */}
+          <View
+            accessibilityRole="radiogroup"
+            className="flex-row flex-wrap justify-between gap-y-2"
+          >
+            {JOB_GROUPS.map(({ value, title, example, Icon, SelectedIcon }) => {
+              const isSelected = jobGroup === value;
+              const TileIcon = isSelected ? SelectedIcon : Icon;
+              return (
+                <SelectionTile
+                  key={value}
+                  accessibilityRole="radio"
+                  size="s"
+                  icon={<TileIcon />}
+                  title={title}
+                  subtitle={example}
+                  isSelected={isSelected}
+                  className="w-[32%]"
+                  onPress={() => setJobGroup(value)}
+                />
+              );
+            })}
           </View>
         </View>
       </ScrollView>
