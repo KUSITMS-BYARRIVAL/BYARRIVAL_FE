@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 import type { Time } from "@/components/time-picker/time-picker";
+import type { RegionResponse } from "@/types/user/user.types";
 
 /** 이동 유형. 여기서 고른 값이 이후 화면 문구·캐릭터를 바꾼다 (화면설계서 ONB-05 · 98_유형별 변형) */
 export type UserType = "worker" | "student" | "other";
@@ -33,7 +34,7 @@ export type JobGroup =
 
 export type Region = { province: string; district: string | null };
 
-type OnboardingState = {
+type OnboardingDraft = {
   nickname: string;
   userType: UserType | null;
   /** 가장 일찍 출발하는 날의 출발 시각 (24시간제) */
@@ -44,22 +45,26 @@ type OnboardingState = {
   interests: Interest[];
   /** 직군. 학생은 희망 직군을 같은 코드로 저장한다 */
   jobGroup: JobGroup | null;
-  /** 근무(통학·이동) 지역. district가 null이면 시/도 전체 */
-  region: Region | null;
+  /** 근무(통학·이동) 지역. 서버 목록(GET /regions)에서 고른 시/군/구 */
+  region: RegionResponse | null;
+};
+
+type OnboardingState = OnboardingDraft & {
   /** 온보딩을 끝까지 마쳤는지. 마치기 전에는 홈 쪽 화면에 들어갈 수 없다 */
   isOnboarded: boolean;
+  /** 서버에 저장된 값으로 초안을 채운다 (중간 이탈 후 이어서 진행) */
+  hydrate: (draft: Partial<OnboardingDraft>) => void;
   setNickname: (nickname: string) => void;
   setUserType: (userType: UserType) => void;
   setDepartureTime: (departureTime: Time) => void;
   setTravelMinutes: (travelMinutes: number) => void;
   toggleInterest: (interest: Interest) => void;
   setJobGroup: (jobGroup: JobGroup) => void;
-  setRegion: (region: Region | null) => void;
+  setRegion: (region: RegionResponse | null) => void;
   completeOnboarding: () => void;
 };
 
-// 온보딩 단계 사이에 입력값을 넘기고, 뒤로 가도 값이 유지되도록 한곳에 모은다
-// TODO: 마지막 단계에서 온보딩 저장 API로 보내고 초기화 (API 명세 확정 후)
+// 단계마다 서버에 저장하고, 화면 사이에서는 이 초안으로 값을 넘긴다 (뒤로 가도 유지)
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   nickname: "",
   userType: null,
@@ -72,6 +77,7 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   region: null,
   // TODO: 로그인 연동 후 서버의 온보딩 완료 여부로 대체 (지금은 앱을 켤 때마다 온보딩부터 시작)
   isOnboarded: false,
+  hydrate: (draft) => set(draft),
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
   setDepartureTime: (departureTime) => set({ departureTime }),

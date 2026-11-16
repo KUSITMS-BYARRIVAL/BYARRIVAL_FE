@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { useEffect, useRef } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -12,10 +13,28 @@ import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { TextField } from "@/components/text-field/text-field";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
+import { useGetCategories } from "@/hooks/queries/use-get-categories";
+import { useGetOnboarding } from "@/hooks/queries/use-get-onboarding";
 import { NicknamePreviewCard } from "@/screens/onboarding/_components/nickname-preview-card";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
+import { toOnboardingDraft } from "./_helpers";
+
+// 중간에 이탈했다 돌아오면 서버에 저장된 값으로 초안을 1번 채운다 (첫 화면에서만)
+function useResumeOnboarding() {
+  const { data: onboarding } = useGetOnboarding();
+  const { data: categories } = useGetCategories();
+  const hydrate = useOnboardingStore((state) => state.hydrate);
+  const isHydrated = useRef(false);
+
+  useEffect(() => {
+    if (isHydrated.current || !onboarding || !categories) return;
+    isHydrated.current = true;
+    hydrate(toOnboardingDraft(onboarding, categories));
+  }, [onboarding, categories, hydrate]);
+}
 
 const NICKNAME_MAX_LENGTH = 10;
 const NICKNAME_MIN_LENGTH = 2;
@@ -35,8 +54,14 @@ export function NicknameScreen() {
   // 입력하는 대로 스토어에 저장해, 다음으로를 누르기 전에 화면을 떠났다 와도 초안이 남는다
   const nickname = useOnboardingStore((state) => state.nickname);
   const setNickname = useOnboardingStore((state) => state.setNickname);
+  useResumeOnboarding();
+  // 서버 검사(INVALID_NICKNAME 등)는 토스트 대신 입력창 아래에 보여준다
+  const { mutate, isPending, error, reset } = useUpdateOnboarding({
+    meta: { skipToast: true },
+  });
   const trimmed = nickname.trim();
-  const errorMessage = trimmed ? validateNickname(trimmed) : null;
+  const errorMessage =
+    (trimmed ? validateNickname(trimmed) : null) ?? error?.message ?? null;
   // 공백만 입력한 경우도 통과시키지 않는다
   const isValid = trimmed.length > 0 && !errorMessage;
 
@@ -78,7 +103,10 @@ export function NicknameScreen() {
             <TextField
               className="py-5"
               value={nickname}
-              onChangeText={setNickname}
+              onChangeText={(text) => {
+                setNickname(text);
+                reset();
+              }}
               maxLength={NICKNAME_MAX_LENGTH}
               placeholder="닉네임을 입력하세요"
               error={!!errorMessage}
@@ -98,11 +126,13 @@ export function NicknameScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          disabled={!isValid}
-          // TODO: 금칙어("사용할 수 없는 닉네임이에요")는 서버 검사 API 확정 후 연결
+          disabled={!isValid || isPending}
           onPress={() => {
             setNickname(trimmed);
-            router.push("/user-type");
+            mutate(
+              { nickname: trimmed },
+              { onSuccess: () => router.push("/user-type") },
+            );
           }}
         />
       </View>

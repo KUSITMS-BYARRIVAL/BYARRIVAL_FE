@@ -10,6 +10,20 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 jest.mock("expo-router", () => ({ router: { replace: jest.fn() } }));
 
+let mockSucceeds = true;
+const mockComplete = jest.fn(
+  (_: undefined, options?: { onSuccess?: () => void }) =>
+    mockSucceeds && options?.onSuccess?.(),
+);
+jest.mock("@/hooks/mutations/use-complete-onboarding", () => ({
+  useCompleteOnboarding: () => ({ mutate: mockComplete, isPending: false }),
+}));
+
+beforeEach(() => {
+  mockSucceeds = true;
+  jest.clearAllMocks();
+});
+
 describe("OnboardingCompleteScreen", () => {
   it("고른 유형·출발 시각·관심 분야를 요약해 보여준다", async () => {
     useOnboardingStore.setState({
@@ -32,12 +46,23 @@ describe("OnboardingCompleteScreen", () => {
     expect(screen.getByText("오전 12:00")).toBeOnTheScreen();
   });
 
-  it("출근길 시작하기를 누르면 온보딩을 마친 것으로 기록하고 홈으로 간다", async () => {
+  it("출근길 시작하기를 누르면 온보딩 완료를 요청하고, 성공하면 기록한 뒤 홈으로 간다", async () => {
     const user = userEvent.setup();
     useOnboardingStore.setState({ isOnboarded: false });
     await render(<OnboardingCompleteScreen />);
     await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
+    expect(mockComplete).toHaveBeenCalledTimes(1);
     expect(useOnboardingStore.getState().isOnboarded).toBe(true);
     expect(router.replace).toHaveBeenCalledWith("/");
+  });
+
+  it("완료 요청이 실패하면 홈으로 가지 않는다", async () => {
+    mockSucceeds = false;
+    const user = userEvent.setup();
+    useOnboardingStore.setState({ isOnboarded: false });
+    await render(<OnboardingCompleteScreen />);
+    await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
+    expect(useOnboardingStore.getState().isOnboarded).toBe(false);
+    expect(router.replace).not.toHaveBeenCalled();
   });
 });

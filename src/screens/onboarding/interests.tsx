@@ -5,11 +5,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
+import { useGetCategories } from "@/hooks/queries/use-get-categories";
 import { InterestTile } from "@/screens/_components/interest-tile";
 import { INTERESTS } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
+import { toCategoryIds } from "./_helpers";
 
 // 2개씩 한 줄로 나눈다 (Figma 2열 · 간격 8px)
 const ROWS = Array.from({ length: Math.ceil(INTERESTS.length / 2) }, (_, i) =>
@@ -21,6 +24,9 @@ export function InterestsScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const interests = useOnboardingStore((state) => state.interests);
   const toggleInterest = useOnboardingStore((state) => state.toggleInterest);
+  // 서버 id를 알아야 저장할 수 있어 목록을 받기 전에는 다음으로를 막는다
+  const { data: categories } = useGetCategories();
+  const { mutate, isPending } = useUpdateOnboarding();
   const count = interests.length;
 
   return (
@@ -87,8 +93,14 @@ export function InterestsScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          disabled={count === 0}
-          onPress={() => router.push("/job-group")}
+          disabled={count === 0 || !categories || isPending}
+          onPress={() =>
+            categories &&
+            mutate(
+              { categoryIds: toCategoryIds(interests, categories) },
+              { onSuccess: () => router.push("/job-group") },
+            )
+          }
         />
       </View>
     </View>

@@ -4,18 +4,19 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
+import { TextButton } from "@/components/button/text-button";
 import { Chip } from "@/components/chip/chip";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { SearchField } from "@/components/search-field/search-field";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
+import { useGetRegions } from "@/hooks/queries/use-get-regions";
 import { RegionPanel } from "@/screens/_components/region-panel";
-import { regionLabel } from "@/screens/_constants";
-import { PROVINCES, REGIONS, wholeProvince } from "@/screens/_regions";
-import {
-  type Region,
-  type UserType,
-  useOnboardingStore,
-} from "@/stores/onboarding-store";
+import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
+import type {
+  RegionResponse,
+  RegionSidoResponse,
+} from "@/types/user/user.types";
 
 import { ONBOARDING_STEPS, PRIVACY_NOTE } from "./_constants";
 
@@ -36,38 +37,113 @@ const COPY: Record<UserType, { title: string; description: string }> = {
   },
 };
 
-// 시/도·시/군/구 통합 검색 대상 (예: "강남" → 서울 강남구)
-const ALL_REGIONS: Region[] = PROVINCES.flatMap((province) => [
-  { province, district: null },
-  ...REGIONS[province].map((district) => ({ province, district })),
-]);
+const labelOf = ({ sidoName, sigunguName }: RegionResponse) =>
+  `${sidoName} ${sigunguName}`;
 
-// 화면설계서 ONB-10 근무 지역 선택
+// 시/도·시/군/구 통합 검색 대상 (예: "강남" → 서울 강남구)
+const flatten = (sidos: RegionSidoResponse[]): RegionResponse[] =>
+  sidos.flatMap(({ sidoId, name, sigungus }) =>
+    sigungus.map(({ sigunguId, name: sigunguName }) => ({
+      sidoId,
+      sidoName: name,
+      sigunguId,
+      sigunguName,
+    })),
+  );
+
+// 화면설계서 ONB-10 근무 지역 선택. 목록은 서버(GET /regions) 순서 그대로 쓴다
 export function RegionScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const userType = useOnboardingStore((state) => state.userType);
   const region = useOnboardingStore((state) => state.region);
   const setRegion = useOnboardingStore((state) => state.setRegion);
-  // 화면설계서: 시/도 기본값 서울
-  const [province, setProvince] = useState(region?.province ?? PROVINCES[0]);
+  const { data: sidos, isPending, isError, refetch } = useGetRegions();
+  const { mutate, isPending: isSaving } = useUpdateOnboarding();
+  const [selectedSido, setSelectedSido] = useState(region?.sidoName ?? null);
   const [query, setQuery] = useState("");
   const copy = COPY[userType ?? "worker"];
   const keyword = query.trim();
 
-  const whole = wholeProvince(province);
-  const checkedDistrict =
-    region?.province === province ? (region.district ?? whole) : null;
+  // 화면설계서: 시/도 기본값은 첫 번째(서울)
+  const province = selectedSido ?? sidos?.[0]?.name ?? "";
+  const sido = sidos?.find(({ name }) => name === province);
+  const allRegions = sidos ? flatten(sidos) : [];
+  const searchResults = allRegions.filter((item) =>
+    labelOf(item).includes(keyword),
+  );
 
   // 검색 결과를 고르면 해당 시/도 탭과 시/군/구를 함께 선택한다
-  const selectRegion = (next: Region) => {
-    setProvince(next.province);
+  const selectRegion = (next: RegionResponse) => {
+    setSelectedSido(next.sidoName);
     setRegion(next);
     setQuery("");
   };
 
-  const searchResults = ALL_REGIONS.filter((item) =>
-    regionLabel(item).includes(keyword),
-  );
+  const renderList = () => {
+    if (isPending) {
+      return (
+        <Text className="py-10 text-center text-tertiary text-body1-m">
+          지역 목록을 불러오는 중이에요
+        </Text>
+      );
+    }
+    if (isError) {
+      return (
+        <View className="items-center gap-3 py-10">
+          <Text className="text-center text-tertiary text-body1-m">
+            지역 목록을 불러오지 못했어요
+          </Text>
+          <TextButton label="다시 시도" onPress={() => refetch()} />
+        </View>
+      );
+    }
+    if (keyword) {
+      return (
+        <ScrollView
+          className="flex-1 bg-white"
+          keyboardShouldPersistTaps="handled"
+        >
+          {searchResults.length === 0 ? (
+            <Text className="py-10 text-center text-tertiary text-body1-m">
+              검색 결과가 없어요
+            </Text>
+          ) : (
+            searchResults.map((item) => (
+              <Pressable
+                key={item.sigunguId}
+                accessibilityRole="button"
+                className="h-[60px] justify-center px-5"
+                onPress={() => selectRegion(item)}
+              >
+                <Text className="text-secondary text-body1-m">
+                  {labelOf(item)}
+                </Text>
+              </Pressable>
+            ))
+          )}
+        </ScrollView>
+      );
+    }
+    return (
+      <RegionPanel
+        provinces={sidos.map(({ name }) => name)}
+        selectedProvince={province}
+        onProvincePress={setSelectedSido}
+        districts={sido?.sigungus.map(({ name }) => name) ?? []}
+        selectedDistricts={
+          region?.sidoName === province ? [region.sigunguName] : []
+        }
+        // 단일 선택: 다른 항목을 누르면 선택이 바뀐다
+        onDistrictPress={(district) => {
+          const next = allRegions.find(
+            (item) =>
+              item.sidoName === province && item.sigunguName === district,
+          );
+          if (next) setRegion(next);
+        }}
+      />
+    );
+  };
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -104,46 +180,7 @@ export function RegionScreen() {
             accessibilityLabel="지역명 검색"
             className="mx-5"
           />
-          {keyword ? (
-            <ScrollView
-              className="flex-1 bg-white"
-              keyboardShouldPersistTaps="handled"
-            >
-              {searchResults.length === 0 ? (
-                <Text className="py-10 text-center text-tertiary text-body1-m">
-                  검색 결과가 없어요
-                </Text>
-              ) : (
-                searchResults.map((item) => (
-                  <Pressable
-                    key={regionLabel(item)}
-                    accessibilityRole="button"
-                    className="h-[60px] justify-center px-5"
-                    onPress={() => selectRegion(item)}
-                  >
-                    <Text className="text-secondary text-body1-m">
-                      {regionLabel(item)}
-                    </Text>
-                  </Pressable>
-                ))
-              )}
-            </ScrollView>
-          ) : (
-            <RegionPanel
-              provinces={PROVINCES}
-              selectedProvince={province}
-              onProvincePress={setProvince}
-              districts={[whole, ...REGIONS[province]]}
-              selectedDistricts={checkedDistrict ? [checkedDistrict] : []}
-              // 단일 선택: 다른 항목을 누르면 선택이 바뀐다
-              onDistrictPress={(district) =>
-                setRegion({
-                  province,
-                  district: district === whole ? null : district,
-                })
-              }
-            />
-          )}
+          {renderList()}
         </View>
       </View>
       <View
@@ -152,11 +189,11 @@ export function RegionScreen() {
       >
         {region && (
           <Chip
-            label={regionLabel(region)}
+            label={labelOf(region)}
             accessibilityHint="눌러서 해당 지역 목록으로 이동해요"
             // 검색 중이면 패널이 가려져 있어 검색어도 비워 목록을 다시 보여준다
             onPress={() => {
-              setProvince(region.province);
+              setSelectedSido(region.sidoName);
               setQuery("");
             }}
             onDelete={() => setRegion(null)}
@@ -168,8 +205,14 @@ export function RegionScreen() {
             label="다음으로"
             size="l"
             color="neutral"
-            disabled={!region}
-            onPress={() => router.push("/complete")}
+            disabled={!region || isSaving}
+            onPress={() =>
+              region &&
+              mutate(
+                { sigunguId: region.sigunguId },
+                { onSuccess: () => router.push("/complete") },
+              )
+            }
           />
         </View>
       </View>

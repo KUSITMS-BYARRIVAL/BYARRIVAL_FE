@@ -1,4 +1,5 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
+import { router } from "expo-router";
 
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -7,7 +8,22 @@ import { JobGroupScreen } from "../job-group";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), push: jest.fn() },
+}));
+
+const mockUpdate = jest.fn(
+  (_body: unknown, options?: { onSuccess?: () => void }) =>
+    options?.onSuccess?.(),
+);
+jest.mock("@/hooks/mutations/use-update-onboarding", () => ({
+  useUpdateOnboarding: () => ({
+    mutate: mockUpdate,
+    isPending: false,
+    error: null,
+    reset: jest.fn(),
+  }),
+}));
 
 beforeEach(() =>
   useOnboardingStore.setState({ userType: "worker", jobGroup: null }),
@@ -43,5 +59,17 @@ describe("JobGroupScreen", () => {
       screen.getByRole("radio", { name: /IT개발·데이터/ }),
     ).not.toBeChecked();
     expect(screen.getByRole("button", { name: "다음으로" })).toBeEnabled();
+  });
+
+  it("다음을 누르면 서버 직군 코드로 저장하고 근무지로 넘어간다", async () => {
+    const user = userEvent.setup();
+    await render(<JobGroupScreen />);
+    await user.press(screen.getByRole("radio", { name: /미디어·문화·스포츠/ }));
+    await user.press(screen.getByRole("button", { name: "다음으로" }));
+    expect(mockUpdate).toHaveBeenLastCalledWith(
+      { jobGroups: ["MEDIA_CULTURE_SPORTS"] },
+      expect.anything(),
+    );
+    expect(router.push).toHaveBeenCalledWith("/region");
   });
 });

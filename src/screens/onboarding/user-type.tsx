@@ -5,9 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
 import { SelectionCard } from "@/screens/_components/selection-card";
 import { USER_TYPES } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
+import { toTravelType } from "@/types/user/user.mappers";
 
 import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
 
@@ -17,6 +19,7 @@ export function UserTypeScreen() {
   const nickname = useOnboardingStore((state) => state.nickname);
   const userType = useOnboardingStore((state) => state.userType);
   const setUserType = useOnboardingStore((state) => state.setUserType);
+  const { mutate, isPending } = useUpdateOnboarding();
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -68,8 +71,14 @@ export function UserTypeScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          disabled={!userType}
-          onPress={() => router.push("/departure-time")}
+          disabled={!userType || isPending}
+          onPress={() =>
+            userType &&
+            mutate(
+              { travelType: toTravelType(userType) },
+              { onSuccess: () => router.push("/departure-time") },
+            )
+          }
         />
       </View>
     </View>

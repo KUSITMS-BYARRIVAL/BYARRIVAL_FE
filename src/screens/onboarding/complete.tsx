@@ -6,6 +6,7 @@ import { OnboardingFinishIllustration } from "@/assets/illustrations";
 import { Button } from "@/components/button/button";
 import type { Time } from "@/components/time-picker/time-picker";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
+import { useCompleteOnboarding } from "@/hooks/mutations/use-complete-onboarding";
 import { INTERESTS, USER_TYPES } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -24,6 +25,7 @@ export function OnboardingCompleteScreen() {
   const completeOnboarding = useOnboardingStore(
     (state) => state.completeOnboarding,
   );
+  const { mutate, isPending } = useCompleteOnboarding();
 
   const summary = [
     {
@@ -85,16 +87,20 @@ export function OnboardingCompleteScreen() {
         className="px-5 pt-2"
         style={{ paddingBottom: Math.max(bottom, 30) }}
       >
-        {/* TODO: 온보딩 저장 API 호출 후 이동 (API 명세 확정 후) */}
         <Button
           label="출근길 시작하기"
           size="l"
           color="neutral"
-          // 온보딩으로 돌아가지 않도록 기록을 바꿔 홈(HOME-01)으로 보낸다
-          onPress={() => {
-            completeOnboarding();
-            router.replace("/");
-          }}
+          disabled={isPending}
+          // 온보딩으로 돌아가지 않도록 기록을 바꿔 홈(HOME-01)으로 보낸다. 필수값 누락(ONBOARDING_INCOMPLETE)은 전역 토스트
+          onPress={() =>
+            mutate(undefined, {
+              onSuccess: () => {
+                completeOnboarding();
+                router.replace("/");
+              },
+            })
+          }
         />
       </View>
     </View>

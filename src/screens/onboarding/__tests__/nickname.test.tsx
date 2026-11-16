@@ -12,7 +12,32 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
 }));
 
-beforeEach(() => useOnboardingStore.setState({ nickname: "", userType: null }));
+const mockUpdate = jest.fn(
+  (_body: unknown, options?: { onSuccess?: () => void }) =>
+    options?.onSuccess?.(),
+);
+let mockError: { message: string } | null = null;
+jest.mock("@/hooks/mutations/use-update-onboarding", () => ({
+  useUpdateOnboarding: () => ({
+    mutate: mockUpdate,
+    isPending: false,
+    error: mockError,
+    reset: jest.fn(),
+  }),
+}));
+let mockSaved: unknown = undefined;
+jest.mock("@/hooks/queries/use-get-onboarding", () => ({
+  useGetOnboarding: () => ({ data: mockSaved }),
+}));
+jest.mock("@/hooks/queries/use-get-categories", () => ({
+  useGetCategories: () => ({ data: [{ id: 6, name: "IT·기술" }] }),
+}));
+
+beforeEach(() => {
+  mockError = null;
+  mockSaved = undefined;
+  useOnboardingStore.setState({ nickname: "", userType: null });
+});
 
 const nextButton = () => screen.getByRole("button", { name: "다음으로" });
 
@@ -60,7 +85,43 @@ describe("NicknameScreen", () => {
     await user.type(screen.getByLabelText("닉네임"), " 아침형 ");
     await user.press(nextButton());
     expect(useOnboardingStore.getState().nickname).toBe("아침형");
+    expect(mockUpdate).toHaveBeenLastCalledWith(
+      { nickname: "아침형" },
+      expect.anything(),
+    );
     expect(router.push).toHaveBeenCalledWith("/user-type");
+  });
+
+  it("서버가 닉네임을 거절하면 그 문구를 입력창 아래에 보여주고 다음을 막는다", async () => {
+    mockError = { message: "닉네임 형식이 올바르지 않습니다." };
+    useOnboardingStore.setState({ nickname: "아침형" });
+    await render(<NicknameScreen />);
+    expect(
+      screen.getByText("닉네임 형식이 올바르지 않습니다."),
+    ).toBeOnTheScreen();
+    expect(nextButton()).toBeDisabled();
+  });
+
+  it("서버에 저장된 온보딩 값이 있으면 이어서 진행하도록 초안을 채운다", async () => {
+    mockSaved = {
+      nickname: "출근요정",
+      travelType: "STUDENT",
+      commuteStartTime: "07:30",
+      defaultCommuteMinutes: 45,
+      categoryIds: [6],
+      jobGroups: ["HR_ADMIN_LEGAL"],
+      region: null,
+      onboardingCompleted: false,
+    };
+    await render(<NicknameScreen />);
+    expect(screen.getByDisplayValue("출근요정")).toBeOnTheScreen();
+    expect(useOnboardingStore.getState()).toMatchObject({
+      userType: "student",
+      departureTime: { hour: 7, minute: 30 },
+      travelMinutes: 45,
+      interests: ["tech"],
+      jobGroup: "hr_legal",
+    });
   });
 
   it("다음을 누르기 전에 화면을 떠났다 돌아와도 입력하던 닉네임이 남는다", async () => {

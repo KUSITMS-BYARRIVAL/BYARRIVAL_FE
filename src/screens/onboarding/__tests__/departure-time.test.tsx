@@ -19,6 +19,19 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
 }));
 
+const mockUpdate = jest.fn(
+  (_body: unknown, options?: { onSuccess?: () => void }) =>
+    options?.onSuccess?.(),
+);
+jest.mock("@/hooks/mutations/use-update-onboarding", () => ({
+  useUpdateOnboarding: () => ({
+    mutate: mockUpdate,
+    isPending: false,
+    error: null,
+    reset: jest.fn(),
+  }),
+}));
+
 // 알림 안내 다이얼로그는 앱 루트의 DialogHost가 띄운다
 const renderScreen = () =>
   render(
@@ -92,7 +105,11 @@ describe("DepartureTimeScreen", () => {
       const user = userEvent.setup();
       await renderScreen();
       await user.press(screen.getByRole("button", { name: "다음으로" }));
-      // 다음으로는 안내만 띄우고 이동하지 않는다
+      // 다음으로는 시각을 저장하고 안내만 띄우며, 이동하지 않는다
+      expect(mockUpdate).toHaveBeenLastCalledWith(
+        { commuteStartTime: "08:00" },
+        expect.anything(),
+      );
       expect(router.push).not.toHaveBeenCalled();
       await user.press(screen.getByRole("button", { name }));
       expect(router.push).toHaveBeenCalledTimes(1);

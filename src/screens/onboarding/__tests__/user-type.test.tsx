@@ -12,6 +12,19 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
 }));
 
+const mockUpdate = jest.fn(
+  (_body: unknown, options?: { onSuccess?: () => void }) =>
+    options?.onSuccess?.(),
+);
+jest.mock("@/hooks/mutations/use-update-onboarding", () => ({
+  useUpdateOnboarding: () => ({
+    mutate: mockUpdate,
+    isPending: false,
+    error: null,
+    reset: jest.fn(),
+  }),
+}));
+
 beforeEach(() =>
   useOnboardingStore.setState({ nickname: "아침형", userType: null }),
 );
@@ -39,11 +52,15 @@ describe("UserTypeScreen", () => {
     expect(nextButton()).toBeEnabled();
   });
 
-  it("유형을 고르고 다음을 누르면 출근 시각 설정으로 넘어간다", async () => {
+  it("유형을 고르고 다음을 누르면 서버 코드로 저장한 뒤 출근 시각 설정으로 넘어간다", async () => {
     const user = userEvent.setup();
     await render(<UserTypeScreen />);
     await user.press(screen.getByRole("radio", { name: /기타/ }));
     await user.press(nextButton());
+    expect(mockUpdate).toHaveBeenLastCalledWith(
+      { travelType: "ETC" },
+      expect.anything(),
+    );
     expect(router.push).toHaveBeenCalledWith("/departure-time");
   });
 });
