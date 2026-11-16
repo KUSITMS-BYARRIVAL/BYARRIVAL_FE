@@ -1,18 +1,88 @@
 import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useSocialLogin } from "@/hooks/mutations/use-social-login";
+import {
+  getAppleToken,
+  getKakaoToken,
+  isAppleLoginAvailable,
+} from "@/lib/social-auth";
 import { SocialLoginButton } from "@/screens/auth/_components/social-login-button";
+import { useOnboardingStore } from "@/stores/onboarding-store";
+import { useToastStore } from "@/stores/toast-store";
+import type { SocialLoginRequest } from "@/types/auth/auth.types";
 
 const heroImage = require("@/assets/images/login-hero.jpg");
 
 // Figma 지하철 안 곰 일러스트(393×559) 비율
 const HERO_ASPECT_RATIO = 393 / 559;
 
+const SDK_ERROR_MESSAGE = "로그인하지 못했어요. 잠시 후 다시 시도해 주세요.";
+
+/** 소셜 SDK에서 토큰을 받는다. 사용자가 취소하면 null */
+async function requestSocialToken(
+  provider: SocialLoginRequest["provider"],
+): Promise<SocialLoginRequest | null> {
+  if (provider === "KAKAO") {
+    const token = await getKakaoToken();
+    return token ? { provider, token } : null;
+  }
+  const apple = await getAppleToken();
+  return apple
+    ? {
+        provider,
+        token: apple.token,
+        ...(apple.authorizationCode && {
+          authorizationCode: apple.authorizationCode,
+        }),
+      }
+    : null;
+}
+
 export function SignInScreen() {
   const { bottom } = useSafeAreaInsets();
+  const { mutate, isPending } = useSocialLogin();
+  const completeOnboarding = useOnboardingStore(
+    (state) => state.completeOnboarding,
+  );
+  const showToast = useToastStore((state) => state.showToast);
+  // SDK 로그인 창이 떠 있는 동안 버튼을 다시 누르지 못하게 한다
+  const [isAuthorizing, setIsAuthorizing] = useState(false);
+  // Apple 로그인은 iOS에서만 된다
+  const [canUseApple, setCanUseApple] = useState(false);
+
+  useEffect(() => {
+    isAppleLoginAvailable().then(setCanUseApple);
+  }, []);
+
+  const signIn = async (provider: SocialLoginRequest["provider"]) => {
+    setIsAuthorizing(true);
+    try {
+      const body = await requestSocialToken(provider);
+      if (!body) return;
+      mutate(body, {
+        // TODO: termsAgreed가 false면 약관 화면(ONB-03)으로 — 약관 화면 디자인 전까지는 온보딩으로 보낸다
+        onSuccess: ({ onboardingCompleted }) => {
+          if (onboardingCompleted) {
+            completeOnboarding();
+            router.replace("/");
+            return;
+          }
+          // 온보딩 첫 화면이 서버에 저장된 값으로 이어서 진행한다
+          router.replace("/nickname");
+        },
+      });
+    } catch {
+      showToast({ message: SDK_ERROR_MESSAGE });
+    } finally {
+      setIsAuthorizing(false);
+    }
+  };
+  const isBusy = isAuthorizing || isPending;
 
   // 어두운 배경이라 이 화면에 있는 동안만 상태바 글자를 밝게 하고, 떠나면 되돌린다
   useFocusEffect(() => {
@@ -46,16 +116,17 @@ export function SignInScreen() {
           </Text>
         </View>
         <View className="gap-3 px-5">
-          {/* TODO: 소셜 로그인 연동 (백엔드 인증 API 명세 확정 후)
-              화면설계서 ONB-02: 신규 회원 → ONB-03 약관, 기존 회원 → 홈, 온보딩 미완료 → 중단한 단계
-              약관 화면 디자인 전까지는 닉네임 입력으로 바로 이동한다 */}
-          <SocialLoginButton
-            provider="apple"
-            onPress={() => router.push("/nickname")}
-          />
+          {canUseApple && (
+            <SocialLoginButton
+              provider="apple"
+              disabled={isBusy}
+              onPress={() => signIn("APPLE")}
+            />
+          )}
           <SocialLoginButton
             provider="kakao"
-            onPress={() => router.push("/nickname")}
+            disabled={isBusy}
+            onPress={() => signIn("KAKAO")}
           />
         </View>
       </View>
