@@ -1,15 +1,14 @@
 import { View } from "react-native";
 
+import { InterestTile } from "@/screens/_components/interest-tile";
+import { INTERESTS } from "@/screens/_constants";
 import { useProfileStore } from "@/stores/profile-store";
 
-import { InterestTile } from "./_components/interest-tile";
 import { SettingsLayout } from "./_components/settings-layout";
-import { PROFILE_INTERESTS } from "./_constants";
 
 // 2개씩 한 줄로 나눈다 (Figma 2열 · 간격 8px)
-const ROWS = Array.from(
-  { length: Math.ceil(PROFILE_INTERESTS.length / 2) },
-  (_, i) => PROFILE_INTERESTS.slice(i * 2, i * 2 + 2),
+const ROWS = Array.from({ length: Math.ceil(INTERESTS.length / 2) }, (_, i) =>
+  INTERESTS.slice(i * 2, i * 2 + 2),
 );
 
 // Figma 마이 - 설정(관심 카테고리): 여러 개 고를 수 있고 누르면 바로 저장된다

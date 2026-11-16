@@ -15,8 +15,8 @@ type InterestTileProps = {
   className?: string;
 };
 
-// Figma SelectionButton_Category (마이 - 설정 관심 카테고리): 160px 높이, 60px 아이콘과 이름을 가운데에 둔다
-// 온보딩 SelectionTile(40px 아이콘·영문 부제·아래 정렬)과 시안이 달라 이 화면 전용으로 둔다
+// Figma SelectionButton_Category: 160px 높이, 60px 아이콘과 이름을 가운데에 둔다
+// 온보딩 관심 분야 선택과 마이 관심 카테고리 설정에서 함께 쓴다
 export function InterestTile({
   Icon,
   title,

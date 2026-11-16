@@ -20,11 +20,11 @@ export function NicknamePreviewCard({
       )}
     >
       <BearMagnifierIllustration />
-      <View className="w-full items-center gap-2.5 px-5 pb-5">
+      <View className="w-full items-center gap-3 px-5 pb-5">
         <Text className="text-center text-tertiary text-caption1-r">
-          앱에서 이렇게 보여요
+          앱에서 이렇게 보여요.
         </Text>
-        <View className="items-center gap-2">
+        <View className="items-center gap-1">
           <Text className="text-center text-primary text-title1-sb">
             {nickname}님,
           </Text>

@@ -5,13 +5,18 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
-import { SelectionTile } from "@/screens/_components/selection-tile";
+import { InterestTile } from "@/screens/_components/interest-tile";
 import { INTERESTS } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
 
-// 화면설계서 ONB-08 관심 분야 선택
+// 2개씩 한 줄로 나눈다 (Figma 2열 · 간격 8px)
+const ROWS = Array.from({ length: Math.ceil(INTERESTS.length / 2) }, (_, i) =>
+  INTERESTS.slice(i * 2, i * 2 + 2),
+);
+
+// 화면설계서 ONB-08 관심 분야 선택 (Figma 온보딩_수정_최최종 Step5)
 export function InterestsScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const interests = useOnboardingStore((state) => state.interests);
@@ -22,7 +27,10 @@ export function InterestsScreen() {
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
       {/* 화면설계서: 뒤로 → ONB-07 */}
       <Header onBack={() => router.back()} />
-      <ScrollView className="flex-1" contentContainerClassName="gap-5 pt-3.5">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="gap-3.5 pt-3.5 pb-3"
+      >
         <ProgressStepper
           total={ONBOARDING_STEPS}
           current={5}
@@ -49,24 +57,24 @@ export function InterestsScreen() {
             >
               {count > 0 ? `${count}개 선택됨` : "1개 이상 골라주세요"}
             </Text>
-            <View className="flex-row flex-wrap justify-between gap-y-2 px-5 pb-3">
-              {INTERESTS.map(
-                ({ value, title, subtitle, Icon, SelectedIcon }) => {
-                  const isSelected = interests.includes(value);
-                  const TileIcon = isSelected ? SelectedIcon : Icon;
-                  return (
-                    <SelectionTile
-                      key={value}
-                      icon={<TileIcon />}
-                      title={title}
-                      subtitle={subtitle}
-                      isSelected={isSelected}
-                      className="w-[49%]"
-                      onPress={() => toggleInterest(value)}
-                    />
-                  );
-                },
-              )}
+            <View className="gap-2 px-5">
+              {ROWS.map((row) => (
+                <View key={row[0]!.value} className="flex-row gap-2">
+                  {row.map(({ value, title, Icon, SelectedIcon }) => {
+                    const isSelected = interests.includes(value);
+                    return (
+                      <InterestTile
+                        key={value}
+                        Icon={isSelected ? SelectedIcon : Icon}
+                        title={title}
+                        isSelected={isSelected}
+                        onPress={() => toggleInterest(value)}
+                        className="flex-1"
+                      />
+                    );
+                  })}
+                </View>
+              ))}
             </View>
           </View>
         </View>

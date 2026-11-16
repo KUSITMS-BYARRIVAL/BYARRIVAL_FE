@@ -2,12 +2,8 @@ import type { ComponentType } from "react";
 import type { SvgProps } from "react-native-svg";
 
 import {
-  CategoryCareerIcon,
-  CategoryCareerSelectedIcon,
   CategoryCounselIcon,
   CategoryCounselSelectedIcon,
-  CategoryCultureIcon,
-  CategoryCultureSelectedIcon,
   CategoryDeliveryIcon,
   CategoryDeliverySelectedIcon,
   CategoryDesignIcon,
@@ -20,6 +16,8 @@ import {
   CategoryFinanceSelectedIcon,
   CategoryGlobalIcon,
   CategoryGlobalSelectedIcon,
+  CategoryHealthIcon,
+  CategoryHealthSelectedIcon,
   CategoryHumanResourcesIcon,
   CategoryHumanResourcesSelectedIcon,
   CategoryLaptopIcon,
@@ -40,6 +38,8 @@ import {
   CategoryScienceSelectedIcon,
   CategorySocietyIcon,
   CategorySocietySelectedIcon,
+  CategorySportsIcon,
+  CategorySportsSelectedIcon,
   CategoryTechIcon,
   CategoryTechSelectedIcon,
 } from "@/assets/icons";
@@ -92,69 +92,60 @@ export const USER_TYPES: {
   },
 ];
 
-// 관심 분야 선택지 (화면설계서 ONB-08). 온보딩 관심 분야 선택·완료 요약, 마이 관심 카테고리 설정에서 함께 쓴다
+// 관심 분야 선택지 (Figma SelectionButton_Category 순서·이름·아이콘). 온보딩 관심 분야 선택·완료 요약, 마이 관심 카테고리 설정에서 함께 쓴다
 export const INTERESTS: {
   value: Interest;
   title: string;
-  subtitle: string;
   Icon: ComponentType<SvgProps>;
   SelectedIcon: ComponentType<SvgProps>;
 }[] = [
   {
     value: "economy",
-    title: "경제",
-    subtitle: "Economy",
+    title: "경제·금융",
     Icon: CategoryEconomyIcon,
     SelectedIcon: CategoryEconomySelectedIcon,
   },
   {
-    value: "tech",
-    title: "테크",
-    subtitle: "Tech",
-    Icon: CategoryTechIcon,
-    SelectedIcon: CategoryTechSelectedIcon,
+    value: "health",
+    title: "건강·생활",
+    Icon: CategoryHealthIcon,
+    SelectedIcon: CategoryHealthSelectedIcon,
   },
   {
-    value: "career",
-    title: "커리어",
-    subtitle: "Career",
-    Icon: CategoryCareerIcon,
-    SelectedIcon: CategoryCareerSelectedIcon,
-  },
-  {
-    value: "society",
-    title: "사회",
-    subtitle: "Society",
-    Icon: CategorySocietyIcon,
-    SelectedIcon: CategorySocietySelectedIcon,
-  },
-  {
-    value: "global",
-    title: "글로벌",
-    subtitle: "Global",
-    Icon: CategoryGlobalIcon,
-    SelectedIcon: CategoryGlobalSelectedIcon,
-  },
-  {
-    value: "life",
-    title: "라이프",
-    subtitle: "Lifestyle",
+    value: "entertainment",
+    title: "연예·문화",
     Icon: CategoryLifeIcon,
     SelectedIcon: CategoryLifeSelectedIcon,
   },
   {
+    value: "politics",
+    title: "정치·사회",
+    Icon: CategorySocietyIcon,
+    SelectedIcon: CategorySocietySelectedIcon,
+  },
+  {
     value: "science",
-    title: "과학",
-    subtitle: "Science",
+    title: "과학·환경",
     Icon: CategoryScienceIcon,
     SelectedIcon: CategoryScienceSelectedIcon,
   },
   {
-    value: "culture",
-    title: "문화",
-    subtitle: "Culture",
-    Icon: CategoryCultureIcon,
-    SelectedIcon: CategoryCultureSelectedIcon,
+    value: "tech",
+    title: "IT·기술",
+    Icon: CategoryTechIcon,
+    SelectedIcon: CategoryTechSelectedIcon,
+  },
+  {
+    value: "global",
+    title: "세계·국제",
+    Icon: CategoryGlobalIcon,
+    SelectedIcon: CategoryGlobalSelectedIcon,
+  },
+  {
+    value: "sports",
+    title: "스포츠",
+    Icon: CategorySportsIcon,
+    SelectedIcon: CategorySportsSelectedIcon,
   },
 ];
 

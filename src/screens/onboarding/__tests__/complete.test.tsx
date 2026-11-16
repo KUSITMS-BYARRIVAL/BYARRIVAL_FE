@@ -23,7 +23,7 @@ describe("OnboardingCompleteScreen", () => {
     expect(screen.getByText("학생")).toBeOnTheScreen();
     expect(screen.getByText("오후 6:05")).toBeOnTheScreen();
     // 고른 순서가 아니라 화면 목록 순서로 보여준다
-    expect(screen.getByText("경제, 테크")).toBeOnTheScreen();
+    expect(screen.getByText("경제·금융, IT·기술")).toBeOnTheScreen();
   });
 
   it("자정·정오는 12시로 표기한다", async () => {
