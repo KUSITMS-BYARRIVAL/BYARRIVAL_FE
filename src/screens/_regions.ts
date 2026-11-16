@@ -105,7 +105,8 @@ export const REGIONS: Record<string, string[]> = {
     "중구",
   ],
   대전: ["대덕구", "동구", "서구", "유성구", "중구"],
-  세종: [],
+  // 하위 구역이 없어 시 자체를 한 항목으로 둔다 (시/도 전체 선택이 없으므로)
+  세종: ["세종시"],
   울산: ["남구", "동구", "북구", "울주군", "중구"],
   광주: ["광산구", "남구", "동구", "북구", "서구"],
   강원: [
@@ -246,6 +247,3 @@ export const REGIONS: Record<string, string[]> = {
 };
 
 export const PROVINCES = Object.keys(REGIONS);
-
-/** 시/도 단위로 고를 때 목록 맨 위에 두는 항목 (예: 서울전체) */
-export const wholeProvince = (province: string) => `${province}전체`;

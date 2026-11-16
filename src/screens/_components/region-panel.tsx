@@ -9,7 +9,7 @@ type RegionPanelProps = {
   provinces: string[];
   selectedProvince: string;
   onProvincePress: (province: string) => void;
-  /** 선택한 시·도의 구·군 목록 (예: 서울전체, 강남구) */
+  /** 선택한 시·도의 구·군 목록 (예: 강남구, 강동구) */
   districts: string[];
   /** 체크할 구·군. 하나만 고르는지 여러 개 고르는지는 사용처에서 정한다 */
   selectedDistricts: string[];

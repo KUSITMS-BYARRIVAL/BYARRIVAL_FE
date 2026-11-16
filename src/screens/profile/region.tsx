@@ -5,17 +5,16 @@ import { Chip } from "@/components/chip/chip";
 import { SearchField } from "@/components/search-field/search-field";
 import { RegionPanel } from "@/screens/_components/region-panel";
 import { regionLabel } from "@/screens/_constants";
-import { PROVINCES, REGIONS, wholeProvince } from "@/screens/_regions";
+import { PROVINCES, REGIONS } from "@/screens/_regions";
 import type { Region } from "@/stores/onboarding-store";
 import { useProfileStore } from "@/stores/profile-store";
 
 import { SettingsLayout } from "./_components/settings-layout";
 
-// 시/도·시/군/구 통합 검색 대상 (예: "강남" → 서울 강남구)
-const ALL_REGIONS: Region[] = PROVINCES.flatMap((province) => [
-  { province, district: null },
-  ...REGIONS[province].map((district) => ({ province, district })),
-]);
+// 시/군/구 통합 검색 대상 (예: "강남" → 서울 강남구). 시/도 전체는 고르지 않는다
+const ALL_REGIONS: Region[] = PROVINCES.flatMap((province) =>
+  REGIONS[province].map((district) => ({ province, district })),
+);
 
 // Figma 마이 - 설정(근무 지역): 온보딩 근무지 선택과 같은 검색·지역 패널, 고르면 바로 저장된다
 export function ProfileRegionScreen() {
@@ -25,9 +24,8 @@ export function ProfileRegionScreen() {
   const [query, setQuery] = useState("");
   const keyword = query.trim();
 
-  const whole = wholeProvince(province);
   const checkedDistrict =
-    region?.province === province ? (region.district ?? whole) : null;
+    region?.province === province ? region.district : null;
 
   // 검색 결과를 고르면 해당 시/도 탭과 시/군/구를 함께 선택한다
   const selectRegion = (next: Region) => {
@@ -91,15 +89,10 @@ export function ProfileRegionScreen() {
             provinces={PROVINCES}
             selectedProvince={province}
             onProvincePress={setProvince}
-            districts={[whole, ...REGIONS[province]]}
+            districts={REGIONS[province]}
             selectedDistricts={checkedDistrict ? [checkedDistrict] : []}
             // 단일 선택: 다른 항목을 누르면 선택이 바뀐다
-            onDistrictPress={(district) =>
-              setRegion({
-                province,
-                district: district === whole ? null : district,
-              })
-            }
+            onDistrictPress={(district) => setRegion({ province, district })}
             className="overflow-hidden rounded"
           />
         </View>
