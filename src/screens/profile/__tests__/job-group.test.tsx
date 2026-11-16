@@ -21,5 +21,9 @@ describe("ProfileJobGroupScreen", () => {
     expect(screen.getByRole("radio", { name: /IT개발·데이터/ })).toBeChecked();
     await user.press(screen.getByRole("radio", { name: /디자인/ }));
     expect(useProfileStore.getState().jobGroup).toBe("design");
+    expect(screen.getByRole("radio", { name: /디자인/ })).toBeChecked();
+    expect(
+      screen.getByRole("radio", { name: /IT개발·데이터/ }),
+    ).not.toBeChecked();
   });
 });

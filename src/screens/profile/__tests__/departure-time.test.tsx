@@ -1,4 +1,9 @@
-import { render, screen, userEvent } from "@testing-library/react-native";
+import {
+  fireEvent,
+  render,
+  screen,
+  userEvent,
+} from "@testing-library/react-native";
 
 import { useProfileStore } from "@/stores/profile-store";
 
@@ -24,15 +29,31 @@ describe("ProfileDepartureTimeScreen", () => {
     ).toBeDisabled();
   });
 
-  it("요일 시간을 누르면 시간 설정 시트가 열리고, 확인을 누르면 저장한다", async () => {
+  it("요일 시간을 누르면 시간 설정 시트가 열리고, 바꾼 시각을 확인하면 저장해 보여준다", async () => {
     const user = userEvent.setup();
     await render(<ProfileDepartureTimeScreen />);
     await user.press(screen.getByRole("button", { name: "화 오전 09:00" }));
     expect(screen.getByText("시간 설정")).toBeOnTheScreen();
+    // 시 휠을 한 칸 올려 9시 → 10시
+    await fireEvent(
+      screen.getByRole("adjustable", { name: "시" }),
+      "accessibilityAction",
+      { nativeEvent: { actionName: "increment" } },
+    );
     await user.press(screen.getByRole("button", { name: "확인" }));
     expect(useProfileStore.getState().departureTimes.byWeekday.tue).toEqual({
-      hour: 9,
+      hour: 10,
       minute: 0,
     });
+    expect(
+      screen.getByRole("button", { name: "화 오전 10:00" }),
+    ).toBeOnTheScreen();
+    // 기본과 다른 요일은 그대로다
+    expect(
+      screen.getByRole("button", { name: "기본 오전 08:00" }),
+    ).toBeOnTheScreen();
+    expect(
+      screen.getByRole("button", { name: "월 오전 08:00" }),
+    ).toBeOnTheScreen();
   });
 });

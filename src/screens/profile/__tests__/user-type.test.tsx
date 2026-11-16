@@ -20,5 +20,7 @@ describe("ProfileUserTypeScreen", () => {
     expect(screen.getByRole("radio", { name: /직장인/ })).toBeChecked();
     await user.press(screen.getByRole("radio", { name: /학생/ }));
     expect(useProfileStore.getState().userType).toBe("student");
+    expect(screen.getByRole("radio", { name: /학생/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /직장인/ })).not.toBeChecked();
   });
 });

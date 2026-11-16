@@ -24,5 +24,7 @@ describe("ProfileRegionScreen", () => {
       province: "부산",
       district: "해운대구",
     });
+    expect(screen.getByText("부산 해운대구")).toBeOnTheScreen();
+    expect(screen.queryByText("서울 강남구")).not.toBeOnTheScreen();
   });
 });
