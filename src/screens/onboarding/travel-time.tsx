@@ -11,14 +11,10 @@ import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { COMMUTE_ILLUSTRATIONS, ONBOARDING_STEPS } from "./_constants";
 
-// 손잡이가 멈추는 값. 같은 간격 눈금(5·30·90분)과 실제 값이 맞도록 30분을 정가운데(6번째) 둔다
-// 화면설계서 ONB-07은 5~90분 5분 단위지만, 30분 이후는 10~15분 단위로 둔다 (기획 합의 필요)
-const STOPS = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 90];
-const LABELS = [
-  STOPS[0],
-  STOPS[(STOPS.length - 1) / 2],
-  STOPS[STOPS.length - 1],
-];
+// 화면설계서 ONB-07: 5~90분, 5분 단위
+const STOPS = Array.from({ length: 18 }, (_, i) => (i + 1) * 5);
+// 정가운데 실제 값은 47.5분이라 고를 수 있는 가까운 값(45분)으로 표시한다
+const LABELS = [5, 45, 90];
 
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
 
