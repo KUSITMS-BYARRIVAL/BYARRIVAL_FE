@@ -25,6 +25,7 @@ export function MyScreen() {
   const today = new Date();
   const year = today.getFullYear();
 
+  // TODO: 탭은 마운트가 유지돼 다시 조회되지 않는다 — 읽기 완료 · 스크랩 API 연동 시 그 mutation onSuccess에서 ['stats'] · ['scrap'] 쿼리를 invalidate
   const all = useGetStatsSummary("ALL");
   const month = useGetStatsSummary("MONTH");
   const yearSummary = useGetStatsSummary("YEAR");
