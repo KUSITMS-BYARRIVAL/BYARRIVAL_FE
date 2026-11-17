@@ -1,14 +1,3 @@
-// shortcut: 카테고리별 기사 이미지 에셋이 아직 없어 탑승 기사 이미지 7장을 scrapId로 돌려 쓴다. assets/images/category/ 이미지가 오면 카테고리별로 교체
-export const ARTICLE_IMAGES = [
-  require("@/assets/images/news/stop-1.jpg"),
-  require("@/assets/images/news/stop-2.jpg"),
-  require("@/assets/images/news/stop-3.jpg"),
-  require("@/assets/images/news/stop-4.jpg"),
-  require("@/assets/images/news/stop-5.jpg"),
-  require("@/assets/images/news/stop-6.jpg"),
-  require("@/assets/images/news/stop-7.jpg"),
-];
-
 export const ARCHIVE_TABS = {
   article: {
     label: "기사",

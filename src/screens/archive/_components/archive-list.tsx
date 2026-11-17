@@ -2,15 +2,11 @@ import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
+import { CATEGORY_IMAGES, CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { CategoryFilter } from "@/screens/archive/_components/category-filter";
 import { ScrappedArticleCard } from "@/screens/archive/_components/scrapped-article-card";
-import {
-  ARCHIVE_TABS,
-  ARTICLE_IMAGES,
-  type ArchiveTab,
-} from "@/screens/archive/_constants";
+import { ARCHIVE_TABS, type ArchiveTab } from "@/screens/archive/_constants";
 import type {
   Library,
   LibraryArticle,
@@ -63,24 +59,21 @@ export function ArchiveList({
       </View>
       <View className="gap-3.5 px-5">
         {tab === "article"
-          ? articles
-              .filter(isVisible)
-              .map((article) => (
-                <ScrappedArticleCard
-                  key={article.scrapId}
-                  category={CATEGORY_KEY_BY_ID[article.categoryId]}
-                  categoryLabel={article.categoryName}
-                  title={article.title}
-                  image={
-                    ARTICLE_IMAGES[article.scrapId % ARTICLE_IMAGES.length]
-                  }
-                  aiSummary={article.oneLine}
-                  isBookmarked
-                  isDeleted={!article.available}
-                  onPress={() => openSource(article.sourceUrl)}
-                  onBookmarkPress={() => onRemove(article.scrapId)}
-                />
-              ))
+          ? articles.filter(isVisible).map((article) => (
+              <ScrappedArticleCard
+                key={article.scrapId}
+                category={CATEGORY_KEY_BY_ID[article.categoryId]}
+                categoryLabel={article.categoryName}
+                title={article.title}
+                // scrapId로 고르면 다시 그려도 같은 카드는 같은 이미지가 나온다
+                image={CATEGORY_IMAGES[article.categoryId][article.scrapId % 5]}
+                aiSummary={article.oneLine}
+                isBookmarked
+                isDeleted={!article.available}
+                onPress={() => openSource(article.sourceUrl)}
+                onBookmarkPress={() => onRemove(article.scrapId)}
+              />
+            ))
           : smalltalks
               .filter(isVisible)
               .map((smalltalk) => (
