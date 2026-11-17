@@ -11,6 +11,7 @@ import {
   getKakaoToken,
   isAppleLoginAvailable,
 } from "@/lib/social-auth";
+import { DevTokenLogin } from "@/screens/auth/_components/dev-token-login";
 import { SocialLoginButton } from "@/screens/auth/_components/social-login-button";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useToastStore } from "@/stores/toast-store";
@@ -93,45 +94,48 @@ export function SignInScreen() {
   });
 
   return (
-    // 작은 화면에서는 일러스트가 커서 로그인 버튼이 밀리므로 스크롤로 닿게 한다
-    <ScrollView
-      className="flex-1 bg-black"
-      contentContainerStyle={{ paddingBottom: bottom }}
-      bounces={false}
-    >
-      <Image
-        source={heroImage}
-        contentFit="cover"
-        accessibilityIgnoresInvertColors
-        style={{ width: "100%", aspectRatio: HERO_ASPECT_RATIO }}
-      />
-      <View className="gap-9 pt-5">
-        <View className="gap-3.5 px-5">
-          <Text
-            accessibilityRole="header"
-            className="text-on-fill-default text-heading1-b"
-          >
-            반가워요!
-          </Text>
-          <Text className="text-on-fill-muted text-body2-m">
-            도착까지와 함께 이동길을 더 가치있게 보내요.
-          </Text>
-        </View>
-        <View className="gap-3 px-5">
-          {canUseApple && (
+    <View className="flex-1">
+      {/* 작은 화면에서는 일러스트가 커서 로그인 버튼이 밀리므로 스크롤로 닿게 한다 */}
+      <ScrollView
+        className="flex-1 bg-black"
+        contentContainerStyle={{ paddingBottom: bottom }}
+        bounces={false}
+      >
+        <Image
+          source={heroImage}
+          contentFit="cover"
+          accessibilityIgnoresInvertColors
+          style={{ width: "100%", aspectRatio: HERO_ASPECT_RATIO }}
+        />
+        <View className="gap-9 pt-5">
+          <View className="gap-3.5 px-5">
+            <Text
+              accessibilityRole="header"
+              className="text-on-fill-default text-heading1-b"
+            >
+              반가워요!
+            </Text>
+            <Text className="text-on-fill-muted text-body2-m">
+              도착까지와 함께 이동길을 더 가치있게 보내요.
+            </Text>
+          </View>
+          <View className="gap-3 px-5">
+            {canUseApple && (
+              <SocialLoginButton
+                provider="apple"
+                disabled={isBusy}
+                onPress={() => signIn("APPLE")}
+              />
+            )}
             <SocialLoginButton
-              provider="apple"
+              provider="kakao"
               disabled={isBusy}
-              onPress={() => signIn("APPLE")}
+              onPress={() => signIn("KAKAO")}
             />
-          )}
-          <SocialLoginButton
-            provider="kakao"
-            disabled={isBusy}
-            onPress={() => signIn("KAKAO")}
-          />
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      {__DEV__ && <DevTokenLogin />}
+    </View>
   );
 }
