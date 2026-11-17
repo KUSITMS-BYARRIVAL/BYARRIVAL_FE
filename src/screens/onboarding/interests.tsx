@@ -10,11 +10,11 @@ import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
 import { useGetCategories } from "@/hooks/queries/use-get-categories";
 import { InterestTile } from "@/screens/_components/interest-tile";
 import { INTERESTS } from "@/screens/_constants";
+import { toCategoryIds } from "@/screens/_helpers";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useToastStore } from "@/stores/toast-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
-import { toCategoryIds } from "./_helpers";
 
 const SAVE_ERROR_MESSAGE =
   "관심 분야를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";

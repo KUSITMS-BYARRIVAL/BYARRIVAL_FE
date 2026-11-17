@@ -48,12 +48,7 @@ import {
   AssetSubwayIllustration,
   AssetSuitIllustration,
 } from "@/assets/illustrations";
-import type {
-  Interest,
-  JobGroup,
-  Region,
-  UserType,
-} from "@/stores/onboarding-store";
+import type { Interest, JobGroup, UserType } from "@/stores/onboarding-store";
 
 // 사용자 유형별로 '출근' · '출근길' · '직장인' 문구를 바꾼다
 export const COMMUTE_WORDS: Record<
@@ -242,7 +237,3 @@ export const JOB_GROUPS: {
     SelectedIcon: CategoryEtcSelectedIcon,
   },
 ];
-
-// 예: 서울 강남구 (시/도 전체 선택은 두지 않는다)
-export const regionLabel = ({ province, district }: Region) =>
-  `${province} ${district}`;

@@ -1,51 +1,105 @@
+import { useState } from "react";
 import { View } from "react-native";
 
 import { NumericSpinner } from "@/components/numeric-spinner/numeric-spinner";
-import { useProfileStore } from "@/stores/profile-store";
+import { useReplaceWeeklyCommute } from "@/hooks/mutations/use-replace-weekly-commute";
+import { useUpdateMe } from "@/hooks/mutations/use-update-me";
+import { useGetMe } from "@/hooks/queries/use-get-me";
+import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { useToastStore } from "@/stores/toast-store";
+import type { UserMeResponse } from "@/types/user/user.types";
 
+import { SettingsLayout } from "./_components/settings-layout";
+import { UserMeState } from "./_components/user-me-state";
 import { WeeklySettingsLayout } from "./_components/weekly-settings-layout";
-import { WEEKDAYS } from "./_constants";
+import { MAX_MINUTES, MINUTE_STEP, WEEKDAYS } from "./_constants";
+import {
+  earliestTime,
+  toDailyCommutes,
+  toWeeklyPlan,
+  type WeeklyPlan,
+} from "./_helpers";
 
-// 온보딩 이동 시간처럼 5분 단위, 최대 90분
-const STEP = 5;
-const MAX_MINUTES = 90;
+const TITLE = "요일별 이동 시간";
+// +/- 를 연달아 누르는 동안은 화면에만 반영하고, 멈춘 뒤 한 번만 저장한다
+const SAVE_DELAY_MS = 600;
+const DEFAULT_MINUTES = 30;
+const NO_COMMUTE_DAY_MESSAGE = "이동하는 요일이 하루 이상 있어야 저장돼요";
 
 const describe = (minutes: number) =>
   minutes > 0 ? `약 ${minutes}분` : "쉬는 날";
 
 // Figma 마이 - 설정(요일별 이동 시간)
+// 기본 → PATCH /users/me, 요일 → PUT /users/me/weekly-commute. 0분이면 쉬는 날(이동하지 않는 요일)
 export function ProfileTravelTimeScreen() {
-  const travelMinutes = useProfileStore((state) => state.travelMinutes);
-  const setBaseTravelMinutes = useProfileStore(
-    (state) => state.setBaseTravelMinutes,
-  );
-  const setTravelMinutes = useProfileStore((state) => state.setTravelMinutes);
+  const { data: me } = useGetMe();
+  if (!me) {
+    return (
+      <SettingsLayout title={TITLE}>
+        <UserMeState>{() => null}</UserMeState>
+      </SettingsLayout>
+    );
+  }
+  return <TravelTimeForm me={me} />;
+}
+
+function TravelTimeForm({ me }: { me: UserMeResponse }) {
+  const { mutate: updateMe } = useUpdateMe();
+  const { mutate: replaceWeekly } = useReplaceWeeklyCommute();
+  const showToast = useToastStore((state) => state.showToast);
+  const [base, setBase] = useState(me.defaultCommuteMinutes ?? DEFAULT_MINUTES);
+  const [plan, setPlan] = useState(() => toWeeklyPlan(me.weeklyCommute));
+
+  const saveBase = useDebouncedCallback((minutes: number) => {
+    updateMe({ defaultCommuteMinutes: minutes });
+  }, SAVE_DELAY_MS);
+  const saveWeekly = useDebouncedCallback((next: WeeklyPlan) => {
+    const days = toDailyCommutes(next);
+    // 서버는 이동하는 요일이 하루 이상이어야 받는다
+    if (days.length === 0) {
+      showToast({ message: NO_COMMUTE_DAY_MESSAGE });
+      return;
+    }
+    replaceWeekly(days);
+  }, SAVE_DELAY_MS);
+
+  const changeDay = (weekday: keyof WeeklyPlan, minutes: number) => {
+    // 쉬는 날을 이동하는 날로 바꾸면 출근 시각은 기본(가장 이른) 시각으로 채운다
+    const time =
+      plan[weekday].minutes === 0 ? earliestTime(plan) : plan[weekday].time;
+    const next = { ...plan, [weekday]: { minutes, time } };
+    setPlan(next);
+    saveWeekly(next);
+  };
 
   return (
     <WeeklySettingsLayout
-      title="요일별 이동 시간"
+      title={TITLE}
       base={
         <NumericSpinner
           label="기본"
-          description={describe(travelMinutes.base)}
-          value={travelMinutes.base}
-          onChange={setBaseTravelMinutes}
-          step={STEP}
+          description={describe(base)}
+          value={base}
+          onChange={(minutes) => {
+            setBase(minutes);
+            saveBase(minutes);
+          }}
+          step={MINUTE_STEP}
           max={MAX_MINUTES}
         />
       }
     >
       <View className="gap-3 rounded bg-white p-5">
         {WEEKDAYS.map(({ value, label }) => {
-          const minutes = travelMinutes.byWeekday[value];
+          const { minutes } = plan[value];
           return (
             <NumericSpinner
               key={value}
               label={label}
               description={describe(minutes)}
               value={minutes}
-              onChange={(next) => setTravelMinutes(value, next)}
-              step={STEP}
+              onChange={(next) => changeDay(value, next)}
+              step={MINUTE_STEP}
               max={MAX_MINUTES}
             />
           );

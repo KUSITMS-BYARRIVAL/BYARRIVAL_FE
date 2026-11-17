@@ -16,12 +16,13 @@ import { TextField } from "@/components/text-field/text-field";
 import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
 import { useGetCategories } from "@/hooks/queries/use-get-categories";
 import { useGetOnboarding } from "@/hooks/queries/use-get-onboarding";
+import { toInterests } from "@/screens/_helpers";
 import { NicknamePreviewCard } from "@/screens/onboarding/_components/nickname-preview-card";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useToastStore } from "@/stores/toast-store";
 
 import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
-import { toInterests, toOnboardingDraft } from "./_helpers";
+import { toOnboardingDraft } from "./_helpers";
 
 // 중간에 이탈했다 돌아오면 서버에 저장된 값으로 초안을 1번 채운다 (첫 화면에서만)
 // 관심 분야만 카테고리 목록이 필요해, 목록 조회가 실패해도 나머지 값은 복원되도록 따로 채운다

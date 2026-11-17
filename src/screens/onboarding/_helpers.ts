@@ -1,37 +1,10 @@
-import { INTERESTS } from "@/screens/_constants";
-import type { Interest, JobGroup } from "@/stores/onboarding-store";
+import type { JobGroup } from "@/stores/onboarding-store";
 import {
   fromHHmm,
   fromJobGroupCode,
   fromTravelType,
 } from "@/types/user/user.mappers";
-import type {
-  CategoryResponse,
-  OnboardingResponse,
-} from "@/types/user/user.types";
-
-// 서버 카테고리는 id·이름만 주므로 이름을 앱 선택지(아이콘이 붙은 8개)의 title과 맞춰 짝짓는다
-const titleOf = (interest: Interest) =>
-  INTERESTS.find(({ value }) => value === interest)?.title;
-
-export const toCategoryIds = (
-  interests: Interest[],
-  categories: CategoryResponse[],
-) =>
-  interests.flatMap((interest) => {
-    const category = categories.find(({ name }) => name === titleOf(interest));
-    return category ? [category.id] : [];
-  });
-
-export const toInterests = (
-  ids: number[] | null,
-  categories: CategoryResponse[],
-) =>
-  (ids ?? []).flatMap((id) => {
-    const name = categories.find((category) => category.id === id)?.name;
-    const interest = INTERESTS.find(({ title }) => title === name)?.value;
-    return interest ? [interest] : [];
-  });
+import type { OnboardingResponse } from "@/types/user/user.types";
 
 /**
  * 서버에 저장된 값 중 있는 것만 초안으로 바꾼다 (없는 항목은 화면 기본값 유지).
