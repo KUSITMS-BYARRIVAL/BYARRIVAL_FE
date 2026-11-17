@@ -1,14 +1,13 @@
 import { ScrollView } from "react-native";
 
 import { CategoryChip } from "@/components/chip/category-chip";
-import type { ARCHIVE_CATEGORIES } from "@/screens/archive/_constants";
-import type { Category } from "@/theme/category";
+import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 
 type CategoryFilterProps = {
   /** '전체' 뒤에 보여줄 카테고리 칩 */
-  chips: typeof ARCHIVE_CATEGORIES;
-  value: Category | "all";
-  onChange: (value: Category | "all") => void;
+  chips: { categoryId: number; name: string }[];
+  value: number | "all";
+  onChange: (value: number | "all") => void;
 };
 
 export function CategoryFilter({
@@ -22,13 +21,19 @@ export function CategoryFilter({
       showsHorizontalScrollIndicator={false}
       contentContainerClassName="gap-2.5 px-5"
     >
-      {[{ value: "all" as const, label: "전체" }, ...chips].map((chip) => (
+      <CategoryChip
+        category="all"
+        label="전체"
+        selected={value === "all"}
+        onPress={() => onChange("all")}
+      />
+      {chips.map((chip) => (
         <CategoryChip
-          key={chip.value}
-          category={chip.value}
-          label={chip.label}
-          selected={value === chip.value}
-          onPress={() => onChange(chip.value)}
+          key={chip.categoryId}
+          category={CATEGORY_KEY_BY_ID[chip.categoryId]}
+          label={chip.name}
+          selected={value === chip.categoryId}
+          onPress={() => onChange(chip.categoryId)}
         />
       ))}
     </ScrollView>

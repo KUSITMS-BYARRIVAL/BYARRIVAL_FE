@@ -52,7 +52,7 @@ import type { Interest, JobGroup, UserType } from "@/stores/onboarding-store";
 import type { Category } from "@/theme/category";
 
 // 서버 카테고리 id(GET /categories, 고정) → 칩 색 키. 스포츠는 예전 이름 그대로 career 키를 쓴다
-export const CATEGORY_KEY_BY_ID: Partial<Record<number, Category>> = {
+export const CATEGORY_KEY_BY_ID: Record<number, Category> = {
   1: "life",
   2: "culture",
   3: "society",
@@ -61,6 +61,67 @@ export const CATEGORY_KEY_BY_ID: Partial<Record<number, Category>> = {
   6: "tech",
   7: "global",
   8: "career",
+};
+
+// 기사 이미지가 API에 없어 카테고리(서버 id)별 로컬 이미지 중 하나를 보여준다 (보관함 · 뉴스 탑승)
+// shortcut: PNG(320×180, 장당 약 80KB · 40장 약 3.3MB)로 넣었다. 앱 용량을 더 줄이려면 WebP로 변환하고 require 경로 확장자를 .webp로 바꿀 것 (expo-image가 WebP 지원)
+export const CATEGORY_IMAGES: Record<number, number[]> = {
+  1: [
+    require("@/assets/images/category/health-1.png"),
+    require("@/assets/images/category/health-2.png"),
+    require("@/assets/images/category/health-3.png"),
+    require("@/assets/images/category/health-4.png"),
+    require("@/assets/images/category/health-5.png"),
+  ],
+  2: [
+    require("@/assets/images/category/entertainment-1.png"),
+    require("@/assets/images/category/entertainment-2.png"),
+    require("@/assets/images/category/entertainment-3.png"),
+    require("@/assets/images/category/entertainment-4.png"),
+    require("@/assets/images/category/entertainment-5.png"),
+  ],
+  3: [
+    require("@/assets/images/category/politics-1.png"),
+    require("@/assets/images/category/politics-2.png"),
+    require("@/assets/images/category/politics-3.png"),
+    require("@/assets/images/category/politics-4.png"),
+    require("@/assets/images/category/politics-5.png"),
+  ],
+  4: [
+    require("@/assets/images/category/economy-1.png"),
+    require("@/assets/images/category/economy-2.png"),
+    require("@/assets/images/category/economy-3.png"),
+    require("@/assets/images/category/economy-4.png"),
+    require("@/assets/images/category/economy-5.png"),
+  ],
+  5: [
+    require("@/assets/images/category/science-1.png"),
+    require("@/assets/images/category/science-2.png"),
+    require("@/assets/images/category/science-3.png"),
+    require("@/assets/images/category/science-4.png"),
+    require("@/assets/images/category/science-5.png"),
+  ],
+  6: [
+    require("@/assets/images/category/tech-1.png"),
+    require("@/assets/images/category/tech-2.png"),
+    require("@/assets/images/category/tech-3.png"),
+    require("@/assets/images/category/tech-4.png"),
+    require("@/assets/images/category/tech-5.png"),
+  ],
+  7: [
+    require("@/assets/images/category/global-1.png"),
+    require("@/assets/images/category/global-2.png"),
+    require("@/assets/images/category/global-3.png"),
+    require("@/assets/images/category/global-4.png"),
+    require("@/assets/images/category/global-5.png"),
+  ],
+  8: [
+    require("@/assets/images/category/sports-1.png"),
+    require("@/assets/images/category/sports-2.png"),
+    require("@/assets/images/category/sports-3.png"),
+    require("@/assets/images/category/sports-4.png"),
+    require("@/assets/images/category/sports-5.png"),
+  ],
 };
 
 // 사용자 유형별로 '출근' · '출근길' · '직장인' 문구를 바꾼다

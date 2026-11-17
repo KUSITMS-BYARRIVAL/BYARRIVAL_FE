@@ -7,6 +7,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { EditorPickSmalltalkIcon } from "@/assets/icons";
 import { Header } from "@/components/header/header";
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
+import { useSaveSmalltalk } from "@/hooks/mutations/use-save-smalltalk";
+import { useUnsaveSmalltalk } from "@/hooks/mutations/use-unsave-smalltalk";
 import { useGetTodaySmalltalks } from "@/hooks/queries/use-get-today-smalltalks";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
@@ -15,11 +17,27 @@ import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 export function SmalltalkScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { data, isPending } = useGetTodaySmalltalks();
-  // TODO: 스크랩 API 연결 전까지 서버 값(scrapped) 위에 화면 안에서만 담기 상태를 덮어쓴다
+  const saveSmalltalk = useSaveSmalltalk();
+  const unsaveSmalltalk = useUnsaveSmalltalk();
+  // 서버 응답을 기다리지 않고 북마크를 바로 바꿔 보여준다. 실패하면 되돌린다 (실패 토스트는 전역 처리)
   const [bookmarkOverrides, setBookmarkOverrides] = useState<
     Record<number, boolean>
   >({});
   const smalltalks = data?.smalltalks ?? [];
+
+  const toggleBookmark = (smalltalkId: number, isBookmarked: boolean) => {
+    // 요청 중 연타하면 저장·해제 응답 순서가 꼬여 서버와 화면이 달라질 수 있다
+    if (saveSmalltalk.isPending || unsaveSmalltalk.isPending) return;
+    const setBookmarked = (value: boolean) =>
+      setBookmarkOverrides((overrides) => ({
+        ...overrides,
+        [smalltalkId]: value,
+      }));
+    setBookmarked(!isBookmarked);
+    (isBookmarked ? unsaveSmalltalk : saveSmalltalk).mutate(smalltalkId, {
+      onError: () => setBookmarked(isBookmarked),
+    });
+  };
 
   return (
     <View className="flex-1 bg-default">
@@ -60,10 +78,7 @@ export function SmalltalkScreen() {
               return (
                 <EditorPickSmalltalkCard
                   key={smalltalk.smalltalkId}
-                  // shortcut: 매핑표에 없는 새 카테고리 id는 경제 색으로 보인다, 카테고리가 늘면 CATEGORY_KEY_BY_ID에 추가
-                  category={
-                    CATEGORY_KEY_BY_ID[smalltalk.categoryId] ?? "economy"
-                  }
+                  category={CATEGORY_KEY_BY_ID[smalltalk.categoryId]}
                   categoryLabel={smalltalk.categoryName}
                   newsTitle={smalltalk.articleTitle}
                   question={smalltalk.hook}
@@ -74,10 +89,7 @@ export function SmalltalkScreen() {
                       WebBrowser.openBrowserAsync(smalltalk.sourceUrl);
                   }}
                   onBookmarkPress={() =>
-                    setBookmarkOverrides((overrides) => ({
-                      ...overrides,
-                      [smalltalk.smalltalkId]: !isBookmarked,
-                    }))
+                    toggleBookmark(smalltalk.smalltalkId, isBookmarked)
                   }
                 />
               );
