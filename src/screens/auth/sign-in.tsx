@@ -1,5 +1,5 @@
 import { Image } from "expo-image";
-import { router, useFocusEffect } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -13,7 +13,6 @@ import {
 } from "@/lib/social-auth";
 import { DevTokenLogin } from "@/screens/auth/_components/dev-token-login";
 import { SocialLoginButton } from "@/screens/auth/_components/social-login-button";
-import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useToastStore } from "@/stores/toast-store";
 import type { SocialLoginRequest } from "@/types/auth/auth.types";
 
@@ -47,9 +46,6 @@ async function requestSocialToken(
 export function SignInScreen() {
   const { bottom } = useSafeAreaInsets();
   const { mutate, isPending } = useSocialLogin();
-  const completeOnboarding = useOnboardingStore(
-    (state) => state.completeOnboarding,
-  );
   const showToast = useToastStore((state) => state.showToast);
   // SDK 로그인 창이 떠 있는 동안 버튼을 다시 누르지 못하게 한다
   const [isAuthorizing, setIsAuthorizing] = useState(false);
@@ -67,18 +63,8 @@ export function SignInScreen() {
     try {
       const body = await requestSocialToken(provider);
       if (!body) return;
-      mutate(body, {
-        // TODO: termsAgreed가 false면 약관 화면(ONB-03)으로 — 약관 화면 디자인 전까지는 온보딩으로 보낸다
-        onSuccess: ({ onboardingCompleted }) => {
-          if (onboardingCompleted) {
-            completeOnboarding();
-            router.replace("/");
-            return;
-          }
-          // 온보딩 첫 화면이 서버에 저장된 값으로 이어서 진행한다
-          router.replace("/nickname");
-        },
-      });
+      // 성공하면 세션이 저장되고 루트 가드가 온보딩(이어서 진행) / 홈으로 보낸다
+      mutate(body);
     } catch {
       showToast({ message: SDK_ERROR_MESSAGE });
     } finally {

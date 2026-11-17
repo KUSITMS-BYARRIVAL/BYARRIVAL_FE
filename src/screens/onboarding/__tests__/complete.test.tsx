@@ -1,6 +1,11 @@
-import { render, screen, userEvent } from "@testing-library/react-native";
-import { router } from "expo-router";
+import {
+  render,
+  screen,
+  userEvent,
+  waitFor,
+} from "@testing-library/react-native";
 
+import { useAuthStore } from "@/stores/auth-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { OnboardingCompleteScreen } from "../complete";
@@ -8,7 +13,9 @@ import { OnboardingCompleteScreen } from "../complete";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { replace: jest.fn() } }));
+jest.mock("expo-secure-store", () => ({
+  setItemAsync: jest.fn().mockResolvedValue(undefined),
+}));
 
 let mockSucceeds = true;
 const mockComplete = jest.fn(
@@ -46,23 +53,21 @@ describe("OnboardingCompleteScreen", () => {
     expect(screen.getByText("오전 12:00")).toBeOnTheScreen();
   });
 
-  it("출근길 시작하기를 누르면 온보딩 완료를 요청하고, 성공하면 기록한 뒤 홈으로 간다", async () => {
+  it("출근길 시작하기를 누르면 온보딩 완료를 요청하고, 성공하면 세션에 완료로 기록한다 (홈 이동은 가드)", async () => {
     const user = userEvent.setup();
-    useOnboardingStore.setState({ isOnboarded: false });
+    useAuthStore.setState({ isOnboarded: false });
     await render(<OnboardingCompleteScreen />);
     await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
     expect(mockComplete).toHaveBeenCalledTimes(1);
-    expect(useOnboardingStore.getState().isOnboarded).toBe(true);
-    expect(router.replace).toHaveBeenCalledWith("/");
+    await waitFor(() => expect(useAuthStore.getState().isOnboarded).toBe(true));
   });
 
-  it("완료 요청이 실패하면 홈으로 가지 않는다", async () => {
+  it("완료 요청이 실패하면 완료로 기록하지 않는다", async () => {
     mockSucceeds = false;
     const user = userEvent.setup();
-    useOnboardingStore.setState({ isOnboarded: false });
+    useAuthStore.setState({ isOnboarded: false });
     await render(<OnboardingCompleteScreen />);
     await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
-    expect(useOnboardingStore.getState().isOnboarded).toBe(false);
-    expect(router.replace).not.toHaveBeenCalled();
+    expect(useAuthStore.getState().isOnboarded).toBe(false);
   });
 });

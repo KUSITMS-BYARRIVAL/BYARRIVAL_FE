@@ -6,7 +6,6 @@ import {
 } from "@testing-library/react-native";
 import { router } from "expo-router";
 
-import { useOnboardingStore } from "@/stores/onboarding-store";
 import { useToastStore } from "@/stores/toast-store";
 
 import { SignInScreen } from "../sign-in";
@@ -17,6 +16,11 @@ jest.mock("react-native-safe-area-context", () => ({
 jest.mock("expo-router", () => ({
   router: { replace: jest.fn() },
   useFocusEffect: jest.fn(),
+}));
+
+// 개발용 토큰 로그인 버튼은 따로 테스트한다
+jest.mock("@/screens/auth/_components/dev-token-login", () => ({
+  DevTokenLogin: () => null,
 }));
 
 const mockGetKakaoToken = jest.fn();
@@ -49,22 +53,20 @@ beforeEach(() => {
     token: "apple-id-token",
     authorizationCode: "apple-code",
   });
-  useOnboardingStore.setState({ isOnboarded: false });
   useToastStore.getState().hideToast();
 });
 
 describe("SignInScreen", () => {
-  it("카카오로 로그인하면 받은 토큰으로 서버에 로그인하고, 온보딩 전이면 닉네임으로 간다", async () => {
+  it("카카오로 로그인하면 받은 토큰으로 서버에 로그인한다 (이동은 가드)", async () => {
     const user = userEvent.setup();
     await render(<SignInScreen />);
     await user.press(kakaoButton());
     await waitFor(() =>
-      expect(mockLogin).toHaveBeenCalledWith(
-        { provider: "KAKAO", token: "kakao-token" },
-        expect.anything(),
-      ),
+      expect(mockLogin).toHaveBeenCalledWith({
+        provider: "KAKAO",
+        token: "kakao-token",
+      }),
     );
-    expect(router.replace).toHaveBeenCalledWith("/nickname");
   });
 
   it("Apple로 로그인하면 identity token과 authorization code를 함께 보낸다", async () => {
@@ -74,24 +76,12 @@ describe("SignInScreen", () => {
       await screen.findByRole("button", { name: "Apple로 로그인하기" }),
     );
     await waitFor(() =>
-      expect(mockLogin).toHaveBeenCalledWith(
-        {
-          provider: "APPLE",
-          token: "apple-id-token",
-          authorizationCode: "apple-code",
-        },
-        expect.anything(),
-      ),
+      expect(mockLogin).toHaveBeenCalledWith({
+        provider: "APPLE",
+        token: "apple-id-token",
+        authorizationCode: "apple-code",
+      }),
     );
-  });
-
-  it("온보딩을 마친 회원이면 완료로 기록하고 홈으로 간다", async () => {
-    mockLoginResult = { onboardingCompleted: true };
-    const user = userEvent.setup();
-    await render(<SignInScreen />);
-    await user.press(kakaoButton());
-    await waitFor(() => expect(router.replace).toHaveBeenCalledWith("/"));
-    expect(useOnboardingStore.getState().isOnboarded).toBe(true);
   });
 
   it("소셜 로그인 창을 닫으면 서버에 요청하지 않고 그대로 머문다", async () => {

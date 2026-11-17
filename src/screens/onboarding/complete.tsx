@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -8,6 +7,7 @@ import type { Time } from "@/components/time-picker/time-picker";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { useCompleteOnboarding } from "@/hooks/mutations/use-complete-onboarding";
 import { INTERESTS, USER_TYPES } from "@/screens/_constants";
+import { useAuthStore } from "@/stores/auth-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
@@ -22,9 +22,7 @@ export function OnboardingCompleteScreen() {
   const userType = useOnboardingStore((state) => state.userType);
   const departureTime = useOnboardingStore((state) => state.departureTime);
   const interests = useOnboardingStore((state) => state.interests);
-  const completeOnboarding = useOnboardingStore(
-    (state) => state.completeOnboarding,
-  );
+  const setOnboarded = useAuthStore((state) => state.setOnboarded);
   const { mutate, isPending } = useCompleteOnboarding();
 
   const summary = [
@@ -92,13 +90,11 @@ export function OnboardingCompleteScreen() {
           size="l"
           color="neutral"
           disabled={isPending}
-          // 온보딩으로 돌아가지 않도록 기록을 바꿔 홈(HOME-01)으로 보낸다. 필수값 누락(ONBOARDING_INCOMPLETE)은 전역 토스트
+          // 필수값 누락(ONBOARDING_INCOMPLETE)은 전역 토스트
           onPress={() =>
             mutate(undefined, {
-              onSuccess: () => {
-                completeOnboarding();
-                router.replace("/");
-              },
+              // 완료로 저장하면 루트 가드가 홈으로 보낸다 (온보딩으로 돌아갈 수 없다)
+              onSuccess: () => setOnboarded(),
             })
           }
         />

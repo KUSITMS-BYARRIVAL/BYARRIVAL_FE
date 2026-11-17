@@ -24,7 +24,6 @@ describe("useOnboardingStore", () => {
       interests: [],
       jobGroup: null,
       region: null,
-      isOnboarded: false,
     });
   });
 
@@ -70,15 +69,6 @@ describe("useOnboardingStore", () => {
     expect(state().interests).toEqual(["tech", "sports"]);
   });
 
-  it("completeOnboarding은 isOnboarded만 true로 바꾼다", () => {
-    state().setNickname("홍길동");
-
-    state().completeOnboarding();
-
-    expect(state().isOnboarded).toBe(true);
-    expect(state().nickname).toBe("홍길동");
-  });
-
   it("setTravelMinutes는 이동 시간을 바꾼다", () => {
     state().setTravelMinutes(45);
 
@@ -95,8 +85,6 @@ describe("useOnboardingStore", () => {
       jobGroup: "design",
       region,
     });
-    state().completeOnboarding();
-
     state().reset();
 
     expect(state()).toMatchObject({
@@ -107,7 +95,6 @@ describe("useOnboardingStore", () => {
       interests: [],
       jobGroup: null,
       region: null,
-      isOnboarded: false,
     });
   });
 });
