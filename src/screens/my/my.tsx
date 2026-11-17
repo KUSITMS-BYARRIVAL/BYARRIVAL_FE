@@ -52,8 +52,7 @@ export function MyScreen() {
     .slice(0, RECENT_ARTICLE_COUNT)
     .map((article) => ({
       id: String(article.scrapId),
-      // shortcut: 매핑표에 없는 새 카테고리 id는 경제 색으로 보인다, 카테고리가 늘면 CATEGORY_KEY_BY_ID에 추가
-      category: CATEGORY_KEY_BY_ID[article.categoryId] ?? "economy",
+      category: CATEGORY_KEY_BY_ID[article.categoryId],
       label: article.categoryName,
       title: article.title,
     }));

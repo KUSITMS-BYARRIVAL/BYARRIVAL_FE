@@ -60,10 +60,7 @@ export function SmalltalkScreen() {
               return (
                 <EditorPickSmalltalkCard
                   key={smalltalk.smalltalkId}
-                  // shortcut: 매핑표에 없는 새 카테고리 id는 경제 색으로 보인다, 카테고리가 늘면 CATEGORY_KEY_BY_ID에 추가
-                  category={
-                    CATEGORY_KEY_BY_ID[smalltalk.categoryId] ?? "economy"
-                  }
+                  category={CATEGORY_KEY_BY_ID[smalltalk.categoryId]}
                   categoryLabel={smalltalk.categoryName}
                   newsTitle={smalltalk.articleTitle}
                   question={smalltalk.hook}
