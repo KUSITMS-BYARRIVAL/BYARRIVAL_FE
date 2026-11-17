@@ -28,6 +28,7 @@ export function TermsCheckRow({
         accessibilityState={{ checked: isChecked }}
         accessibilityLabel={label}
         onPress={onToggle}
+        hitSlop={{ top: 6, bottom: 6 }}
         className="flex-1 flex-row items-center gap-3.5"
       >
         <CheckCircleIcon
@@ -50,6 +51,7 @@ export function TermsCheckRow({
           accessibilityRole="link"
           accessibilityLabel={`${label} 보기`}
           onPress={onView}
+          hitSlop={12}
           className="px-[5px]"
         >
           <Text className="text-on-fill-default underline text-caption1-r">

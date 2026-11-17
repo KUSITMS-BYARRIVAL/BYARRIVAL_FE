@@ -2,8 +2,8 @@ import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import { BackHandler, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
@@ -36,10 +36,21 @@ export function TermsScreen() {
   const [isMarketingChecked, setIsMarketingChecked] = useState(false);
 
   // 어두운 배경이라 이 화면에 있는 동안만 상태바 글자를 밝게 한다
-  useFocusEffect(() => {
-    setStatusBarStyle("light");
-    return () => setStatusBarStyle("dark");
-  });
+  // 리렌더마다 다시 실행되지 않게 고정한다 (실행될 때마다 상태바가 깜빡인다)
+  useFocusEffect(
+    useCallback(() => {
+      setStatusBarStyle("light");
+      // Android 뒤로가기로 동의 없이 아래 닉네임으로 가지 못하게 막는다
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        () => true,
+      );
+      return () => {
+        setStatusBarStyle("dark");
+        subscription.remove();
+      };
+    }, []),
+  );
 
   const isAllChecked =
     terms.length > 0 &&
@@ -136,7 +147,8 @@ export function TermsScreen() {
                   agreed: checkedIds.includes(termsId),
                 })),
               },
-              { onSuccess: () => router.push("/nickname") },
+              // 아래에 깔린 닉네임으로 돌아가 약관 화면을 스택에서 뺀다 (뒤로 가도 다시 나오지 않게)
+              { onSuccess: () => router.dismissTo("/nickname") },
             )
           }
         />

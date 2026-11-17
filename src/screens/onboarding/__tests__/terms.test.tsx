@@ -10,7 +10,7 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 jest.mock("expo-router", () => ({
-  router: { push: jest.fn() },
+  router: { dismissTo: jest.fn() },
   useFocusEffect: jest.fn(),
 }));
 jest.mock("expo-status-bar", () => ({ setStatusBarStyle: jest.fn() }));
@@ -107,7 +107,7 @@ describe("TermsScreen", () => {
       },
       expect.anything(),
     );
-    expect(router.push).toHaveBeenCalledWith("/nickname");
+    expect(router.dismissTo).toHaveBeenCalledWith("/nickname");
   });
 
   it("보기를 누르면 약관 본문을 인앱 브라우저로 연다", async () => {
