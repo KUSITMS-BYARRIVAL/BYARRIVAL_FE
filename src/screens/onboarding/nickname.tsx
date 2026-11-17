@@ -18,24 +18,39 @@ import { useGetCategories } from "@/hooks/queries/use-get-categories";
 import { useGetOnboarding } from "@/hooks/queries/use-get-onboarding";
 import { NicknamePreviewCard } from "@/screens/onboarding/_components/nickname-preview-card";
 import { useOnboardingStore } from "@/stores/onboarding-store";
+import { useToastStore } from "@/stores/toast-store";
 
 import { DEFAULT_NICKNAME, ONBOARDING_STEPS } from "./_constants";
-import { toOnboardingDraft } from "./_helpers";
+import { toInterests, toOnboardingDraft } from "./_helpers";
 
 // 중간에 이탈했다 돌아오면 서버에 저장된 값으로 초안을 1번 채운다 (첫 화면에서만)
+// 관심 분야만 카테고리 목록이 필요해, 목록 조회가 실패해도 나머지 값은 복원되도록 따로 채운다
 function useResumeOnboarding() {
   const { data: onboarding } = useGetOnboarding();
   const { data: categories } = useGetCategories();
   const hydrate = useOnboardingStore((state) => state.hydrate);
   const isHydrated = useRef(false);
+  const isInterestsHydrated = useRef(false);
 
   useEffect(() => {
-    if (isHydrated.current || !onboarding || !categories) return;
+    if (isHydrated.current || !onboarding) return;
     isHydrated.current = true;
-    hydrate(toOnboardingDraft(onboarding, categories));
+    const { nickname, ...rest } = toOnboardingDraft(onboarding);
+    // 응답이 오기 전에 입력하기 시작했다면 그 닉네임을 덮어쓰지 않는다
+    const isTyping = useOnboardingStore.getState().nickname.length > 0;
+    hydrate(isTyping || !nickname ? rest : { ...rest, nickname });
+  }, [onboarding, hydrate]);
+
+  useEffect(() => {
+    if (isInterestsHydrated.current || !onboarding || !categories) return;
+    isInterestsHydrated.current = true;
+    const interests = toInterests(onboarding.categoryIds, categories);
+    if (interests.length > 0) hydrate({ interests });
   }, [onboarding, categories, hydrate]);
 }
 
+// 서버 닉네임 검사 실패 코드 (API 명세 USER-14)
+const NICKNAME_ERROR_CODE = "INVALID_NICKNAME";
 const NICKNAME_MAX_LENGTH = 10;
 const NICKNAME_MIN_LENGTH = 2;
 // 한글(조합 중인 자모 포함)·영문·숫자만 허용
@@ -55,13 +70,15 @@ export function NicknameScreen() {
   const nickname = useOnboardingStore((state) => state.nickname);
   const setNickname = useOnboardingStore((state) => state.setNickname);
   useResumeOnboarding();
-  // 서버 검사(INVALID_NICKNAME 등)는 토스트 대신 입력창 아래에 보여준다
+  const showToast = useToastStore((state) => state.showToast);
+  // 닉네임 검사 오류만 입력창 아래에 보여주고, 그 외(네트워크·서버 오류)는 토스트로 알린다
   const { mutate, isPending, error, reset } = useUpdateOnboarding({
     meta: { skipToast: true },
   });
+  const fieldError = error?.code === NICKNAME_ERROR_CODE ? error.message : null;
   const trimmed = nickname.trim();
   const errorMessage =
-    (trimmed ? validateNickname(trimmed) : null) ?? error?.message ?? null;
+    (trimmed ? validateNickname(trimmed) : null) ?? fieldError;
   // 공백만 입력한 경우도 통과시키지 않는다
   const isValid = trimmed.length > 0 && !errorMessage;
 
@@ -131,7 +148,12 @@ export function NicknameScreen() {
             setNickname(trimmed);
             mutate(
               { nickname: trimmed },
-              { onSuccess: () => router.push("/user-type") },
+              {
+                onSuccess: () => router.push("/user-type"),
+                onError: ({ code, message }) => {
+                  if (code !== NICKNAME_ERROR_CODE) showToast({ message });
+                },
+              },
             );
           }}
         />

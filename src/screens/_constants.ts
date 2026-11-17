@@ -243,6 +243,6 @@ export const JOB_GROUPS: {
   },
 ];
 
-// 화면설계서 MY-04: "○○전체"는 시/도명만 보여준다
+// 예: 서울 강남구 (시/도 전체 선택은 두지 않는다)
 export const regionLabel = ({ province, district }: Region) =>
-  district ? `${province} ${district}` : province;
+  `${province} ${district}`;

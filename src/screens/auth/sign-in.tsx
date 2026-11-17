@@ -56,7 +56,9 @@ export function SignInScreen() {
   const [canUseApple, setCanUseApple] = useState(false);
 
   useEffect(() => {
-    isAppleLoginAvailable().then(setCanUseApple);
+    isAppleLoginAvailable()
+      .then(setCanUseApple)
+      .catch(() => setCanUseApple(false));
   }, []);
 
   const signIn = async (provider: SocialLoginRequest["provider"]) => {

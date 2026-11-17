@@ -23,18 +23,21 @@ export const toCategoryIds = (
     return category ? [category.id] : [];
   });
 
-const toInterests = (ids: number[], categories: CategoryResponse[]) =>
-  ids.flatMap((id) => {
+export const toInterests = (
+  ids: number[] | null,
+  categories: CategoryResponse[],
+) =>
+  (ids ?? []).flatMap((id) => {
     const name = categories.find((category) => category.id === id)?.name;
     const interest = INTERESTS.find(({ title }) => title === name)?.value;
     return interest ? [interest] : [];
   });
 
-/** 서버에 저장된 값 중 있는 것만 초안으로 바꾼다 (없는 항목은 화면 기본값 유지) */
-export function toOnboardingDraft(
-  res: OnboardingResponse,
-  categories: CategoryResponse[],
-) {
+/**
+ * 서버에 저장된 값 중 있는 것만 초안으로 바꾼다 (없는 항목은 화면 기본값 유지).
+ * 관심 분야는 카테고리 목록이 있어야 바꿀 수 있어 toInterests로 따로 채운다
+ */
+export function toOnboardingDraft(res: OnboardingResponse) {
   const jobGroup = (res.jobGroups ?? [])
     .map(fromJobGroupCode)
     .find((code): code is JobGroup => code !== undefined);
@@ -47,10 +50,6 @@ export function toOnboardingDraft(
     ...(res.defaultCommuteMinutes != null && {
       travelMinutes: res.defaultCommuteMinutes,
     }),
-    ...(res.categoryIds &&
-      res.categoryIds.length > 0 && {
-        interests: toInterests(res.categoryIds, categories),
-      }),
     ...(jobGroup && { jobGroup }),
     ...(res.region && { region: res.region }),
   };

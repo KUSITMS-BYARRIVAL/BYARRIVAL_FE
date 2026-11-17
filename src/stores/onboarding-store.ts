@@ -32,7 +32,7 @@ export type JobGroup =
   | "public_welfare"
   | "etc";
 
-export type Region = { province: string; district: string | null };
+export type Region = { province: string; district: string };
 
 type OnboardingDraft = {
   nickname: string;

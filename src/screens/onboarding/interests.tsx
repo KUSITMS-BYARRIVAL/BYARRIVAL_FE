@@ -3,6 +3,7 @@ import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
+import { TextButton } from "@/components/button/text-button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
@@ -10,9 +11,13 @@ import { useGetCategories } from "@/hooks/queries/use-get-categories";
 import { InterestTile } from "@/screens/_components/interest-tile";
 import { INTERESTS } from "@/screens/_constants";
 import { useOnboardingStore } from "@/stores/onboarding-store";
+import { useToastStore } from "@/stores/toast-store";
 
 import { ONBOARDING_STEPS } from "./_constants";
 import { toCategoryIds } from "./_helpers";
+
+const SAVE_ERROR_MESSAGE =
+  "관심 분야를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.";
 
 // 2개씩 한 줄로 나눈다 (Figma 2열 · 간격 8px)
 const ROWS = Array.from({ length: Math.ceil(INTERESTS.length / 2) }, (_, i) =>
@@ -25,9 +30,26 @@ export function InterestsScreen() {
   const interests = useOnboardingStore((state) => state.interests);
   const toggleInterest = useOnboardingStore((state) => state.toggleInterest);
   // 서버 id를 알아야 저장할 수 있어 목록을 받기 전에는 다음으로를 막는다
-  const { data: categories } = useGetCategories();
+  const {
+    data: categories,
+    isPending: isLoadingCategories,
+    isError: isCategoriesError,
+    refetch,
+  } = useGetCategories();
   const { mutate, isPending } = useUpdateOnboarding();
+  const showToast = useToastStore((state) => state.showToast);
   const count = interests.length;
+
+  const save = () => {
+    if (!categories) return;
+    const categoryIds = toCategoryIds(interests, categories);
+    // 서버 카테고리 이름이 앱 선택지와 하나도 맞지 않으면 빈 목록이 저장되므로 보내지 않는다
+    if (categoryIds.length === 0) {
+      showToast({ message: SAVE_ERROR_MESSAGE });
+      return;
+    }
+    mutate({ categoryIds }, { onSuccess: () => router.push("/job-group") });
+  };
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -86,21 +108,28 @@ export function InterestsScreen() {
         </View>
       </ScrollView>
       <View
-        className="px-5 pt-2"
+        className="gap-3 px-5 pt-2"
         style={{ paddingBottom: Math.max(bottom, 30) }}
       >
+        {isLoadingCategories && (
+          <Text className="text-center text-tertiary text-body2-m">
+            관심 분야 목록을 불러오는 중이에요
+          </Text>
+        )}
+        {isCategoriesError && (
+          <View className="items-center gap-1">
+            <Text className="text-center text-tertiary text-body2-m">
+              관심 분야 목록을 불러오지 못했어요
+            </Text>
+            <TextButton label="다시 시도" onPress={() => refetch()} />
+          </View>
+        )}
         <Button
           label="다음으로"
           size="l"
           color="neutral"
           disabled={count === 0 || !categories || isPending}
-          onPress={() =>
-            categories &&
-            mutate(
-              { categoryIds: toCategoryIds(interests, categories) },
-              { onSuccess: () => router.push("/job-group") },
-            )
-          }
+          onPress={save}
         />
       </View>
     </View>
