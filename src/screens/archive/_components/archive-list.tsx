@@ -57,7 +57,7 @@ export function ArchiveList({
     <ScrollView contentContainerClassName="gap-5 py-5">
       <View className="gap-3.5">
         <Text className="px-5 text-strong text-heading2-sb">
-          내가 직접 담은 {items.length}개의 {ARCHIVE_TABS[tab].label}
+          스크랩한 {items.length}개의 {ARCHIVE_TABS[tab].label}
         </Text>
         <CategoryFilter chips={chips} value={category} onChange={setSelected} />
       </View>

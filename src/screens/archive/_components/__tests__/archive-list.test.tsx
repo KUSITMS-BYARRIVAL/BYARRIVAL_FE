@@ -69,7 +69,7 @@ beforeEach(() => jest.clearAllMocks());
 describe("ArchiveList", () => {
   it("담은 개수와, '전체' + 담은 항목이 있는 카테고리 칩만 보여준다", async () => {
     await renderList();
-    expect(screen.getByText("내가 직접 담은 2개의 기사")).toBeOnTheScreen();
+    expect(screen.getByText("스크랩한 2개의 기사")).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "전체" })).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "경제·금융" })).toBeOnTheScreen();
     expect(screen.getByRole("button", { name: "IT·기술" })).toBeOnTheScreen();
@@ -131,7 +131,7 @@ describe("ArchiveList", () => {
 
   it("스몰토크 탭은 질문 문구와 기사 제목을 보여준다", async () => {
     await renderList({ tab: "smalltalk", smalltalks: [smalltalk(3)] });
-    expect(screen.getByText("내가 직접 담은 1개의 스몰토크")).toBeOnTheScreen();
+    expect(screen.getByText("스크랩한 1개의 스몰토크")).toBeOnTheScreen();
     expect(screen.getByText("한마디 3")).toBeOnTheScreen();
     expect(screen.getByText("스몰토크 기사 3")).toBeOnTheScreen();
   });
