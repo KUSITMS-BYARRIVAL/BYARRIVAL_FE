@@ -5,10 +5,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
 import { cn } from "@/lib/cn";
 import { SelectionTile } from "@/screens/_components/selection-tile";
 import { JOB_GROUPS } from "@/screens/_constants";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
+import { toJobGroupCode } from "@/types/user/user.mappers";
 
 import { ONBOARDING_STEPS, PRIVACY_NOTE } from "./_constants";
 
@@ -27,6 +29,7 @@ export function JobGroupScreen() {
   const userType = useOnboardingStore((state) => state.userType);
   const jobGroup = useOnboardingStore((state) => state.jobGroup);
   const setJobGroup = useOnboardingStore((state) => state.setJobGroup);
+  const { mutate, isPending } = useUpdateOnboarding();
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -98,8 +101,14 @@ export function JobGroupScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          disabled={!jobGroup}
-          onPress={() => router.push("/region")}
+          disabled={!jobGroup || isPending}
+          onPress={() =>
+            jobGroup &&
+            mutate(
+              { jobGroups: [toJobGroupCode(jobGroup)] },
+              { onSuccess: () => router.push("/region") },
+            )
+          }
         />
       </View>
     </View>

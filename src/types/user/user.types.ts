@@ -1,31 +1,88 @@
+// Swagger 스키마 그대로 (도메인 코드 user: User · Onboarding · Terms · Category · Region 태그)
+
 export type TravelType = "WORKER" | "STUDENT" | "ETC";
 
-export type Me = {
-  userId: number;
-  nickname: string;
-  profileImageUrl: string;
-  termsAgreed: boolean;
+export type RegionResponse = {
+  sidoId: number;
+  sidoName: string;
+  sigunguId: number;
+  sigunguName: string;
+};
+
+export type OnboardingResponse = {
+  nickname: string | null;
+  travelType: TravelType | null;
+  /** HH:mm */
+  commuteStartTime: string | null;
+  defaultCommuteMinutes: number | null;
+  // 입력 전에는 값이 없을 수 있다 (Swagger에 nullable 표기 없음)
+  categoryIds: number[] | null;
+  jobGroups: string[] | null;
+  region: RegionResponse | null;
   onboardingCompleted: boolean;
+};
+
+/** 보낸 항목만 바뀐다 */
+export type OnboardingUpdateRequest = Partial<{
+  nickname: string;
   travelType: TravelType;
+  commuteStartTime: string;
   defaultCommuteMinutes: number;
-  weeklyCommute: {
-    dayOfWeek:
-      | "MONDAY"
-      | "TUESDAY"
-      | "WEDNESDAY"
-      | "THURSDAY"
-      | "FRIDAY"
-      | "SATURDAY"
-      | "SUNDAY";
-    startTime: string;
-    minutes: number;
-  }[];
   categoryIds: number[];
   jobGroups: string[];
-  region: {
-    sidoId: number;
-    sidoName: string;
-    sigunguId: number;
-    sigunguName: string;
-  };
+  sigunguId: number;
+}>;
+
+export type DayOfWeek =
+  | "MONDAY"
+  | "TUESDAY"
+  | "WEDNESDAY"
+  | "THURSDAY"
+  | "FRIDAY"
+  | "SATURDAY"
+  | "SUNDAY";
+
+/** 이동하는 요일 하나. 보내지 않은 요일은 이동하지 않는 날 */
+export type DailyCommute = {
+  dayOfWeek: DayOfWeek;
+  /** HH:mm */
+  startTime: string;
+  /** 5~120분, 5분 단위 */
+  minutes: number;
+};
+
+export type UserMeResponse = {
+  userId: number;
+  nickname: string | null;
+  profileImageUrl: string | null;
+  termsAgreed: boolean;
+  onboardingCompleted: boolean;
+  travelType: TravelType | null;
+  defaultCommuteMinutes: number | null;
+  /** 이동하는 요일만 월요일부터 */
+  weeklyCommute: DailyCommute[] | null;
+  categoryIds: number[] | null;
+  jobGroups: string[] | null;
+  region: RegionResponse | null;
+};
+
+/** 닉네임 · 이동 유형 · 기본 이동시간 중 보낸 항목만 바뀐다 */
+export type UserUpdateRequest = Partial<{
+  nickname: string;
+  travelType: TravelType;
+  defaultCommuteMinutes: number;
+}>;
+
+/** OS 알림 권한 결과 (PUT /users/me/notification-permission) */
+export type NotificationPermission = "GRANTED" | "DENIED";
+
+export type CategoryResponse = { id: number; name: string };
+
+export type SigunguResponse = { sigunguId: number; name: string };
+
+export type RegionSidoResponse = {
+  sidoId: number;
+  name: string;
+  fullName: string;
+  sigungus: SigunguResponse[];
 };

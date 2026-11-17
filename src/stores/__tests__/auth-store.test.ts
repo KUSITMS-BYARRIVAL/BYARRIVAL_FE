@@ -3,12 +3,15 @@ import * as SecureStore from "expo-secure-store";
 import { queryClient } from "@/lib/query-client";
 
 import { useAuthStore } from "../auth-store";
+import { useOnboardingStore } from "../onboarding-store";
 
 jest.mock("expo-secure-store", () => ({
+  getItemAsync: jest.fn().mockResolvedValue(null),
   setItemAsync: jest.fn().mockResolvedValue(undefined),
   deleteItemAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
+const getItemAsync = jest.mocked(SecureStore.getItemAsync);
 const setItemAsync = jest.mocked(SecureStore.setItemAsync);
 const deleteItemAsync = jest.mocked(SecureStore.deleteItemAsync);
 const tokens = { accessToken: "access-1", refreshToken: "refresh-1" };
@@ -18,7 +21,13 @@ describe("useAuthStore", () => {
     jest.clearAllMocks();
     setItemAsync.mockResolvedValue(undefined);
     deleteItemAsync.mockResolvedValue(undefined);
-    useAuthStore.setState({ accessToken: null, refreshToken: null });
+    getItemAsync.mockResolvedValue(null);
+    useAuthStore.setState({
+      accessToken: null,
+      refreshToken: null,
+      isOnboarded: false,
+      isRestored: false,
+    });
     queryClient.clear();
   });
 
@@ -77,22 +86,111 @@ describe("useAuthStore", () => {
       expect(queryClient.getQueryData(["me"])).toBeUndefined();
     });
 
+    it("온보딩 초안을 처음 상태로 되돌린다", async () => {
+      useOnboardingStore.setState({ nickname: "홍길동" });
+
+      await useAuthStore.getState().clearSession();
+
+      expect(useOnboardingStore.getState().nickname).toBe("");
+    });
+
     it("토큰이 없는 초기 상태에서 호출해도 오류 없이 끝난다", async () => {
       await expect(
         useAuthStore.getState().clearSession(),
       ).resolves.toBeUndefined();
     });
 
-    it("SecureStore 삭제가 실패하면 reject하고 토큰 상태와 캐시를 유지한다", async () => {
-      useAuthStore.setState(tokens);
+    it("SecureStore 삭제가 실패해도 앱 안의 토큰 · 캐시는 비우고, 실패는 알린다", async () => {
+      useAuthStore.setState({ ...tokens, isOnboarded: true });
       queryClient.setQueryData(["me"], { name: "홍길동" });
       deleteItemAsync.mockRejectedValueOnce(new Error("삭제 실패"));
 
       await expect(useAuthStore.getState().clearSession()).rejects.toThrow(
         "삭제 실패",
       );
-      expect(useAuthStore.getState().accessToken).toBe("access-1");
-      expect(queryClient.getQueryData(["me"])).toEqual({ name: "홍길동" });
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: null,
+        refreshToken: null,
+        isOnboarded: false,
+      });
+      expect(queryClient.getQueryData(["me"])).toBeUndefined();
+    });
+  });
+
+  describe("restoreSession", () => {
+    const stored = (items: Record<string, string>) =>
+      getItemAsync.mockImplementation(async (key) => items[key] ?? null);
+
+    it("저장된 토큰과 온보딩 완료 여부를 불러오고 복원 완료로 표시한다", async () => {
+      stored({ tokens: JSON.stringify(tokens), onboarded: "true" });
+
+      await useAuthStore.getState().restoreSession();
+
+      expect(useAuthStore.getState()).toMatchObject({
+        ...tokens,
+        isOnboarded: true,
+        isRestored: true,
+      });
+    });
+
+    it("저장된 토큰이 없으면 비로그인으로 복원 완료한다", async () => {
+      await useAuthStore.getState().restoreSession();
+
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: null,
+        isOnboarded: false,
+        isRestored: true,
+      });
+    });
+
+    it("저장 형식이 깨졌으면 비로그인으로 본다", async () => {
+      stored({ tokens: "{broken", onboarded: "true" });
+
+      await useAuthStore.getState().restoreSession();
+
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: null,
+        isOnboarded: false,
+        isRestored: true,
+      });
+    });
+
+    it("SecureStore를 읽지 못해도 복원 완료로 표시해 스플래시에 멈추지 않는다", async () => {
+      getItemAsync.mockRejectedValue(new Error("읽기 실패"));
+
+      await expect(useAuthStore.getState().restoreSession()).rejects.toThrow();
+
+      expect(useAuthStore.getState().isRestored).toBe(true);
+    });
+  });
+
+  describe("startSession · setOnboarded", () => {
+    it("startSession은 토큰과 온보딩 완료 여부를 함께 저장한다", async () => {
+      await useAuthStore
+        .getState()
+        .startSession({ tokens, isOnboarded: false });
+
+      expect(setItemAsync).toHaveBeenCalledWith("onboarded", "false");
+      expect(useAuthStore.getState()).toMatchObject({
+        ...tokens,
+        isOnboarded: false,
+      });
+    });
+
+    it("setOnboarded는 완료로 저장한다", async () => {
+      await useAuthStore.getState().setOnboarded();
+
+      expect(setItemAsync).toHaveBeenCalledWith("onboarded", "true");
+      expect(useAuthStore.getState().isOnboarded).toBe(true);
+    });
+
+    it("clearSession은 온보딩 완료 여부도 지운다", async () => {
+      useAuthStore.setState({ ...tokens, isOnboarded: true });
+
+      await useAuthStore.getState().clearSession();
+
+      expect(deleteItemAsync).toHaveBeenCalledWith("onboarded");
+      expect(useAuthStore.getState().isOnboarded).toBe(false);
     });
   });
 });

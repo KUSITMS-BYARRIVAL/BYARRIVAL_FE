@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
+import { router } from "expo-router";
 
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -7,7 +8,22 @@ import { TravelTimeScreen } from "../travel-time";
 jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
-jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
+jest.mock("expo-router", () => ({
+  router: { back: jest.fn(), push: jest.fn() },
+}));
+
+const mockUpdate = jest.fn(
+  (_body: unknown, options?: { onSuccess?: () => void }) =>
+    options?.onSuccess?.(),
+);
+jest.mock("@/hooks/mutations/use-update-onboarding", () => ({
+  useUpdateOnboarding: () => ({
+    mutate: mockUpdate,
+    isPending: false,
+    error: null,
+    reset: jest.fn(),
+  }),
+}));
 
 beforeEach(() =>
   useOnboardingStore.setState({ userType: "worker", travelMinutes: 30 }),
@@ -26,6 +42,17 @@ describe("TravelTimeScreen", () => {
     useOnboardingStore.setState({ userType });
     await render(<TravelTimeScreen />);
     expect(screen.getByRole("header").props.children).toContain(prefix);
+  });
+
+  it("다음을 누르면 고른 이동 시간을 저장하고 관심 분야로 넘어간다", async () => {
+    await render(<TravelTimeScreen />);
+    await adjust("increment");
+    await fireEvent.press(screen.getByRole("button", { name: "다음으로" }));
+    expect(mockUpdate).toHaveBeenLastCalledWith(
+      { defaultCommuteMinutes: 40 },
+      expect.anything(),
+    );
+    expect(router.push).toHaveBeenCalledWith("/interests");
   });
 
   it("기본값 30분을 보여주고, 30분 위로는 10분 단위로 늘린다", async () => {

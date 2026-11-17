@@ -34,17 +34,30 @@ async function reissueTokens(refreshToken: string) {
       { refreshToken },
       { timeout: TIMEOUT_MS },
     );
+    // 재발급을 기다리는 사이 로그아웃했다면 응답으로 세션을 되살리지 않는다
+    if (useAuthStore.getState().refreshToken !== refreshToken) return;
     await useAuthStore.getState().setTokens(res.data.data);
   } catch (error) {
     // 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 거절(4xx)일 때만 로그아웃한다
-    if (isTokenRejected(error)) await useAuthStore.getState().clearSession();
+    // 기다리는 사이 다른 계정으로 바뀌었다면 그 세션은 건드리지 않는다
+    const isSameSession = useAuthStore.getState().refreshToken === refreshToken;
+    if (isTokenRejected(error) && isSameSession)
+      await useAuthStore.getState().clearSession();
     throw error;
   }
 }
 
+// 서버 에러 계약(거절 코드)이 Swagger에 없어 4xx 전체로 보되, 일시적인 408 · 429는 제외한다
+const TRANSIENT_4XX = [408, 429];
+
 function isTokenRejected(error: unknown) {
   const status = isAxiosError(error) ? error.response?.status : undefined;
-  return status !== undefined && status >= 400 && status < 500;
+  return (
+    status !== undefined &&
+    status >= 400 &&
+    status < 500 &&
+    !TRANSIENT_4XX.includes(status)
+  );
 }
 
 type RetryableConfig = InternalAxiosRequestConfig & { isRetried?: boolean };

@@ -1,0 +1,27 @@
+import { INTERESTS } from "@/screens/_constants";
+import type { Interest } from "@/stores/onboarding-store";
+import type { CategoryResponse } from "@/types/user/user.types";
+
+// 온보딩 · 마이 관심 분야에서 함께 쓴다
+// 서버 카테고리는 id·이름만 주므로 이름을 앱 선택지(아이콘이 붙은 8개)의 title과 맞춰 짝짓는다
+const titleOf = (interest: Interest) =>
+  INTERESTS.find(({ value }) => value === interest)?.title;
+
+export const toCategoryIds = (
+  interests: Interest[],
+  categories: CategoryResponse[],
+) =>
+  interests.flatMap((interest) => {
+    const category = categories.find(({ name }) => name === titleOf(interest));
+    return category ? [category.id] : [];
+  });
+
+export const toInterests = (
+  ids: number[] | null,
+  categories: CategoryResponse[],
+) =>
+  (ids ?? []).flatMap((id) => {
+    const name = categories.find((category) => category.id === id)?.name;
+    const interest = INTERESTS.find(({ title }) => title === name)?.value;
+    return interest ? [interest] : [];
+  });

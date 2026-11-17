@@ -6,6 +6,7 @@ import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { Slider } from "@/components/slider/slider";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
 
 import { COMMUTE_ILLUSTRATIONS, ONBOARDING_STEPS } from "./_constants";
@@ -45,6 +46,7 @@ export function TravelTimeScreen() {
   const setTravelMinutes = useOnboardingStore(
     (state) => state.setTravelMinutes,
   );
+  const { mutate, isPending } = useUpdateOnboarding();
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -106,7 +108,13 @@ export function TravelTimeScreen() {
           label="다음으로"
           size="l"
           color="neutral"
-          onPress={() => router.push("/interests")}
+          disabled={isPending}
+          onPress={() =>
+            mutate(
+              { defaultCommuteMinutes: travelMinutes },
+              { onSuccess: () => router.push("/interests") },
+            )
+          }
         />
       </View>
     </View>

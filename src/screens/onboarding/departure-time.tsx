@@ -9,10 +9,17 @@ import { Header } from "@/components/header/header";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { type Time, TimePicker } from "@/components/time-picker/time-picker";
 import { TimeSelector } from "@/components/time-selector/time-selector";
+import { useUpdateNotificationPermission } from "@/hooks/mutations/use-update-notification-permission";
+import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
+import { requestNotificationPermission } from "@/lib/notification-permission";
 import { useDialogStore } from "@/stores/dialog-store";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
+import { useToastStore } from "@/stores/toast-store";
+import { toHHmm } from "@/types/user/user.mappers";
 
 import { COMMUTE_ILLUSTRATIONS, ONBOARDING_STEPS } from "./_constants";
+
+const DENIED_MESSAGE = "마이 > 알림에서 언제든 켤 수 있어요";
 
 // Figma 지하철 좌석 일러스트(393×279) 비율
 const ILLUSTRATION_ASPECT_RATIO = 393 / 279;
@@ -50,6 +57,7 @@ export function DepartureTimeScreen() {
     (state) => state.setDepartureTime,
   );
   const openDialog = useDialogStore((state) => state.openDialog);
+  const { mutate, isPending } = useUpdateOnboarding();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   // 바텀시트에서 휠을 돌리는 동안의 값. 확인을 눌러야 저장한다
   const [draftTime, setDraftTime] = useState<Time>(departureTime);
@@ -60,7 +68,21 @@ export function DepartureTimeScreen() {
     setIsPickerOpen(true);
   };
 
+  const { mutate: savePermission } = useUpdateNotificationPermission();
+  const showToast = useToastStore((state) => state.showToast);
   const goNext = () => router.push("/travel-time");
+
+  // [알림 받기]: OS 권한을 묻고 결과를 서버에 저장한다. 거부해도 온보딩은 계속한다
+  const allowNotification = async () => {
+    try {
+      const permission = await requestNotificationPermission();
+      savePermission(permission);
+      if (permission === "DENIED") showToast({ message: DENIED_MESSAGE });
+    } catch {
+      // 권한 팝업을 띄우지 못해도 온보딩을 막지 않는다
+    }
+    goNext();
+  };
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -109,16 +131,22 @@ export function DepartureTimeScreen() {
           label="다음으로"
           size="l"
           color="neutral"
+          disabled={isPending}
           onPress={() =>
-            // 화면설계서 ONB-06 N1 알림 권한 사전 안내
-            // TODO: [알림 받기]는 OS 알림 권한 요청, 거부 시 "마이 > 알림에서 언제든 켤 수 있어요" 토스트 (expo-notifications 도입 후)
-            openDialog({
-              title: copy.notice,
-              confirmLabel: "알림 받기",
-              onConfirm: goNext,
-              cancelLabel: "나중에",
-              onCancel: goNext,
-            })
+            mutate(
+              { commuteStartTime: toHHmm(departureTime) },
+              {
+                // 화면설계서 ONB-06 N1 알림 권한 사전 안내 (저장된 뒤에 띄운다)
+                onSuccess: () =>
+                  openDialog({
+                    title: copy.notice,
+                    confirmLabel: "알림 받기",
+                    onConfirm: allowNotification,
+                    cancelLabel: "나중에",
+                    onCancel: goNext,
+                  }),
+              },
+            )
           }
         />
       </View>

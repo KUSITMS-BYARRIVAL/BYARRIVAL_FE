@@ -1,3 +1,4 @@
+import { waitFor } from "@testing-library/react-native";
 import axios, { type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 
@@ -125,6 +126,25 @@ describe("baseApi 401 토큰 재발급", () => {
     expect(api.history.get).toHaveLength(2);
   });
 
+  it("재발급을 기다리는 사이 로그아웃하면 응답 토큰으로 세션이 되살아나지 않는다", async () => {
+    api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    reissue.onPost(REISSUE_URL).reply(async () => {
+      await gate;
+      return [200, { data: newTokens }];
+    });
+
+    const request = caught(baseApi.get("/me"));
+    await waitFor(() => expect(reissue.history.post).toHaveLength(1));
+    await useAuthStore.getState().clearSession();
+    release();
+    await request;
+
+    expect(useAuthStore.getState().accessToken).toBeNull();
+    expect(useAuthStore.getState().refreshToken).toBeNull();
+  });
+
   it("재발급 요청은 refreshToken을 body에 담아 보낸다", async () => {
     api.onGet("/me").reply(replyByToken);
     reissue.onPost(REISSUE_URL).reply(200, { data: newTokens });
@@ -147,6 +167,26 @@ describe("baseApi 401 토큰 재발급", () => {
     expect(useAuthStore.getState().refreshToken).toBeNull();
   });
 
+  it("재발급을 기다리는 사이 다른 계정으로 바뀌었다면, 옛 재발급이 거절돼도 새 세션은 지우지 않는다", async () => {
+    api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
+    reissue.onPost(REISSUE_URL).reply(() => {
+      // 응답이 오기 전에 다른 계정으로 로그인한 상황
+      useAuthStore.setState({
+        accessToken: "other-access",
+        refreshToken: "other-refresh",
+      });
+      return [401, {}];
+    });
+
+    const error = await caught(baseApi.get("/me"));
+
+    expect(error).toMatchObject({ status: 401, code: "EXPIRED" });
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: "other-access",
+      refreshToken: "other-refresh",
+    });
+  });
+
   it.each([
     [
       "네트워크 끊김",
@@ -160,6 +200,14 @@ describe("baseApi 401 토큰 재발급", () => {
           .onPost(REISSUE_URL)
           .reply(503, { code: "SERVER_ERROR", message: "점검 중" }),
       { status: 503, code: "SERVER_ERROR" },
+    ],
+    [
+      "429",
+      () =>
+        reissue
+          .onPost(REISSUE_URL)
+          .reply(429, { code: "TOO_MANY_REQUESTS", message: "잠시 후" }),
+      { status: 429, code: "TOO_MANY_REQUESTS" },
     ],
   ])(
     "재발급이 %s로 실패하면 세션을 유지하고 401 대신 그 에러를 reject한다",

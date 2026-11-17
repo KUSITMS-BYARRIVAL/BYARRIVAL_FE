@@ -48,12 +48,7 @@ import {
   AssetSubwayIllustration,
   AssetSuitIllustration,
 } from "@/assets/illustrations";
-import type {
-  Interest,
-  JobGroup,
-  Region,
-  UserType,
-} from "@/stores/onboarding-store";
+import type { Interest, JobGroup, UserType } from "@/stores/onboarding-store";
 import type { Category } from "@/theme/category";
 
 // 서버 카테고리 id(GET /categories, 고정) → 칩 색 키. 스포츠는 예전 이름 그대로 career 키를 쓴다
@@ -255,7 +250,3 @@ export const JOB_GROUPS: {
     SelectedIcon: CategoryEtcSelectedIcon,
   },
 ];
-
-// 화면설계서 MY-04: "○○전체"는 시/도명만 보여준다
-export const regionLabel = ({ province, district }: Region) =>
-  district ? `${province} ${district}` : province;
