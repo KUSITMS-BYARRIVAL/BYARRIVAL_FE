@@ -1,8 +1,7 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
-
 import { router } from "expo-router";
 
-import { TODAY_QUIZ } from "@/mocks/quiz";
+import type { Quiz, QuizAnswer, QuizSet } from "@/types/quiz/quiz.types";
 
 import { QuizScreen } from "../quiz";
 
@@ -13,61 +12,161 @@ jest.mock("expo-router", () => ({
   router: { back: jest.fn(), replace: jest.fn() },
 }));
 
-const [first, second] = TODAY_QUIZ;
+const mockRoute = jest.fn();
+jest.mock("@/hooks/queries/use-get-today-route", () => ({
+  useGetTodayRoute: () => mockRoute(),
+}));
+const mockQuizzes = jest.fn();
+jest.mock("@/hooks/queries/use-get-quizzes", () => ({
+  useGetQuizzes: (routeId: number | undefined) => mockQuizzes(routeId),
+}));
+const mockAnswer = jest.fn();
+jest.mock("@/hooks/mutations/use-answer-quiz", () => ({
+  useAnswerQuiz: () => ({ mutate: mockAnswer, isPending: false }),
+}));
+
+const quiz = (order: number): Quiz => ({
+  quizOrder: order,
+  quizId: order * 10,
+  categoryId: 4,
+  categoryName: "경제",
+  articleId: order,
+  articleTitle: `기사 ${order}`,
+  question: `문제 ${order}`,
+  choices: [
+    { seq: 1, content: `${order}-가` },
+    { seq: 2, content: `${order}-나` },
+    { seq: 3, content: `${order}-다` },
+  ],
+  answered: false,
+  selectedSeq: null,
+  correct: null,
+  answerSeq: null,
+  explanation: null,
+});
+
+const quizSet = (overrides?: Partial<QuizSet>): QuizSet => ({
+  routeId: 7,
+  nextQuizOrder: 1,
+  quizzes: [quiz(1), quiz(2)],
+  progress: { total: 2, answeredCount: 0, correctCount: 0, finished: false },
+  ...overrides,
+});
+
+// 서버 채점 결과를 바로 돌려준다
+const grade = (answerSeq: number, explanation = "해설") =>
+  mockAnswer.mockImplementation(
+    (
+      { choiceSeq }: { choiceSeq: number },
+      options: { onSuccess: (data: QuizAnswer) => void },
+    ) =>
+      options.onSuccess({
+        quizId: 10,
+        selectedSeq: choiceSeq,
+        answerSeq,
+        correct: choiceSeq === answerSeq,
+        explanation,
+        progress: {
+          total: 2,
+          answeredCount: 1,
+          correctCount: 0,
+          finished: false,
+        },
+      }),
+  );
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockRoute.mockReturnValue({
+    data: { state: "COMPLETED", route: { routeId: 7 } },
+    isPending: false,
+  });
+  mockQuizzes.mockReturnValue({ data: quizSet(), isPending: false });
+});
 
 describe("QuizScreen", () => {
-  it("첫 문제를 보여주고, 답하기 전에는 다음 문제로 넘어갈 수 없다", async () => {
+  it("오늘 노선의 퀴즈를 받아 첫 문제를 보여주고, 답하기 전에는 넘어갈 수 없다", async () => {
     await render(<QuizScreen />);
-    expect(screen.getByText(first!.question)).toBeOnTheScreen();
+    expect(mockQuizzes).toHaveBeenCalledWith(7);
+    expect(screen.getByText("문제 1")).toBeOnTheScreen();
+    expect(screen.getByText("기사 1")).toBeOnTheScreen();
     expect(screen.getByRole("progressbar")).toHaveAccessibilityValue({
       now: 1,
-      max: 3,
+      max: 2,
     });
     expect(screen.getByRole("button", { name: "다음 문제" })).toBeDisabled();
   });
 
-  it("정답을 고르면 정답으로 표시하고 다음 문제로 넘어갈 수 있다", async () => {
+  it("보기를 누르면 서버에 답을 보내고, 정답이면 정답으로 표시한 뒤 다음 문제로 넘어간다", async () => {
+    grade(2);
     const user = userEvent.setup();
     await render(<QuizScreen />);
-    const answer = first!.options[first!.answerIndex]!;
-    await user.press(screen.getByText(answer));
+    await user.press(screen.getByText("1-나"));
+    expect(mockAnswer).toHaveBeenCalledWith(
+      { routeId: 7, quizId: 10, choiceSeq: 2 },
+      expect.anything(),
+    );
     expect(
-      screen.getByRole("button", {
-        name: `${first!.answerIndex + 1} ${answer}`,
-      }),
+      screen.getByRole("button", { name: "2 1-나" }),
     ).toHaveAccessibilityValue({ text: "정답" });
     await user.press(screen.getByRole("button", { name: "다음 문제" }));
-    expect(screen.getByText(second!.question)).toBeOnTheScreen();
+    expect(screen.getByText("문제 2")).toBeOnTheScreen();
   });
 
-  it("오답을 고르면 고른 보기는 흐리게, 정답은 초록으로 두고 해설을 보여준다", async () => {
+  it("오답이면 서버가 준 해설을 보여준다", async () => {
+    grade(3, "정답은 다예요");
     const user = userEvent.setup();
     await render(<QuizScreen />);
-    const wrongIndex = first!.answerIndex === 0 ? 1 : 0;
-    await user.press(screen.getByText(first!.options[wrongIndex]!));
+    await user.press(screen.getByText("1-가"));
     expect(screen.getByText("아쉬워요, 오답이에요.")).toBeOnTheScreen();
-    expect(screen.getByText(first!.explanation)).toBeOnTheScreen();
-    const answer = first!.options[first!.answerIndex]!;
-    expect(
-      screen.getByRole("button", {
-        name: `${first!.answerIndex + 1} ${answer}`,
-      }),
-    ).toHaveAccessibilityValue({ text: "정답" });
+    expect(screen.getByText("정답은 다예요")).toBeOnTheScreen();
   });
 
-  it("마지막 문제까지 풀면 맞힌 개수를 들고 결과 화면으로 넘어간다", async () => {
+  it("다시 들어오면 서버가 알려준 문제부터 이어서 풀고, 마지막 문제 뒤에는 결과로 간다", async () => {
+    mockQuizzes.mockReturnValue({
+      data: quizSet({ nextQuizOrder: 2 }),
+      isPending: false,
+    });
+    grade(1);
     const user = userEvent.setup();
     await render(<QuizScreen />);
-    // 1번은 틀리고 나머지는 맞힌다
-    for (const [i, quiz] of TODAY_QUIZ.entries()) {
-      const option = i === 0 ? (quiz.answerIndex + 1) % 3 : quiz.answerIndex;
-      await user.press(screen.getByText(quiz.options[option]!));
-      const label = i === TODAY_QUIZ.length - 1 ? "결과 보기" : "다음 문제";
-      await user.press(screen.getByRole("button", { name: label }));
-    }
-    expect(router.replace).toHaveBeenCalledWith({
-      pathname: "/quiz/result",
-      params: { correct: 2, total: 3 },
+    expect(screen.getByText("문제 2")).toBeOnTheScreen();
+    await user.press(screen.getByText("2-가"));
+    await user.press(screen.getByRole("button", { name: "결과 보기" }));
+    expect(router.replace).toHaveBeenCalledWith("/quiz/result");
+  });
+
+  it.each([
+    ["이미 다 풀었으면", quizSet({ nextQuizOrder: null })],
+    [
+      "낼 문제가 없으면",
+      quizSet({
+        nextQuizOrder: null,
+        quizzes: [],
+        progress: {
+          total: 0,
+          answeredCount: 0,
+          correctCount: 0,
+          finished: true,
+        },
+      }),
+    ],
+  ])("%s 결과 화면으로 보낸다", async (_, data) => {
+    mockQuizzes.mockReturnValue({ data, isPending: false });
+    await render(<QuizScreen />);
+    expect(router.replace).toHaveBeenCalledWith("/quiz/result");
+  });
+
+  it("오늘 노선이 없으면 퀴즈를 요청하지 않고 풀 퀴즈가 없다고 알린다", async () => {
+    mockRoute.mockReturnValue({
+      data: { state: "NONE", route: null },
+      isPending: false,
     });
+    mockQuizzes.mockReturnValue({ data: undefined, isPending: true });
+    await render(<QuizScreen />);
+    expect(mockQuizzes).toHaveBeenCalledWith(undefined);
+    expect(
+      screen.getByText("지금은 풀 수 있는 퀴즈가 없어요"),
+    ).toBeOnTheScreen();
   });
 });
