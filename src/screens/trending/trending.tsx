@@ -1,5 +1,4 @@
 import { router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -16,7 +15,7 @@ import {
   useGetPopular,
 } from "@/hooks/queries/use-get-popular";
 import { AchievementCard } from "@/screens/_components/achievement-card";
-import { toPopularChipLabel } from "@/screens/_helpers";
+import { openArticle, toPopularChipLabel } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 
 export function TrendingScreen() {
@@ -27,7 +26,9 @@ export function TrendingScreen() {
   const jobGroups = me?.jobGroups;
   // 고른 직군(고른 순서) 다음에 전체(null) — 홈 칩과 같은 순서
   const chips = [...(jobGroups ?? []), null];
-  const [selected, setSelected] = useState(chips[0] ?? null);
+  // 칩 위치로 고른다 — 내 정보가 늦게 와도 첫 칩(내 직군)이 기본이 되고, 칩이 줄면 마지막 칩으로 맞춘다
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const selected = chips[Math.min(selectedIndex, chips.length - 1)];
   const { data, isPending, dataUpdatedAt } = useGetPopular(
     selected ?? undefined,
   );
@@ -64,17 +65,18 @@ export function TrendingScreen() {
             </Text>
           </View>
           <View className="flex-row flex-wrap gap-2 px-5">
-            {chips.map((jobGroup) => (
+            {chips.map((jobGroup, i) => (
               <Chip
                 key={jobGroup ?? "all"}
                 label={toPopularChipLabel(jobGroup)}
                 selected={jobGroup === selected}
-                onPress={() => setSelected(jobGroup)}
+                onPress={() => setSelectedIndex(i)}
               />
             ))}
           </View>
         </View>
         <View className="px-5">
+          {/* 조회 실패(전역 토스트) · 순위 0건이면 빈 카드를 그리지 않는다 */}
           {isPending ? (
             <LoadingDots className="py-10" />
           ) : isAggregating ? (
@@ -83,9 +85,9 @@ export function TrendingScreen() {
               description="데이터를 집계중이에요"
               orientation="vertical"
             />
-          ) : (
+          ) : data && data.articles.length > 0 ? (
             <ButtonCard>
-              {data?.articles.map((article) => (
+              {data.articles.map((article) => (
                 <RankingRow
                   key={article.articleId}
                   rank={article.rank}
@@ -95,15 +97,11 @@ export function TrendingScreen() {
                   isLive
                   hasArrow={false}
                   rankTone={article.rank <= 3 ? "brand" : "mono"}
-                  onPress={() => {
-                    // 서버가 준 주소라도 https 원문만 연다
-                    if (article.url.startsWith("https://"))
-                      WebBrowser.openBrowserAsync(article.url);
-                  }}
+                  onPress={() => openArticle(article.url)}
                 />
               ))}
             </ButtonCard>
-          )}
+          ) : null}
         </View>
       </ScrollView>
     </View>

@@ -1,3 +1,5 @@
+import * as WebBrowser from "expo-web-browser";
+
 import { INTERESTS, JOB_GROUPS } from "@/screens/_constants";
 import type { Interest } from "@/stores/onboarding-store";
 import { fromJobGroupCode } from "@/types/user/user.mappers";
@@ -33,4 +35,9 @@ export const toPopularChipLabel = (jobGroupCode: string | null) => {
   const jobGroup = fromJobGroupCode(jobGroupCode);
   const title = JOB_GROUPS.find(({ value }) => value === jobGroup)?.title;
   return `내 직군 · ${title ?? jobGroupCode}`;
+};
+
+// 서버가 준 주소라도 https 원문만 연다 (스킴은 대소문자를 가리지 않는다)
+export const openArticle = (url: string) => {
+  if (/^https:\/\//i.test(url)) WebBrowser.openBrowserAsync(url);
 };

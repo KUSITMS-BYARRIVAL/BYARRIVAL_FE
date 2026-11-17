@@ -7,6 +7,8 @@ import type { PopularChip } from "@/types/ride/ride.types";
 export const getPopularQuery = (jobGroup?: string) => ({
   queryKey: ["ride", "getPopular", jobGroup],
   queryFn: () => rideService.getPopular(jobGroup),
+  // 미리 받아 둔 칩을 바꿀 때 곧바로 다시 받지 않도록 잠깐은 그대로 쓴다
+  staleTime: 60_000,
 });
 
 /** jobGroup(직군 코드)을 빼면 전체 칩 */

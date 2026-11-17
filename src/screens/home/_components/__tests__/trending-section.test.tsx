@@ -131,6 +131,30 @@ describe("TrendingSection", () => {
     expect(allChip()).toBeOnTheScreen();
   });
 
+  it("다시 받은 칩이 줄어 선택한 칩이 없어지면 마지막 칩을 선택한다", async () => {
+    const user = userEvent.setup();
+    const designChip = {
+      label: "내 직군 · 디자인",
+      isAggregating: false,
+      articles: [
+        { title: "디자인 기사", url: "https://example.com/d1", viewers: 5 },
+      ],
+    };
+    const props = {
+      route: "출근길",
+      person: "직장인",
+      onSeeAllPress: jest.fn(),
+      onArticlePress: jest.fn(),
+    };
+    await render(
+      <TrendingSection {...props} chips={[CHIPS[0]!, designChip, CHIPS[1]!]} />,
+    );
+    await user.press(allChip());
+    await screen.rerender(<TrendingSection {...props} chips={CHIPS} />);
+    expect(allChip()).toBeSelected();
+    expect(screen.getByText("전체 기사 1")).toBeOnTheScreen();
+  });
+
   it("선택한 칩의 기사가 없으면 기사 행을 그리지 않는다", async () => {
     await renderSection({
       chips: [{ label: "전체", isAggregating: false, articles: [] }],

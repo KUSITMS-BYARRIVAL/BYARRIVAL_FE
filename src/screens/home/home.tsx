@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -17,23 +17,29 @@ import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import { getRideButton } from "@/screens/home/_helpers";
-import { toPopularChipLabel } from "@/screens/_helpers";
+import { openArticle, toPopularChipLabel } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
-
-// 서버가 준 주소라도 https 원문만 연다
-const openArticle = (url: string) => {
-  if (url.startsWith("https://")) WebBrowser.openBrowserAsync(url);
-};
 
 export function HomeScreen() {
   const { top } = useSafeAreaInsets();
-  const { data: home, isPending } = useGetHome();
-  const { data: me } = useGetMe();
-  const { data: streak } = useGetStatsStreak();
+  const home = useGetHome();
+  const me = useGetMe();
+  const streak = useGetStatsStreak();
   const { commute, route, person } = useCommuteWords();
-  const nickname = me?.nickname ?? "";
-  const rideButton = getRideButton(home?.todayRoute ?? null);
-  const smalltalk = home?.smalltalks?.[0];
+  const isPending = home.isPending || me.isPending || streak.isPending;
+  const nickname = me.data?.nickname ?? "";
+  const rideButton = getRideButton(home.data?.todayRoute ?? null);
+  const popular = home.data?.popular;
+  const smalltalk = home.data?.smalltalks?.[0];
+  const { refetch: refetchHome } = home;
+  const { refetch: refetchStreak } = streak;
+  // 탭은 마운트된 채 남아 탑승을 마치고 돌아와도 다시 받지 않는다. 처음 포커스는 마운트 조회와 합친다(cancelRefetch: false)
+  useFocusEffect(
+    useCallback(() => {
+      refetchHome({ cancelRefetch: false });
+      refetchStreak({ cancelRefetch: false });
+    }, [refetchHome, refetchStreak]),
+  );
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -58,13 +64,13 @@ export function HomeScreen() {
             <StreakCard
               nickname={nickname}
               route={route}
-              streakDays={home?.streakDays ?? 0}
-              longestDays={streak?.longestStreak ?? 0}
+              streakDays={home.data?.streakDays ?? 0}
+              longestDays={streak.data?.longestStreak ?? 0}
             />
             {/* [임시] 값은 '오늘 앱을 쓴 회원 수'인데 문구는 '지금 {출근}하는 사람' — 기획 확인 전 */}
-            {home?.todayVisitorCount != null && (
+            {home.data?.todayVisitorCount != null && (
               <CommuterCountCard
-                count={home.todayVisitorCount}
+                count={home.data.todayVisitorCount}
                 commute={commute}
               />
             )}
@@ -77,11 +83,11 @@ export function HomeScreen() {
               onPress={rideButton.onPress}
             />
           </View>
-          {home?.popular && home.popular.length > 0 && (
+          {popular && popular.length > 0 && (
             <TrendingSection
               route={route}
               person={person}
-              chips={home.popular.map((chip) => ({
+              chips={popular.map((chip) => ({
                 label: toPopularChipLabel(chip.jobGroup),
                 isAggregating: chip.status === "AGGREGATING",
                 // [임시] cartedUserCount는 '담은 사람 수'인데 문구는 '보고 있어요' — 기획 확인 전

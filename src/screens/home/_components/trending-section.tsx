@@ -42,7 +42,9 @@ export function TrendingSection({
   onArticlePress,
   className,
 }: TrendingSectionProps) {
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [pickedIndex, setPickedIndex] = useState(0);
+  // 다시 받은 칩이 줄어도 비지 않게 마지막 칩으로 맞춘다
+  const selectedIndex = Math.min(pickedIndex, chips.length - 1);
   const selected = chips[selectedIndex];
 
   return (
@@ -60,7 +62,7 @@ export function TrendingSection({
             key={chip.label}
             label={chip.label}
             selected={i === selectedIndex}
-            onPress={() => setSelectedIndex(i)}
+            onPress={() => setPickedIndex(i)}
           />
         ))}
       </View>
