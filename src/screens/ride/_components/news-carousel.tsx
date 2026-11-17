@@ -13,6 +13,7 @@ import type { RideArticle } from "@/screens/ride/_components/stop-article";
 const CARD_SIDE_PEEK = 78;
 const CARD_GAP = 14;
 
+// shortcut: summary를 붙인 타입이 stop-article · 테스트에도 따로 있음, API 연동 때 응답 타입 하나로 합친다
 type CarouselArticle = Pick<
   RideArticle,
   "category" | "label" | "title" | "minutes" | "image"
@@ -52,7 +53,16 @@ export function NewsCarousel({
           useNativeDriver: true,
           // 같은 값이면 부모 setState가 다시 그리지 않는다
           listener: (e: NativeSyntheticEvent<NativeScrollEvent>) =>
-            onIndexChange(Math.round(e.nativeEvent.contentOffset.x / interval)),
+            // iOS 양끝 바운스로 offset이 범위를 넘을 수 있어 가둔다
+            onIndexChange(
+              Math.min(
+                Math.max(
+                  Math.round(e.nativeEvent.contentOffset.x / interval),
+                  0,
+                ),
+                articles.length - 1,
+              ),
+            ),
         },
       )}
       contentContainerStyle={{

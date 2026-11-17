@@ -75,4 +75,19 @@ describe("NewsCarousel", () => {
     });
     expect(onIndexChange).toHaveBeenCalledWith(1);
   });
+
+  it.each([
+    [-100, 0],
+    [99999, 1],
+  ])(
+    "양끝을 넘겨 당겨도(offset %d) 카드 범위 안 순서 %d로 알린다",
+    async (x, expected) => {
+      const onIndexChange = jest.fn();
+      await renderCarousel({ onIndexChange });
+      await fireEvent(screen.getByText("한국은행, 기준금리 동결"), "scroll", {
+        nativeEvent: { contentOffset: { x } },
+      });
+      expect(onIndexChange).toHaveBeenCalledWith(expected);
+    },
+  );
 });

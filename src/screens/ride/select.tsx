@@ -9,6 +9,7 @@ import { Header } from "@/components/header/header";
 import { ProgressBar } from "@/components/progress-bar/progress-bar";
 import { Toast } from "@/components/toast/toast";
 import { SELECT_ARTICLES, TARGET_MINUTES } from "@/mocks/ride";
+import { ADD_TOAST_MESSAGE } from "@/screens/ride/_constants";
 import { getTotalMinutes } from "@/screens/ride/_components/boarding-pass-card";
 import {
   canAddToCart,
@@ -35,9 +36,10 @@ export function SelectScreen() {
   const [isCoachVisible, setIsCoachVisible] = useState(false);
 
   useEffect(() => {
-    SecureStore.getItemAsync(COACH_SEEN_KEY).then((seen) =>
-      setIsCoachVisible(!seen),
-    );
+    SecureStore.getItemAsync(COACH_SEEN_KEY)
+      .then((seen) => setIsCoachVisible(!seen))
+      // 읽기 실패(키체인 오류 등) 시 안내 없이 바로 쓰게 둔다
+      .catch(() => {});
     return () => clearTimeout(toastTimer.current);
   }, []);
 
@@ -94,7 +96,7 @@ export function SelectScreen() {
       <View className="px-5" style={{ paddingBottom: Math.max(bottom, 30) }}>
         {isToastVisible && (
           <View className="pointer-events-none absolute inset-x-5 -top-[60px]">
-            <Toast message="1정거장이 추가되었어요" />
+            <Toast message={ADD_TOAST_MESSAGE} />
           </View>
         )}
         <Button
