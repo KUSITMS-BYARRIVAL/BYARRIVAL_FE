@@ -67,7 +67,9 @@ export function NewsCard({
                 </Text>
               </View>
             </View>
-            <Text className="text-primary text-title2-sb">{title}</Text>
+            <Text numberOfLines={2} className="text-primary text-title2-sb">
+              {title}
+            </Text>
           </View>
           <View className="flex-row items-center gap-1.5">
             <AiCircleIcon />

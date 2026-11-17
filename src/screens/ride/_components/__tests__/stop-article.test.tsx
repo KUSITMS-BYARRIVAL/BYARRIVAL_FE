@@ -2,7 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { type RideArticle, StopArticle } from "../stop-article";
 
-const ARTICLE: RideArticle = {
+type StopArticleData = RideArticle & { summary: string[] };
+
+const ARTICLE: StopArticleData = {
   category: "economy",
   label: "경제",
   title: "한국은행, 기준금리 동결",
@@ -12,10 +14,11 @@ const ARTICLE: RideArticle = {
   keywords: ["#금리", "#오늘의 브리핑"],
   url: "https://example.com/article",
   image: "https://example.com/a.png",
+  summary: ["기준금리 연 3.00% 동결", "물가 안정세 고려"],
 };
 
 const renderArticle = (
-  article: Partial<RideArticle> = {},
+  article: Partial<StopArticleData> = {},
   onOriginalPress = jest.fn(),
 ) =>
   render(
@@ -49,10 +52,18 @@ describe("StopArticle", () => {
     expect(screen.getByText("#오늘의 브리핑")).toBeOnTheScreen();
   });
 
-  it("키워드가 없으면 '핵심 키워드' 라벨만 보여준다", async () => {
+  it("키워드가 없으면 키워드 칩을 보여주지 않는다", async () => {
     await renderArticle({ keywords: [] });
-    expect(screen.getByText("핵심 키워드")).toBeOnTheScreen();
     expect(screen.queryByText(/^#/)).toBeNull();
+  });
+
+  it("AI 요약을 번호와 함께 모두 보여준다", async () => {
+    await renderArticle();
+    expect(screen.getByText("AI가 요약한 핵심 내용")).toBeOnTheScreen();
+    expect(screen.getByText("1")).toBeOnTheScreen();
+    expect(screen.getByText("기준금리 연 3.00% 동결")).toBeOnTheScreen();
+    expect(screen.getByText("2")).toBeOnTheScreen();
+    expect(screen.getByText("물가 안정세 고려")).toBeOnTheScreen();
   });
 
   it("'원문 보기'를 누르면 onOriginalPress를 한 번 호출한다", async () => {

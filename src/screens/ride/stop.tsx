@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   type ScrollViewInstance,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -72,16 +71,8 @@ export function StopScreen() {
         }
       />
       <ScrollView className="flex-1">
-        <View className="mx-5 mt-5 gap-2 rounded-md bg-card-green px-5 py-2.5">
-          {/* Figma Progress Stepper 7 steps(차량 없음). Small의 brand 톤은 시안에서 삭제됨 */}
+        <View className="px-5 py-7">
           <ProgressStepper total={total} current={index + 1} />
-          <View className="flex-row items-center justify-between">
-            <Text className="text-tertiary text-caption1-m">출발</Text>
-            <Text className="text-primary text-caption1-m">
-              {index + 1}번 정거장 정차 중
-            </Text>
-            <Text className="text-tertiary text-caption1-m">종착</Text>
-          </View>
         </View>
         <ScrollView
           ref={pagerRef}
@@ -94,7 +85,7 @@ export function StopScreen() {
           }
         >
           {articles.map((article) => (
-            <View key={article.url} className="p-5" style={{ width }}>
+            <View key={article.url} className="px-5" style={{ width }}>
               <StopArticle
                 article={article}
                 onOriginalPress={() => {
