@@ -82,4 +82,12 @@ describe("SmalltalkScreen", () => {
     await user.press(bookmark);
     expect(bookmark).not.toBeSelected();
   });
+
+  it("https가 아닌 원문 주소는 열지 않는다", async () => {
+    withSmalltalks([smalltalk(1, { sourceUrl: "http://news.example/1" })]);
+    const user = userEvent.setup();
+    await render(<SmalltalkScreen />);
+    await user.press(screen.getByText("한마디 1"));
+    expect(WebBrowser.openBrowserAsync).not.toHaveBeenCalled();
+  });
 });

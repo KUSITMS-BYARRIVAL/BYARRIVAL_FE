@@ -68,9 +68,11 @@ export function SmalltalkScreen() {
                   newsTitle={smalltalk.articleTitle}
                   question={smalltalk.hook}
                   isBookmarked={isBookmarked}
-                  onPress={() =>
-                    WebBrowser.openBrowserAsync(smalltalk.sourceUrl)
-                  }
+                  onPress={() => {
+                    // 서버가 준 주소라도 https 원문만 연다
+                    if (smalltalk.sourceUrl.startsWith("https://"))
+                      WebBrowser.openBrowserAsync(smalltalk.sourceUrl);
+                  }}
                   onBookmarkPress={() =>
                     setBookmarkOverrides((overrides) => ({
                       ...overrides,
