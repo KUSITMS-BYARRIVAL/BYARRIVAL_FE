@@ -13,4 +13,7 @@ export const authService = {
     );
     return res.data.data;
   },
+  logout: async (refreshToken: string) => {
+    await baseApi.post<ApiResponse<null>>("/auth/logout", { refreshToken });
+  },
 };

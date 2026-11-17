@@ -33,6 +33,46 @@ export type OnboardingUpdateRequest = Partial<{
   sigunguId: number;
 }>;
 
+export type DayOfWeek =
+  | "MONDAY"
+  | "TUESDAY"
+  | "WEDNESDAY"
+  | "THURSDAY"
+  | "FRIDAY"
+  | "SATURDAY"
+  | "SUNDAY";
+
+/** 이동하는 요일 하나. 보내지 않은 요일은 이동하지 않는 날 */
+export type DailyCommute = {
+  dayOfWeek: DayOfWeek;
+  /** HH:mm */
+  startTime: string;
+  /** 5~120분, 5분 단위 */
+  minutes: number;
+};
+
+export type UserMeResponse = {
+  userId: number;
+  nickname: string | null;
+  profileImageUrl: string | null;
+  termsAgreed: boolean;
+  onboardingCompleted: boolean;
+  travelType: TravelType | null;
+  defaultCommuteMinutes: number | null;
+  /** 이동하는 요일만 월요일부터 */
+  weeklyCommute: DailyCommute[] | null;
+  categoryIds: number[] | null;
+  jobGroups: string[] | null;
+  region: RegionResponse | null;
+};
+
+/** 닉네임 · 이동 유형 · 기본 이동시간 중 보낸 항목만 바뀐다 */
+export type UserUpdateRequest = Partial<{
+  nickname: string;
+  travelType: TravelType;
+  defaultCommuteMinutes: number;
+}>;
+
 export type CategoryResponse = { id: number; name: string };
 
 export type SigunguResponse = { sigunguId: number; name: string };
