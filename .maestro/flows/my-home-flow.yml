@@ -1,4 +1,4 @@
-appId: host.exp.Exponent  # Expo Go (빌드 금지)
+appId: host.exp.Exponent # Expo Go (빌드 금지)
 onFlowStart:
   - runFlow: ../subflows/go-home.yml
 ---
