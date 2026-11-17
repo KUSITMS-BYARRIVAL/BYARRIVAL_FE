@@ -17,6 +17,15 @@ jest.mock("@/hooks/queries/use-get-today-smalltalks", () => ({
   useGetTodaySmalltalks: () => mockQuery(),
 }));
 
+const mockSave = jest.fn();
+const mockUnsave = jest.fn();
+jest.mock("@/hooks/mutations/use-save-smalltalk", () => ({
+  useSaveSmalltalk: () => ({ mutate: mockSave }),
+}));
+jest.mock("@/hooks/mutations/use-unsave-smalltalk", () => ({
+  useUnsaveSmalltalk: () => ({ mutate: mockUnsave }),
+}));
+
 const smalltalk = (id: number, overrides?: Partial<Smalltalk>): Smalltalk => ({
   smalltalkId: id,
   hook: `한마디 ${id}`,
@@ -73,12 +82,34 @@ describe("SmalltalkScreen", () => {
     expect(router.back).toHaveBeenCalled();
   });
 
-  it("서버에서 담긴 스몰토크는 북마크된 채로 시작하고, 누르면 빠진다", async () => {
+  it("서버에서 담긴 스몰토크는 북마크된 채로 시작하고, 누르면 바로 빠지며 저장 해제를 보낸다", async () => {
     withSmalltalks([smalltalk(1, { scrapped: true })]);
     const user = userEvent.setup();
     await render(<SmalltalkScreen />);
     const bookmark = screen.getByRole("button", { name: "북마크" });
     expect(bookmark).toBeSelected();
+    await user.press(bookmark);
+    expect(bookmark).not.toBeSelected();
+    expect(mockUnsave).toHaveBeenCalledWith(1, expect.anything());
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it("담지 않은 스몰토크는 누르면 바로 담기고 저장을 보낸다", async () => {
+    withSmalltalks([smalltalk(1)]);
+    const user = userEvent.setup();
+    await render(<SmalltalkScreen />);
+    const bookmark = screen.getByRole("button", { name: "북마크" });
+    await user.press(bookmark);
+    expect(bookmark).toBeSelected();
+    expect(mockSave).toHaveBeenCalledWith(1, expect.anything());
+  });
+
+  it("저장이 실패하면 북마크를 원래대로 되돌린다", async () => {
+    withSmalltalks([smalltalk(1)]);
+    mockSave.mockImplementation((_id, { onError }) => onError());
+    const user = userEvent.setup();
+    await render(<SmalltalkScreen />);
+    const bookmark = screen.getByRole("button", { name: "북마크" });
     await user.press(bookmark);
     expect(bookmark).not.toBeSelected();
   });
