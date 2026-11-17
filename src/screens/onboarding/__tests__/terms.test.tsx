@@ -127,4 +127,20 @@ describe("TermsScreen", () => {
     expect(screen.queryByRole("checkbox")).toBeNull();
     expect(next()).toBeDisabled();
   });
+
+  it("약관 조회에 실패하면 알리고, 다시 시도로 다시 받는다", async () => {
+    const refetch = jest.fn();
+    mockQuery.mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch,
+    });
+    const user = userEvent.setup();
+    await render(<TermsScreen />);
+    expect(screen.getByText("약관을 불러오지 못했어요")).toBeOnTheScreen();
+    expect(next()).toBeDisabled();
+    await user.press(screen.getByRole("button", { name: "다시 시도" }));
+    expect(refetch).toHaveBeenCalledTimes(1);
+  });
 });

@@ -3,7 +3,7 @@ import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
 import { useCallback, useState } from "react";
-import { BackHandler, ScrollView, Text, View } from "react-native";
+import { BackHandler, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button } from "@/components/button/button";
@@ -30,7 +30,7 @@ const labelOf = ({ type, title, required }: TermsResponse) =>
 // 화면설계서 ONB-03 약관 동의: 로그인 후 필수 약관에 동의해야 닉네임 입력으로 넘어간다
 export function TermsScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  const { data: terms = [], isPending } = useGetTerms();
+  const { data: terms = [], isPending, isError, refetch } = useGetTerms();
   const { mutate: agree, isPending: isAgreeing } = useAgreeTerms();
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
   const [isMarketingChecked, setIsMarketingChecked] = useState(false);
@@ -101,6 +101,22 @@ export function TermsScreen() {
           </View>
           {isPending ? (
             <LoadingDots className="py-10" />
+          ) : isError ? (
+            // 약관이 없으면 동의할 수 없어 화면에서 바로 다시 받을 수 있게 한다
+            <View className="items-center gap-3 py-10">
+              <Text className="text-on-fill-muted text-body2-m">
+                약관을 불러오지 못했어요
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                hitSlop={12}
+                onPress={() => refetch()}
+              >
+                <Text className="text-on-fill-default underline text-body2-m">
+                  다시 시도
+                </Text>
+              </Pressable>
+            </View>
           ) : (
             <View className="gap-3.5 px-5 py-3">
               <TermsCheckRow
