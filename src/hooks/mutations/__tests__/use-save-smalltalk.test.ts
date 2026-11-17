@@ -1,0 +1,100 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react-native";
+import MockAdapter from "axios-mock-adapter";
+import { act, createElement, type ReactNode } from "react";
+
+import { baseApi } from "@/lib/api-client";
+import { ApiError } from "@/types/api";
+
+import { useSaveSmalltalk } from "../use-save-smalltalk";
+
+jest.mock("expo-secure-store", () => ({
+  setItemAsync: jest.fn().mockResolvedValue(undefined),
+  deleteItemAsync: jest.fn().mockResolvedValue(undefined),
+}));
+
+const api = new MockAdapter(baseApi);
+
+let queryClient: QueryClient;
+const wrapper = ({ children }: { children: ReactNode }) =>
+  createElement(QueryClientProvider, { client: queryClient }, children);
+
+beforeEach(() => {
+  api.reset();
+  queryClient = new QueryClient({
+    defaultOptions: {
+      // gcTime Infinity: 정리 타이머가 Jest 종료를 막지 않게 한다
+      queries: { retry: false, gcTime: Infinity },
+      mutations: { retry: false, gcTime: Infinity },
+    },
+  });
+});
+
+afterEach(() => {
+  queryClient.clear();
+});
+
+const status = { targetId: 3, scrapped: true };
+
+describe("useSaveSmalltalk", () => {
+  it("PUT /scraps/smalltalks/{smalltalkId}로 요청한다", async () => {
+    api.onPut("/scraps/smalltalks/3").reply(200, { data: status });
+    const { result } = await renderHook(() => useSaveSmalltalk(), { wrapper });
+
+    await act(() => result.current.mutateAsync(3));
+
+    expect(api.history.put[0]!.url).toBe("/scraps/smalltalks/3");
+  });
+
+  it("성공하면 응답 data(ScrapStatus)를 반환한다", async () => {
+    api.onPut("/scraps/smalltalks/3").reply(200, { data: status });
+    const { result } = await renderHook(() => useSaveSmalltalk(), { wrapper });
+
+    let data: unknown;
+    await act(async () => {
+      data = await result.current.mutateAsync(3);
+    });
+
+    expect(data).toEqual(status);
+  });
+
+  it("성공하면 scrap · smalltalk 쿼리를 모두 무효화한다", async () => {
+    queryClient.setQueryData(["scrap", "getLibrary"], "data");
+    queryClient.setQueryData(["smalltalk", "get"], "data");
+    api.onPut("/scraps/smalltalks/3").reply(200, { data: status });
+    const { result } = await renderHook(() => useSaveSmalltalk(), { wrapper });
+
+    await act(() => result.current.mutateAsync(3));
+
+    expect(
+      queryClient.getQueryState(["scrap", "getLibrary"])?.isInvalidated,
+    ).toBe(true);
+    expect(queryClient.getQueryState(["smalltalk", "get"])?.isInvalidated).toBe(
+      true,
+    );
+  });
+
+  it("실패하면 ApiError로 reject되고 캐시는 무효화되지 않는다", async () => {
+    queryClient.setQueryData(["scrap", "getLibrary"], "data");
+    queryClient.setQueryData(["smalltalk", "get"], "data");
+    api
+      .onPut("/scraps/smalltalks/3")
+      .reply(404, { code: "NOT_FOUND", message: "없는 스몰토크" });
+    const { result } = await renderHook(() => useSaveSmalltalk(), { wrapper });
+
+    await act(() => result.current.mutateAsync(3).catch(() => undefined));
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toBeInstanceOf(ApiError);
+    expect(result.current.error).toMatchObject({
+      status: 404,
+      code: "NOT_FOUND",
+    });
+    expect(
+      queryClient.getQueryState(["scrap", "getLibrary"])?.isInvalidated,
+    ).toBe(false);
+    expect(queryClient.getQueryState(["smalltalk", "get"])?.isInvalidated).toBe(
+      false,
+    );
+  });
+});
