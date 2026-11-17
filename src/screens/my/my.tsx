@@ -9,6 +9,7 @@ import { useGetStatsStreak } from "@/hooks/queries/use-get-stats-streak";
 import { useGetStatsSummary } from "@/hooks/queries/use-get-stats-summary";
 import { useGetStatsWeekly } from "@/hooks/queries/use-get-stats-weekly";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
+import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { MySummaryHero } from "@/screens/my/_components/my-summary-hero";
 import { RecordSummaryCard } from "@/screens/my/_components/record-summary-card";
 import { RecentSavedArticlesCard } from "@/screens/my/_components/recent-saved-articles-card";
@@ -31,6 +32,7 @@ export function MyScreen() {
   const calendar = useGetStatsCalendar(year);
   const weekly = useGetStatsWeekly();
   const scraps = useGetScrapLibrary({ type: "ARTICLE", sort: "LATEST" });
+  const { commute } = useCommuteWords();
 
   const queries = [all, month, yearSummary, streak, calendar, weekly, scraps];
   // 실패는 전역 토스트(query-client)가 알리고, 실패한 영역은 0으로 둔다
@@ -65,6 +67,7 @@ export function MyScreen() {
         totalHours={toHours(all.data?.usedMinutes)}
         monthMinutes={month.data?.usedMinutes ?? 0}
         readCount={month.data?.readArticleCount ?? 0}
+        commute={commute}
         onPressProfile={() => router.push("/profile")}
         minHeight={viewportHeight}
       />

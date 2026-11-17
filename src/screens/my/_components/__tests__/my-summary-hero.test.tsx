@@ -17,6 +17,7 @@ const renderHero = (
         totalHours={142}
         monthMinutes={92}
         readCount={37}
+        commute="출근"
         onPressProfile={jest.fn()}
         {...props}
       />
@@ -54,5 +55,12 @@ describe("MySummaryHero", () => {
     await renderHero({ onPressProfile });
     await fireEvent.press(screen.getByLabelText("프로필"));
     expect(onPressProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it("사용자 유형 문구를 넣어 이번 달 읽은 기사 수를 표시한다", async () => {
+    await renderHero({ commute: "등교", readCount: 5 });
+    expect(
+      screen.getByText(/그냥 지나갈 수 있었던 등교 시간이\s5개의 이야기로/),
+    ).toBeOnTheScreen();
   });
 });

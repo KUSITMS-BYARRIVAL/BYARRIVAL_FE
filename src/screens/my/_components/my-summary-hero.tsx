@@ -9,6 +9,8 @@ type MySummaryHeroProps = {
   totalHours: number;
   monthMinutes: number;
   readCount: number;
+  /** 사용자 유형별 '출근' · '등교' · '이동' (COMMUTE_WORDS) */
+  commute: string;
   onPressProfile: () => void;
   /** 첫 화면을 꽉 채우도록 사용처가 잰 화면 높이 */
   minHeight?: number;
@@ -18,6 +20,7 @@ export function MySummaryHero({
   totalHours,
   monthMinutes,
   readCount,
+  commute,
   onPressProfile,
   minHeight,
 }: MySummaryHeroProps) {
@@ -55,7 +58,7 @@ export function MySummaryHero({
             </Text>
           </View>
           <Text className="text-secondary text-body2-m">
-            {`그냥 지나갈 수 있었던 출근 시간이\n${readCount}개의 이야기로 채워졌어요.`}
+            {`그냥 지나갈 수 있었던 ${commute} 시간이\n${readCount}개의 이야기로 채워졌어요.`}
           </Text>
         </View>
       </View>
