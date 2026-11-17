@@ -26,6 +26,8 @@ export function SmalltalkScreen() {
   const smalltalks = data?.smalltalks ?? [];
 
   const toggleBookmark = (smalltalkId: number, isBookmarked: boolean) => {
+    // 요청 중 연타하면 저장·해제 응답 순서가 꼬여 서버와 화면이 달라질 수 있다
+    if (saveSmalltalk.isPending || unsaveSmalltalk.isPending) return;
     const setBookmarked = (value: boolean) =>
       setBookmarkOverrides((overrides) => ({
         ...overrides,
