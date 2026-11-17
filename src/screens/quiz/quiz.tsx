@@ -46,13 +46,16 @@ export function QuizScreen() {
   const quiz = quizzes[current];
   const isLast = current === quizzes.length - 1;
 
-  // 낼 문제가 없거나 이미 다 풀었으면 결과로 보낸다
+  // 들어올 때 이미 낼 문제가 없거나 다 풀었으면 결과로 보낸다
+  // (풀다가 다 푼 경우는 해설을 보여준 뒤 '결과 보기'로만 간다)
   useEffect(() => {
-    if (isAllAnswered) goResult();
-  }, [isAllAnswered]);
+    if (isAllAnswered && index === null) goResult();
+  }, [isAllAnswered, index]);
 
   const pick = (choiceSeq: number) => {
     if (!quiz || routeId === undefined) return;
+    // 답하면 서버의 nextQuizOrder가 바뀌므로 지금 문제 위치를 고정한다
+    setIndex(current);
     answerQuiz(
       { routeId, quizId: quiz.quizId, choiceSeq },
       { onSuccess: setAnswer },

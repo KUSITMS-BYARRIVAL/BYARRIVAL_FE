@@ -136,6 +136,49 @@ describe("QuizScreen", () => {
     expect(router.replace).toHaveBeenCalledWith("/quiz/result");
   });
 
+  it("답한 뒤 서버의 이어 풀 문제가 바뀌어도, 다음 문제를 누르기 전까지 지금 문제에 머문다", async () => {
+    // 답하면 다시 받은 퀴즈 목록에서 nextQuizOrder가 2로 오른다
+    grade(2);
+    const answer = mockAnswer.getMockImplementation()!;
+    mockAnswer.mockImplementation((body, options) => {
+      mockQuizzes.mockReturnValue({
+        data: quizSet({ nextQuizOrder: 2 }),
+        isPending: false,
+      });
+      answer(body, options);
+    });
+    const user = userEvent.setup();
+    await render(<QuizScreen />);
+    await user.press(screen.getByText("1-나"));
+    expect(screen.getByText("문제 1")).toBeOnTheScreen();
+    await user.press(screen.getByRole("button", { name: "다음 문제" }));
+    expect(screen.getByText("문제 2")).toBeOnTheScreen();
+  });
+
+  it("마지막 문제를 틀려도 해설을 보여주고, 결과 보기를 눌러야 결과로 간다", async () => {
+    mockQuizzes.mockReturnValue({
+      data: quizSet({ nextQuizOrder: 2 }),
+      isPending: false,
+    });
+    grade(3, "정답은 다예요");
+    const answer = mockAnswer.getMockImplementation()!;
+    mockAnswer.mockImplementation((body, options) => {
+      // 마지막 답 뒤에는 다 풀어 nextQuizOrder가 null이 된다
+      mockQuizzes.mockReturnValue({
+        data: quizSet({ nextQuizOrder: null }),
+        isPending: false,
+      });
+      answer(body, options);
+    });
+    const user = userEvent.setup();
+    await render(<QuizScreen />);
+    await user.press(screen.getByText("2-가"));
+    expect(screen.getByText("정답은 다예요")).toBeOnTheScreen();
+    expect(router.replace).not.toHaveBeenCalled();
+    await user.press(screen.getByRole("button", { name: "결과 보기" }));
+    expect(router.replace).toHaveBeenCalledWith("/quiz/result");
+  });
+
   it.each([
     ["이미 다 풀었으면", quizSet({ nextQuizOrder: null })],
     [
