@@ -1,6 +1,10 @@
 import { baseApi } from "@/lib/api-client";
 import type { ApiResponse } from "@/types/api";
-import type { Library, LibraryParams } from "@/types/scrap/scrap.types";
+import type {
+  Library,
+  LibraryParams,
+  ScrapStatus,
+} from "@/types/scrap/scrap.types";
 
 export const scrapService = {
   getLibrary: async (params: LibraryParams) => {
@@ -14,6 +18,18 @@ export const scrapService = {
   restore: async (scrapId: number) => {
     const res = await baseApi.post<ApiResponse<null>>(
       `/scraps/${scrapId}/restore`,
+    );
+    return res.data.data;
+  },
+  saveSmalltalk: async (smalltalkId: number) => {
+    const res = await baseApi.put<ApiResponse<ScrapStatus>>(
+      `/scraps/smalltalks/${smalltalkId}`,
+    );
+    return res.data.data;
+  },
+  unsaveSmalltalk: async (smalltalkId: number) => {
+    const res = await baseApi.delete<ApiResponse<ScrapStatus>>(
+      `/scraps/smalltalks/${smalltalkId}`,
     );
     return res.data.data;
   },

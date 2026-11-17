@@ -40,3 +40,8 @@ export type Library = {
   articles: LibraryArticle[];
   smalltalks: LibrarySmalltalk[];
 };
+
+export type ScrapStatus = {
+  targetId: number;
+  scrapped: boolean;
+};
