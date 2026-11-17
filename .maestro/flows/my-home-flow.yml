@@ -1,4 +1,5 @@
-appId: host.exp.Exponent # Expo Go (빌드 금지)
+# Expo Go (빌드 금지) — 앱 ID가 iOS·Android 대소문자가 다르다
+appId: "${maestro.platform == 'android' ? 'host.exp.exponent' : 'host.exp.Exponent'}"
 onFlowStart:
   - runFlow: ../subflows/go-home.yml
 ---

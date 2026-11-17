@@ -1,5 +1,5 @@
 # Expo Go로 Metro(npx expo start)에 붙어 홈 탭이 보일 때까지 기다린다 (clearState 금지 — 토큰이 지워진다)
-appId: host.exp.Exponent
+appId: "${maestro.platform == 'android' ? 'host.exp.exponent' : 'host.exp.Exponent'}"
 ---
 - launchApp
 - openLink: exp://127.0.0.1:8081
