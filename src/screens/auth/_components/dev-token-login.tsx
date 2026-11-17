@@ -35,7 +35,11 @@ export function DevTokenLogin() {
       await setTokens(tokens);
       const me = await queryClient.fetchQuery(getMeQuery);
       setIsOpen(false);
-      await startSession({ tokens, isOnboarded: me.onboardingCompleted });
+      await startSession({
+        tokens,
+        isOnboarded: me.onboardingCompleted,
+        isTermsAgreed: me.termsAgreed,
+      });
     } catch {
       await clearSession();
       showToast({ message: "토큰으로 로그인하지 못했어요" });

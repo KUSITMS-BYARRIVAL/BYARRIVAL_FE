@@ -8,6 +8,7 @@ import { useOnboardingStore } from "@/stores/onboarding-store";
 const TOKENS_KEY = "tokens";
 // 앱을 다시 켤 때 네트워크 없이 온보딩 / 홈 중 어디로 보낼지 정하려고 함께 저장한다
 const ONBOARDED_KEY = "onboarded";
+const TERMS_AGREED_KEY = "termsAgreed";
 
 export type Tokens = { accessToken: string; refreshToken: string };
 
@@ -16,15 +17,19 @@ type AuthState = {
   refreshToken: string | null;
   /** 온보딩을 마쳤는지. 라우트 가드가 온보딩 / 홈을 고르는 기준 */
   isOnboarded: boolean;
+  /** 필수 약관에 동의했는지. 온보딩 전 회원을 약관 / 닉네임 중 어디로 보낼지 정한다 */
+  isTermsAgreed: boolean;
   /** 앱 시작 때 저장된 세션을 다 읽었는지. 그전에는 스플래시를 유지한다 */
   isRestored: boolean;
   restoreSession: () => Promise<void>;
   startSession: (session: {
     tokens: Tokens;
     isOnboarded: boolean;
+    isTermsAgreed: boolean;
   }) => Promise<void>;
   setTokens: (tokens: Tokens) => Promise<void>;
   setOnboarded: () => Promise<void>;
+  setTermsAgreed: () => Promise<void>;
   clearSession: () => Promise<void>;
 };
 
@@ -45,23 +50,34 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   accessToken: null,
   refreshToken: null,
   isOnboarded: false,
+  isTermsAgreed: false,
   isRestored: false,
   restoreSession: async () => {
     try {
-      const [rawTokens, onboarded] = await Promise.all([
+      const [rawTokens, onboarded, termsAgreed] = await Promise.all([
         SecureStore.getItemAsync(TOKENS_KEY),
         SecureStore.getItemAsync(ONBOARDED_KEY),
+        SecureStore.getItemAsync(TERMS_AGREED_KEY),
       ]);
       // 저장 형식이 깨졌으면 로그인하지 않은 것으로 본다
       const tokens = parseTokens(rawTokens);
-      if (tokens) set({ ...tokens, isOnboarded: onboarded === "true" });
+      // 약관 화면 전에 로그인한 세션은 값이 없다 — 예전처럼 닉네임으로 보낸다
+      if (tokens)
+        set({
+          ...tokens,
+          isOnboarded: onboarded === "true",
+          isTermsAgreed: termsAgreed !== "false",
+        });
     } finally {
       set({ isRestored: true });
     }
   },
-  startSession: async ({ tokens, isOnboarded }) => {
-    await SecureStore.setItemAsync(ONBOARDED_KEY, String(isOnboarded));
-    set({ isOnboarded });
+  startSession: async ({ tokens, isOnboarded, isTermsAgreed }) => {
+    await Promise.all([
+      SecureStore.setItemAsync(ONBOARDED_KEY, String(isOnboarded)),
+      SecureStore.setItemAsync(TERMS_AGREED_KEY, String(isTermsAgreed)),
+    ]);
+    set({ isOnboarded, isTermsAgreed });
     await get().setTokens(tokens);
   },
   setTokens: async ({ accessToken, refreshToken }) => {
@@ -75,6 +91,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     await SecureStore.setItemAsync(ONBOARDED_KEY, "true");
     set({ isOnboarded: true });
   },
+  setTermsAgreed: async () => {
+    await SecureStore.setItemAsync(TERMS_AGREED_KEY, "true");
+    set({ isTermsAgreed: true });
+  },
   // 이전 사용자 데이터가 남지 않게 캐시와 온보딩 초안까지 비운다
   // 저장소 삭제가 실패해도 앱 안의 세션은 반드시 비운다 (실패는 호출한 쪽에 그대로 알린다)
   clearSession: async () => {
@@ -82,9 +102,15 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       await Promise.all([
         SecureStore.deleteItemAsync(TOKENS_KEY),
         SecureStore.deleteItemAsync(ONBOARDED_KEY),
+        SecureStore.deleteItemAsync(TERMS_AGREED_KEY),
       ]);
     } finally {
-      set({ accessToken: null, refreshToken: null, isOnboarded: false });
+      set({
+        accessToken: null,
+        refreshToken: null,
+        isOnboarded: false,
+        isTermsAgreed: false,
+      });
       queryClient.clear();
       useOnboardingStore.getState().reset();
     }
