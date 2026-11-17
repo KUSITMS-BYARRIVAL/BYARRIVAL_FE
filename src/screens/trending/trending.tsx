@@ -1,6 +1,7 @@
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -8,21 +9,40 @@ import { ButtonCard } from "@/components/button-card/button-card";
 import { RankingRow } from "@/components/button-card/ranking-row";
 import { Chip } from "@/components/chip/chip";
 import { Header } from "@/components/header/header";
+import { LoadingDots } from "@/components/loading-dots/loading-dots";
+import { useGetMe } from "@/hooks/queries/use-get-me";
 import {
-  IS_TRENDING_READY,
-  TRENDING_TOP10,
-  TRENDING_UPDATED_AT,
-} from "@/mocks/ride";
-import { MY_PROFILE } from "@/mocks/profile";
+  getPopularQuery,
+  useGetPopular,
+} from "@/hooks/queries/use-get-popular";
 import { AchievementCard } from "@/screens/_components/achievement-card";
-import { COMMUTE_WORDS } from "@/screens/_constants";
-
-type TrendingScope = "jobGroup" | "all";
+import { toPopularChipLabel } from "@/screens/_helpers";
+import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 
 export function TrendingScreen() {
   const { top } = useSafeAreaInsets();
-  const [scope, setScope] = useState<TrendingScope>("jobGroup");
-  const { route, person } = COMMUTE_WORDS[MY_PROFILE.userType];
+  const { route, person } = useCommuteWords();
+  const queryClient = useQueryClient();
+  const { data: me } = useGetMe();
+  const jobGroups = me?.jobGroups;
+  // 고른 직군(고른 순서) 다음에 전체(null) — 홈 칩과 같은 순서
+  const chips = [...(jobGroups ?? []), null];
+  const [selected, setSelected] = useState(chips[0] ?? null);
+  const { data, isPending, dataUpdatedAt } = useGetPopular(
+    selected ?? undefined,
+  );
+  // 칩 수가 적어(고른 직군 + 전체) 화면을 열 때 모두 받아 두고, 칩을 바꾸면 바로 보여준다
+  useEffect(() => {
+    [...(jobGroups ?? []), undefined].forEach((jobGroup) =>
+      queryClient.query(getPopularQuery(jobGroup)).catch(() => undefined),
+    );
+  }, [queryClient, jobGroups]);
+  const isAggregating = data?.status === "AGGREGATING";
+  // [임시] 서버에 집계 시각 필드가 없어 앱이 받은 시각을 보여준다 — 백엔드에 필드 요청 중
+  const updatedAt = new Date(dataUpdatedAt).toLocaleTimeString("ko-KR", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
@@ -35,46 +55,54 @@ export function TrendingScreen() {
           <View className="flex-row items-center gap-2 pl-8">
             <View className="size-2 rounded-full bg-green-500" />
             <Text className="flex-1 text-brand text-caption1-r">
-              {IS_TRENDING_READY
-                ? `LIVE · 오늘 ${TRENDING_UPDATED_AT} 기준`
-                : "LIVE · 첫 순위를 집계하고 있어요"}
+              {/* 첫 응답 전에는 dataUpdatedAt이 0이라 시각을 빼고 보여준다 */}
+              {!data
+                ? "LIVE"
+                : isAggregating
+                  ? "LIVE · 첫 순위를 집계하고 있어요"
+                  : `LIVE · 오늘 ${updatedAt} 기준`}
             </Text>
           </View>
-          <View className="flex-row gap-2 px-5">
-            <Chip
-              label={`내 직군 · ${MY_PROFILE.jobGroup}`}
-              selected={scope === "jobGroup"}
-              onPress={() => setScope("jobGroup")}
-            />
-            <Chip
-              label="전체"
-              selected={scope === "all"}
-              onPress={() => setScope("all")}
-            />
+          <View className="flex-row flex-wrap gap-2 px-5">
+            {chips.map((jobGroup) => (
+              <Chip
+                key={jobGroup ?? "all"}
+                label={toPopularChipLabel(jobGroup)}
+                selected={jobGroup === selected}
+                onPress={() => setSelected(jobGroup)}
+              />
+            ))}
           </View>
         </View>
         <View className="px-5">
-          {IS_TRENDING_READY ? (
-            <ButtonCard>
-              {TRENDING_TOP10[scope].map((article, i) => (
-                <RankingRow
-                  key={article.url}
-                  rank={i + 1}
-                  title={article.title}
-                  subtext={`오늘 ${route} ${person} ${article.viewers.toLocaleString("ko-KR")}명이 보고 있어요`}
-                  isLive
-                  hasArrow={false}
-                  rankTone={i < 3 ? "brand" : "mono"}
-                  onPress={() => WebBrowser.openBrowserAsync(article.url)}
-                />
-              ))}
-            </ButtonCard>
-          ) : (
+          {isPending ? (
+            <LoadingDots className="py-10" />
+          ) : isAggregating ? (
             <AchievementCard
               title="축하합니다! 당신은 1등 갓생러"
               description="데이터를 집계중이에요"
               orientation="vertical"
             />
+          ) : (
+            <ButtonCard>
+              {data?.articles.map((article) => (
+                <RankingRow
+                  key={article.articleId}
+                  rank={article.rank}
+                  title={article.title}
+                  // [임시] cartedUserCount는 '담은 사람 수'인데 문구는 '보고 있어요' — 기획 확인 전
+                  subtext={`오늘 ${route} ${person} ${article.cartedUserCount.toLocaleString("ko-KR")}명이 보고 있어요`}
+                  isLive
+                  hasArrow={false}
+                  rankTone={article.rank <= 3 ? "brand" : "mono"}
+                  onPress={() => {
+                    // 서버가 준 주소라도 https 원문만 연다
+                    if (article.url.startsWith("https://"))
+                      WebBrowser.openBrowserAsync(article.url);
+                  }}
+                />
+              ))}
+            </ButtonCard>
           )}
         </View>
       </ScrollView>
