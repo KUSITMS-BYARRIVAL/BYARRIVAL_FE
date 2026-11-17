@@ -122,6 +122,9 @@ const SUMMARIES = [
   ],
 ];
 
+// 오늘 목표 이동 시간 T(분). 뉴스 탑승하기는 담은 시간 합계가 T의 70~120%일 때 시작할 수 있다
+export const TARGET_MINUTES = 15;
+
 export const SELECT_ARTICLES = BOARDING_ARTICLES.map((article, i) => ({
   ...article,
   summary: SUMMARIES[i],
