@@ -167,6 +167,26 @@ describe("baseApi 401 토큰 재발급", () => {
     expect(useAuthStore.getState().refreshToken).toBeNull();
   });
 
+  it("재발급을 기다리는 사이 다른 계정으로 바뀌었다면, 옛 재발급이 거절돼도 새 세션은 지우지 않는다", async () => {
+    api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
+    reissue.onPost(REISSUE_URL).reply(() => {
+      // 응답이 오기 전에 다른 계정으로 로그인한 상황
+      useAuthStore.setState({
+        accessToken: "other-access",
+        refreshToken: "other-refresh",
+      });
+      return [401, {}];
+    });
+
+    const error = await caught(baseApi.get("/me"));
+
+    expect(error).toMatchObject({ status: 401, code: "EXPIRED" });
+    expect(useAuthStore.getState()).toMatchObject({
+      accessToken: "other-access",
+      refreshToken: "other-refresh",
+    });
+  });
+
   it.each([
     [
       "네트워크 끊김",

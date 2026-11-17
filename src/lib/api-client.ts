@@ -39,7 +39,10 @@ async function reissueTokens(refreshToken: string) {
     await useAuthStore.getState().setTokens(res.data.data);
   } catch (error) {
     // 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 거절(4xx)일 때만 로그아웃한다
-    if (isTokenRejected(error)) await useAuthStore.getState().clearSession();
+    // 기다리는 사이 다른 계정으로 바뀌었다면 그 세션은 건드리지 않는다
+    const isSameSession = useAuthStore.getState().refreshToken === refreshToken;
+    if (isTokenRejected(error) && isSameSession)
+      await useAuthStore.getState().clearSession();
     throw error;
   }
 }

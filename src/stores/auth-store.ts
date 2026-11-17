@@ -76,13 +76,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     set({ isOnboarded: true });
   },
   // 이전 사용자 데이터가 남지 않게 캐시와 온보딩 초안까지 비운다
+  // 저장소 삭제가 실패해도 앱 안의 세션은 반드시 비운다 (실패는 호출한 쪽에 그대로 알린다)
   clearSession: async () => {
-    await Promise.all([
-      SecureStore.deleteItemAsync(TOKENS_KEY),
-      SecureStore.deleteItemAsync(ONBOARDED_KEY),
-    ]);
-    set({ accessToken: null, refreshToken: null, isOnboarded: false });
-    queryClient.clear();
-    useOnboardingStore.getState().reset();
+    try {
+      await Promise.all([
+        SecureStore.deleteItemAsync(TOKENS_KEY),
+        SecureStore.deleteItemAsync(ONBOARDED_KEY),
+      ]);
+    } finally {
+      set({ accessToken: null, refreshToken: null, isOnboarded: false });
+      queryClient.clear();
+      useOnboardingStore.getState().reset();
+    }
   },
 }));

@@ -40,10 +40,11 @@ jest.mock("@/hooks/queries/use-get-me", () => ({
   }),
 }));
 const mockReplaceWeekly = jest.fn();
+let mockSaving = false;
 jest.mock("@/hooks/mutations/use-replace-weekly-commute", () => ({
   useReplaceWeeklyCommute: () => ({
     mutate: mockReplaceWeekly,
-    isPending: false,
+    isPending: mockSaving,
   }),
 }));
 
@@ -56,7 +57,10 @@ const increaseHour = () =>
     },
   );
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockSaving = false;
+});
 
 describe("ProfileDepartureTimeScreen", () => {
   it("요일별 출근 시각을 보여주고, 쉬는 날은 가장 이른 시각으로 흐리게 두어 누를 수 없다", async () => {
@@ -101,5 +105,16 @@ describe("ProfileDepartureTimeScreen", () => {
         ({ startTime }: { startTime: string }) => startTime === "09:00",
       ),
     ).toBe(true);
+  });
+
+  it("앞 저장이 끝나기 전에는 다시 저장하지 않고 시트를 열어 둔다", async () => {
+    mockSaving = true;
+    const user = userEvent.setup();
+    await render(<ProfileDepartureTimeScreen />);
+    await user.press(screen.getByRole("button", { name: "화 오전 09:00" }));
+    await increaseHour();
+    await user.press(screen.getByRole("button", { name: "확인" }));
+    expect(mockReplaceWeekly).not.toHaveBeenCalled();
+    expect(screen.getByText("시간 설정")).toBeOnTheScreen();
   });
 });

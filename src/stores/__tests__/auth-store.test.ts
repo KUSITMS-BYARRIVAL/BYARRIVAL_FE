@@ -100,16 +100,20 @@ describe("useAuthStore", () => {
       ).resolves.toBeUndefined();
     });
 
-    it("SecureStore 삭제가 실패하면 reject하고 토큰 상태와 캐시를 유지한다", async () => {
-      useAuthStore.setState(tokens);
+    it("SecureStore 삭제가 실패해도 앱 안의 토큰 · 캐시는 비우고, 실패는 알린다", async () => {
+      useAuthStore.setState({ ...tokens, isOnboarded: true });
       queryClient.setQueryData(["me"], { name: "홍길동" });
       deleteItemAsync.mockRejectedValueOnce(new Error("삭제 실패"));
 
       await expect(useAuthStore.getState().clearSession()).rejects.toThrow(
         "삭제 실패",
       );
-      expect(useAuthStore.getState().accessToken).toBe("access-1");
-      expect(queryClient.getQueryData(["me"])).toEqual({ name: "홍길동" });
+      expect(useAuthStore.getState()).toMatchObject({
+        accessToken: null,
+        refreshToken: null,
+        isOnboarded: false,
+      });
+      expect(queryClient.getQueryData(["me"])).toBeUndefined();
     });
   });
 

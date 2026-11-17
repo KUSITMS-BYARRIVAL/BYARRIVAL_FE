@@ -30,7 +30,7 @@ type Target = "base" | Weekday;
 // 서버에 기본 출근 시각이 없어, 기본 = 이동하는 요일 중 가장 이른 시각이고 바꾸면 모든 요일을 한 번에 바꾼다
 export function ProfileDepartureTimeScreen() {
   const { data: me } = useGetMe();
-  const { mutate } = useReplaceWeeklyCommute();
+  const { mutate, isPending } = useReplaceWeeklyCommute();
   const showToast = useToastStore((state) => state.showToast);
   // 시간을 고르는 대상. null이면 바텀시트를 닫는다
   const [target, setTarget] = useState<Target | null>(null);
@@ -54,7 +54,8 @@ export function ProfileDepartureTimeScreen() {
   };
 
   const save = () => {
-    if (!target) return;
+    // 앞 저장의 응답 전에 옛 값으로 만든 요청이 나가 앞의 변경을 덮어쓰지 않게, 끝날 때까지 시트를 열어 둔다
+    if (!target || isPending) return;
     const next: WeeklyPlan =
       target === "base"
         ? withAllTimes(plan, draft)

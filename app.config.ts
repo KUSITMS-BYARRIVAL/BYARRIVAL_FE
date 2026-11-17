@@ -9,6 +9,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ...(config.plugins ?? []),
     "expo-apple-authentication",
+    // 카카오 Android SDK(com.kakao.sdk)는 Maven Central에 없어 카카오 저장소를 추가해야 의존성을 받는다
+    [
+      "expo-build-properties",
+      {
+        android: {
+          extraMavenRepos: [
+            "https://devrepo.kakao.com/nexus/content/groups/public/",
+          ],
+        },
+      },
+    ],
     // 키 없이 넣으면 플러그인이 에러를 던져, 키가 없는 환경(CI 등)에서는 빼고 실행한다
     ...(kakaoNativeAppKey
       ? [
