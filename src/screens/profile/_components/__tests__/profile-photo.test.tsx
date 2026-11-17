@@ -5,6 +5,8 @@ import {
   waitFor,
 } from "@testing-library/react-native";
 
+import { useToastStore } from "@/stores/toast-store";
+
 import { ProfilePhoto } from "../profile-photo";
 
 jest.mock("react-native-safe-area-context", () => ({
@@ -65,5 +67,17 @@ describe("ProfilePhoto", () => {
       screen.getByRole("button", { name: "기본 이미지로 변경" }),
     );
     expect(mockRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it("사진 선택 모듈을 쓸 수 없으면(옛 빌드 등) 알리고 업로드하지 않는다", async () => {
+    mockPick.mockRejectedValue(new Error("Cannot find native module"));
+    const user = await openSheet(null);
+    await user.press(screen.getByRole("button", { name: "앨범에서 선택" }));
+    await waitFor(() =>
+      expect(useToastStore.getState().toast?.message).toBe(
+        "사진을 불러오지 못했어요",
+      ),
+    );
+    expect(mockChange).not.toHaveBeenCalled();
   });
 });

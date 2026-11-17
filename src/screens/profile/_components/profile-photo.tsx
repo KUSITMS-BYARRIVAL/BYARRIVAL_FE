@@ -7,6 +7,7 @@ import { BottomSheet } from "@/components/bottom-sheet/bottom-sheet";
 import { useChangeProfileImage } from "@/hooks/mutations/use-change-profile-image";
 import { useDeleteProfileImage } from "@/hooks/mutations/use-delete-profile-image";
 import { pickSquareImage } from "@/lib/pick-image";
+import { useToastStore } from "@/stores/toast-store";
 
 type ProfilePhotoProps = {
   imageUrl: string | null;
@@ -19,11 +20,16 @@ export function ProfilePhoto({ imageUrl }: ProfilePhotoProps) {
   const { mutate: change, isPending: isChanging } = useChangeProfileImage();
   const { mutate: remove, isPending: isRemoving } = useDeleteProfileImage();
   const isSaving = isChanging || isRemoving;
+  const showToast = useToastStore((state) => state.showToast);
 
   const pick = async () => {
     setIsSheetOpen(false);
-    const image = await pickSquareImage();
-    if (image) change(image);
+    try {
+      const image = await pickSquareImage();
+      if (image) change(image);
+    } catch {
+      showToast({ message: "사진을 불러오지 못했어요" });
+    }
   };
 
   return (
