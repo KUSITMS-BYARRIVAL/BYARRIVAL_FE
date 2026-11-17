@@ -25,8 +25,15 @@ export default function RootLayout() {
   const isRestored = useAuthStore((state) => state.isRestored);
   const isLoggedIn = useAuthStore((state) => state.accessToken !== null);
   const isOnboarded = useAuthStore((state) => state.isOnboarded);
-  // 세션에 맞는 첫 화면: 비로그인 → 인트로, 온보딩 전 → 닉네임, 완료 → 홈
-  const entry = !isLoggedIn ? "/intro" : !isOnboarded ? "/nickname" : "/";
+  const isTermsAgreed = useAuthStore((state) => state.isTermsAgreed);
+  // 세션에 맞는 첫 화면: 비로그인 → 인트로, 약관 미동의 → 약관, 온보딩 전 → 닉네임, 완료 → 홈
+  const entry = !isLoggedIn
+    ? "/intro"
+    : !isOnboarded
+      ? isTermsAgreed
+        ? "/nickname"
+        : "/terms"
+      : "/";
   // 로딩 실패 시에는 시스템 폰트로라도 앱을 띄운다
   const isReady = (fontsLoaded || !!fontError) && isRestored;
 

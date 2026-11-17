@@ -4,5 +4,10 @@ import { Stack } from "expo-router";
 export const unstable_settings = { initialRouteName: "nickname" };
 
 export default function OnboardingLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      {/* 약관 아래에 닉네임이 깔리므로 동의 전에 스와이프로 빠져나가지 못하게 한다 */}
+      <Stack.Screen name="terms" options={{ gestureEnabled: false }} />
+    </Stack>
+  );
 }

@@ -76,6 +76,23 @@ export type UserUpdateRequest = Partial<{
 /** OS 알림 권한 결과 (PUT /users/me/notification-permission) */
 export type NotificationPermission = "GRANTED" | "DENIED";
 
+export type TermsType = "SERVICE" | "PRIVACY";
+
+export type TermsResponse = {
+  termsId: number;
+  type: TermsType;
+  title: string;
+  version: string;
+  /** 약관 본문 주소 */
+  contentUrl: string;
+  required: boolean;
+};
+
+/** 필수 약관에 모두 동의해야 받는다 */
+export type TermsAgreementRequest = {
+  agreements: { termsId: number; agreed: boolean }[];
+};
+
 export type CategoryResponse = { id: number; name: string };
 
 export type SigunguResponse = { sigunguId: number; name: string };

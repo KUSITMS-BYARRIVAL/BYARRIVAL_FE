@@ -49,29 +49,28 @@ describe("TravelTimeScreen", () => {
     await adjust("increment");
     await fireEvent.press(screen.getByRole("button", { name: "다음으로" }));
     expect(mockUpdate).toHaveBeenLastCalledWith(
-      { defaultCommuteMinutes: 40 },
+      { defaultCommuteMinutes: 35 },
       expect.anything(),
     );
     expect(router.push).toHaveBeenCalledWith("/interests");
   });
 
-  it("기본값 30분을 보여주고, 30분 위로는 10분 단위로 늘린다", async () => {
+  it("기본값 30분을 보여주고, 5분 단위로 늘리고 줄인다", async () => {
     await render(<TravelTimeScreen />);
     expect(screen.getByText("30")).toBeOnTheScreen();
     await adjust("increment");
-    expect(useOnboardingStore.getState().travelMinutes).toBe(40);
-    expect(screen.getByText("40")).toBeOnTheScreen();
-  });
-
-  it("30분 아래로는 5분 단위로 줄인다", async () => {
-    await render(<TravelTimeScreen />);
+    expect(useOnboardingStore.getState().travelMinutes).toBe(35);
+    expect(screen.getByText("35")).toBeOnTheScreen();
+    await adjust("decrement");
     await adjust("decrement");
     expect(useOnboardingStore.getState().travelMinutes).toBe(25);
   });
 
-  it("30분 손잡이가 슬라이더 정가운데 있다", async () => {
+  it("눈금은 5분 · 45분 · 90분이다", async () => {
     await render(<TravelTimeScreen />);
-    expect(slider().props.accessibilityValue).toMatchObject({ now: 5 });
+    for (const label of ["5분", "45분", "90분"]) {
+      expect(screen.getByText(label)).toBeOnTheScreen();
+    }
   });
 
   it.each([

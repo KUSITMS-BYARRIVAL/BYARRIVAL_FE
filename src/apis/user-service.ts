@@ -7,6 +7,8 @@ import type {
   OnboardingResponse,
   OnboardingUpdateRequest,
   RegionSidoResponse,
+  TermsAgreementRequest,
+  TermsResponse,
   UserMeResponse,
   UserUpdateRequest,
 } from "@/types/user/user.types";
@@ -109,5 +111,12 @@ export const userService = {
   },
   withdraw: async () => {
     await baseApi.delete<ApiResponse<null>>("/users/me");
+  },
+  getTerms: async () => {
+    const res = await baseApi.get<ApiResponse<TermsResponse[]>>("/terms");
+    return res.data.data;
+  },
+  agree: async (body: TermsAgreementRequest) => {
+    await baseApi.post<ApiResponse<unknown>>("/terms/agreements", body);
   },
 };

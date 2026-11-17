@@ -76,6 +76,22 @@ describe("useSocialLogin", () => {
     });
   });
 
+  it("약관 미동의 회원이면 약관 동의 전으로 세션을 저장한다", async () => {
+    api.onPost("/auth/login").reply(200, {
+      data: { ...loggedIn, termsAgreed: false, onboardingCompleted: false },
+    });
+    const { result } = await renderHook(() => useSocialLogin(), { wrapper });
+
+    await act(() =>
+      result.current.mutateAsync({ provider: "KAKAO", token: "kakao-token" }),
+    );
+
+    expect(useAuthStore.getState()).toMatchObject({
+      isOnboarded: false,
+      isTermsAgreed: false,
+    });
+  });
+
   it("401 응답이면 ApiError로 실패하고 토큰은 저장되지 않는다", async () => {
     api
       .onPost("/auth/login")

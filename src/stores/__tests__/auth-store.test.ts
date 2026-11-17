@@ -133,6 +133,26 @@ describe("useAuthStore", () => {
       });
     });
 
+    it("약관 미동의로 저장된 세션은 약관 미동의로 복원한다", async () => {
+      stored({
+        tokens: JSON.stringify(tokens),
+        onboarded: "false",
+        termsAgreed: "false",
+      });
+
+      await useAuthStore.getState().restoreSession();
+
+      expect(useAuthStore.getState().isTermsAgreed).toBe(false);
+    });
+
+    it("약관 값이 없는 예전 세션은 동의한 것으로 본다", async () => {
+      stored({ tokens: JSON.stringify(tokens), onboarded: "false" });
+
+      await useAuthStore.getState().restoreSession();
+
+      expect(useAuthStore.getState().isTermsAgreed).toBe(true);
+    });
+
     it("저장된 토큰이 없으면 비로그인으로 복원 완료한다", async () => {
       await useAuthStore.getState().restoreSession();
 
@@ -168,12 +188,14 @@ describe("useAuthStore", () => {
     it("startSession은 토큰과 온보딩 완료 여부를 함께 저장한다", async () => {
       await useAuthStore
         .getState()
-        .startSession({ tokens, isOnboarded: false });
+        .startSession({ tokens, isOnboarded: false, isTermsAgreed: false });
 
       expect(setItemAsync).toHaveBeenCalledWith("onboarded", "false");
+      expect(setItemAsync).toHaveBeenCalledWith("termsAgreed", "false");
       expect(useAuthStore.getState()).toMatchObject({
         ...tokens,
         isOnboarded: false,
+        isTermsAgreed: false,
       });
     });
 
@@ -184,13 +206,28 @@ describe("useAuthStore", () => {
       expect(useAuthStore.getState().isOnboarded).toBe(true);
     });
 
-    it("clearSession은 온보딩 완료 여부도 지운다", async () => {
-      useAuthStore.setState({ ...tokens, isOnboarded: true });
+    it("setTermsAgreed는 약관 동의로 저장한다", async () => {
+      await useAuthStore.getState().setTermsAgreed();
+
+      expect(setItemAsync).toHaveBeenCalledWith("termsAgreed", "true");
+      expect(useAuthStore.getState().isTermsAgreed).toBe(true);
+    });
+
+    it("clearSession은 온보딩 완료 · 약관 동의 여부도 지운다", async () => {
+      useAuthStore.setState({
+        ...tokens,
+        isOnboarded: true,
+        isTermsAgreed: true,
+      });
 
       await useAuthStore.getState().clearSession();
 
       expect(deleteItemAsync).toHaveBeenCalledWith("onboarded");
-      expect(useAuthStore.getState().isOnboarded).toBe(false);
+      expect(deleteItemAsync).toHaveBeenCalledWith("termsAgreed");
+      expect(useAuthStore.getState()).toMatchObject({
+        isOnboarded: false,
+        isTermsAgreed: false,
+      });
     });
   });
 });
