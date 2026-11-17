@@ -64,19 +64,15 @@ describe("NewsCarousel", () => {
     expect(second).not.toBeChecked();
   });
 
-  it("스와이프가 멈춘 위치의 카드 순서로 onIndexChange를 부른다", async () => {
+  it("스와이프로 가운데 카드가 바뀌면 그 순서로 onIndexChange를 부른다", async () => {
     const onIndexChange = jest.fn();
     await renderCarousel({ onIndexChange });
     // 카드 폭(화면 - 78) + 간격 14 만큼 넘기면 다음 카드
     const interval = Dimensions.get("window").width - 78 + 14;
     // 이벤트는 가장 가까운 스크롤 핸들러까지 올라간다
-    await fireEvent(
-      screen.getByText("한국은행, 기준금리 동결"),
-      "momentumScrollEnd",
-      {
-        nativeEvent: { contentOffset: { x: interval } },
-      },
-    );
+    await fireEvent(screen.getByText("한국은행, 기준금리 동결"), "scroll", {
+      nativeEvent: { contentOffset: { x: interval } },
+    });
     expect(onIndexChange).toHaveBeenCalledWith(1);
   });
 });

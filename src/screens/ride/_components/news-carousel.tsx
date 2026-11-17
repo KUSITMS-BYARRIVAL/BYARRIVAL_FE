@@ -1,4 +1,10 @@
-import { Animated, useAnimatedValue, useWindowDimensions } from "react-native";
+import {
+  Animated,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  useAnimatedValue,
+  useWindowDimensions,
+} from "react-native";
 
 import { NewsCard } from "@/screens/ride/_components/news-card";
 import type { RideArticle } from "@/screens/ride/_components/stop-article";
@@ -16,7 +22,7 @@ type NewsCarouselProps = {
   articles: CarouselArticle[];
   isSelected: (title: string) => boolean;
   onToggle: (title: string, minutes: number) => void;
-  /** 스와이프가 멈춘 뒤 가운데 카드 위치 */
+  /** 가운데 카드 위치가 바뀔 때 (스와이프 도중 절반을 넘으면) */
   onIndexChange: (index: number) => void;
 };
 
@@ -39,14 +45,16 @@ export function NewsCarousel({
       decelerationRate="fast"
       showsHorizontalScrollIndicator={false}
       scrollEventThrottle={16}
-      // 투명도는 스크롤 위치를 따라 네이티브에서 바뀌고, 위치 알림은 멈춘 뒤 한 번만 보낸다
+      // 투명도는 네이티브에서 따라가고, 위치는 카드가 절반을 넘는 순간 알린다 (멈출 때까지 기다리면 진행 바가 늦다)
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-        { useNativeDriver: true },
+        {
+          useNativeDriver: true,
+          // 같은 값이면 부모 setState가 다시 그리지 않는다
+          listener: (e: NativeSyntheticEvent<NativeScrollEvent>) =>
+            onIndexChange(Math.round(e.nativeEvent.contentOffset.x / interval)),
+        },
       )}
-      onMomentumScrollEnd={(e) =>
-        onIndexChange(Math.round(e.nativeEvent.contentOffset.x / interval))
-      }
       contentContainerStyle={{
         gap: CARD_GAP,
         paddingHorizontal: CARD_SIDE_PEEK / 2,
