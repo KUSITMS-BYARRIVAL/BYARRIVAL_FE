@@ -2,24 +2,61 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
-import { ARCHIVE_ARTICLES } from "@/mocks/archive";
-import {
-  LAST_WEEK_DIFF_MINUTES,
-  MONTH_MINUTES,
-  MONTH_READ_COUNT,
-  RECORD_SUMMARY,
-  STRIP_LEVELS,
-  TOTAL_HOURS,
-  WEEKLY_MINUTES,
-} from "@/mocks/my";
+import { LoadingDots } from "@/components/loading-dots/loading-dots";
+import { useGetScrapLibrary } from "@/hooks/queries/use-get-scrap-library";
+import { useGetStatsCalendar } from "@/hooks/queries/use-get-stats-calendar";
+import { useGetStatsStreak } from "@/hooks/queries/use-get-stats-streak";
+import { useGetStatsSummary } from "@/hooks/queries/use-get-stats-summary";
+import { useGetStatsWeekly } from "@/hooks/queries/use-get-stats-weekly";
+import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
+import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { MySummaryHero } from "@/screens/my/_components/my-summary-hero";
 import { RecordSummaryCard } from "@/screens/my/_components/record-summary-card";
 import { RecentSavedArticlesCard } from "@/screens/my/_components/recent-saved-articles-card";
 import { WeeklyRecordCard } from "@/screens/my/_components/weekly-record-card";
 import { YearStripsCard } from "@/screens/my/_components/year-strips-card";
+import { STRIP_LEVEL_BY_API } from "@/screens/my/_constants";
+
+const RECENT_ARTICLE_COUNT = 3;
+const toHours = (minutes = 0) => Math.floor(minutes / 60);
 
 export function MyScreen() {
   const [viewportHeight, setViewportHeight] = useState(0);
+  const today = new Date();
+  const year = today.getFullYear();
+
+  // TODO: 탭은 마운트가 유지돼 다시 조회되지 않는다 — 읽기 완료 · 스크랩 API 연동 시 그 mutation onSuccess에서 ['stats'] · ['scrap'] 쿼리를 invalidate
+  const all = useGetStatsSummary("ALL");
+  const month = useGetStatsSummary("MONTH");
+  const yearSummary = useGetStatsSummary("YEAR");
+  const streak = useGetStatsStreak();
+  const calendar = useGetStatsCalendar(year);
+  const weekly = useGetStatsWeekly();
+  const scraps = useGetScrapLibrary({ type: "ARTICLE", sort: "LATEST" });
+  const { commute } = useCommuteWords();
+
+  const queries = [all, month, yearSummary, streak, calendar, weekly, scraps];
+  // 실패는 전역 토스트(query-client)가 알리고, 실패한 영역은 0으로 둔다
+  if (queries.some((query) => query.isPending))
+    return <LoadingDots className="flex-1 bg-default" />;
+
+  const weeklyMinutes =
+    weekly.data?.weeks.map((week) => week.usedMinutes) ?? [];
+  const levels = Object.fromEntries(
+    (calendar.data?.days ?? []).map((day) => [
+      day.date,
+      STRIP_LEVEL_BY_API[day.level],
+    ]),
+  );
+  const articles = (scraps.data?.articles ?? [])
+    .slice(0, RECENT_ARTICLE_COUNT)
+    .map((article) => ({
+      id: String(article.scrapId),
+      // shortcut: 매핑표에 없는 새 카테고리 id는 경제 색으로 보인다, 카테고리가 늘면 CATEGORY_KEY_BY_ID에 추가
+      category: CATEGORY_KEY_BY_ID[article.categoryId] ?? "economy",
+      label: article.categoryName,
+      title: article.title,
+    }));
 
   return (
     <ScrollView
@@ -28,22 +65,30 @@ export function MyScreen() {
     >
       {/* 기기 높이와 상관없이 요약 영역이 첫 화면을 꽉 채운다 */}
       <MySummaryHero
-        totalHours={TOTAL_HOURS}
-        monthMinutes={MONTH_MINUTES}
-        readCount={MONTH_READ_COUNT}
+        totalHours={toHours(all.data?.usedMinutes)}
+        monthMinutes={month.data?.usedMinutes ?? 0}
+        readCount={month.data?.readArticleCount ?? 0}
+        commute={commute}
         onPressProfile={() => router.push("/profile")}
         minHeight={viewportHeight}
       />
       <View className="gap-3.5 px-5 pb-[30px] pt-5">
-        <RecordSummaryCard {...RECORD_SUMMARY} />
-        <YearStripsCard levels={STRIP_LEVELS} today={new Date()} />
-        {/* 컨디션 기록 카드(ConditionCard)는 기획 확정 후 이 자리에 추가 */}
-        <WeeklyRecordCard
-          weeklyMinutes={WEEKLY_MINUTES}
-          lastWeekDiff={LAST_WEEK_DIFF_MINUTES}
+        <RecordSummaryCard
+          year={year}
+          streakDays={streak.data?.currentStreak ?? 0}
+          readCount={yearSummary.data?.readArticleCount ?? 0}
+          readHours={toHours(yearSummary.data?.usedMinutes)}
+          longestStreakDays={streak.data?.longestStreak ?? 0}
         />
+        <YearStripsCard
+          levels={levels}
+          today={today}
+          completedDays={calendar.data?.completedDays ?? 0}
+        />
+        {/* 컨디션 기록 카드(ConditionCard)는 기획 확정 후 이 자리에 추가 */}
+        <WeeklyRecordCard weeklyMinutes={weeklyMinutes} />
         <RecentSavedArticlesCard
-          articles={ARCHIVE_ARTICLES.slice(0, 3)}
+          articles={articles}
           onPressMore={() =>
             router.navigate({
               pathname: "/archive",

@@ -77,3 +77,35 @@ describe("queryClient mutation 에러 토스트", () => {
     },
   );
 });
+
+describe("queryClient 조회 에러 토스트", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    useToastStore.getState().hideToast();
+  });
+  afterEach(() => jest.useRealTimers());
+
+  const failQuery = (error: ApiError, meta?: { skipToast?: boolean }) =>
+    queryClient
+      .fetchQuery({
+        queryKey: ["test", "fail"],
+        queryFn: () => Promise.reject(error),
+        retry: false,
+        meta,
+      })
+      .catch(() => undefined);
+
+  it("조회가 실패하면 에러 message로 토스트가 뜬다", async () => {
+    await failQuery(new ApiError(404, "NOT_FOUND", "기록이 없어요"));
+
+    expect(useToastStore.getState().toast?.message).toBe("기록이 없어요");
+  });
+
+  it("meta.skipToast가 true이면 토스트가 뜨지 않는다", async () => {
+    await failQuery(new ApiError(404, "NOT_FOUND", "기록이 없어요"), {
+      skipToast: true,
+    });
+
+    expect(useToastStore.getState().toast).toBeNull();
+  });
+});

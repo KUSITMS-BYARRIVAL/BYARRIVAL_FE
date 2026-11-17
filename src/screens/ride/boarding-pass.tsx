@@ -11,10 +11,12 @@ export function BoardingPassScreen() {
   const { top, bottom } = useSafeAreaInsets();
   // 뉴스 탑승하기에서 고른 기사만 노선에 싣는다
   const articles = useRideArticles();
+  // 담은 카드를 유지한 채 뉴스 탑승하기로 돌아간다. 알림에서 바로 들어와 스택에 없으면 그 화면으로 바꾼다
+  const backToSelect = () => router.dismissTo("/ride/select");
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
-      <Header title="도착까지" onBack={router.back} />
+      <Header title="도착까지" onBack={backToSelect} />
       <ScrollView className="flex-1" contentContainerClassName="p-5">
         <BoardingPassCard from="집" to="회사" articles={articles} />
       </ScrollView>
@@ -32,9 +34,7 @@ export function BoardingPassScreen() {
           label="다른 뉴스 더 탑승시키기"
           color="neutral-weak"
           size="l"
-          onPress={() =>
-            router.push({ pathname: "/ride/select", params: { extra: "1" } })
-          }
+          onPress={backToSelect}
         />
       </View>
     </View>

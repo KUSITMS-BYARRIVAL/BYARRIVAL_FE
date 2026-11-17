@@ -52,3 +52,6 @@ export const CONDITIONS: {
     WeatherIcon: WeatherRainIcon,
   },
 ];
+
+// 뉴스 탑승하기에서 기사를 담을 때 뜨는 토스트 (뺄 때는 띄우지 않는다)
+export const ADD_TOAST_MESSAGE = "1정거장이 추가되었어요";

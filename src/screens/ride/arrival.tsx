@@ -17,12 +17,10 @@ import {
 } from "@/mocks/ride";
 import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
 import { ArrivalResultCard } from "@/screens/ride/_components/arrival-result-card";
-import { useRideArticles } from "@/stores/ride-store";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { readCount } = useLocalSearchParams<{ readCount?: string }>();
-  const articles = useRideArticles();
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
@@ -32,7 +30,7 @@ export function ArrivalScreen() {
         <View className="gap-9 p-5">
           <View className="gap-3.5">
             <View className="flex-row items-start justify-between">
-              <View className="gap-2">
+              <View className="gap-1">
                 {/* TODO: 완주한 경우 문구가 달라진다 (기획 수정 대기) */}
                 <Text className="text-strong text-heading1-b">
                   오늘도 해냈다!
@@ -48,7 +46,6 @@ export function ArrivalScreen() {
             <View className="gap-2">
               <ArrivalResultCard
                 readCount={Number(readCount) || 0}
-                total={articles.length}
                 streakDays={ARRIVAL_STREAK_DAYS}
               />
               <Button
@@ -62,7 +59,7 @@ export function ArrivalScreen() {
               />
             </View>
           </View>
-          <View className="gap-5">
+          <View className="gap-3.5">
             <View className="gap-1">
               <Text className="text-tertiary text-body2-m">
                 도착까지 시간이 남으셨다면

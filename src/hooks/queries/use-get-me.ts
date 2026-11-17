@@ -10,5 +10,9 @@ export const getMeQuery = {
 };
 
 export function useGetMe() {
-  return useQuery<UserMeResponse>(getMeQuery);
+  return useQuery<UserMeResponse>({
+    ...getMeQuery,
+    // 내 정보는 거의 바뀌지 않아 화면마다 다시 받지 않는다. 수정 mutation은 성공 응답으로 캐시를 바꾼다
+    staleTime: Infinity,
+  });
 }

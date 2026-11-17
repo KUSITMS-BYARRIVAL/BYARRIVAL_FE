@@ -1,4 +1,4 @@
-import { MutationCache, QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 
 import { useToastStore } from "@/stores/toast-store";
 
@@ -13,6 +13,13 @@ export const queryClient = new QueryClient({
         (error.status === null || error.status >= 500),
     },
   },
+  // shortcut: 에러 화면 디자인이 없어 조회 실패도 토스트로 알린다, 에러 화면이 생기면 그 화면 쿼리에 meta.skipToast
+  queryCache: new QueryCache({
+    onError: (error, query) => {
+      if (query.meta?.skipToast) return;
+      useToastStore.getState().showToast({ message: error.message });
+    },
+  }),
   mutationCache: new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       if (mutation.meta?.skipToast) return;

@@ -49,6 +49,19 @@ import {
   AssetSuitIllustration,
 } from "@/assets/illustrations";
 import type { Interest, JobGroup, UserType } from "@/stores/onboarding-store";
+import type { Category } from "@/theme/category";
+
+// 서버 카테고리 id(GET /categories, 고정) → 칩 색 키. 스포츠는 예전 이름 그대로 career 키를 쓴다
+export const CATEGORY_KEY_BY_ID: Partial<Record<number, Category>> = {
+  1: "life",
+  2: "culture",
+  3: "society",
+  4: "economy",
+  5: "science",
+  6: "tech",
+  7: "global",
+  8: "career",
+};
 
 // 사용자 유형별로 '출근' · '출근길' · '직장인' 문구를 바꾼다
 export const COMMUTE_WORDS: Record<

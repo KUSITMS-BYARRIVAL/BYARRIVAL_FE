@@ -61,6 +61,8 @@ export { default as CheckCircleIcon } from "./check-circle.svg";
 export { default as CheckIcon } from "./check.svg";
 export { default as ClockIcon } from "./clock.svg";
 export { default as ClockMIcon } from "./clock-m.svg";
+export { default as CoachArrowLeftIcon } from "./coach-arrow-left.svg";
+export { default as CoachArrowRightIcon } from "./coach-arrow-right.svg";
 export { default as ConsecutiveRewardsIcon } from "./consecutive-rewards.svg";
 export { default as DeleteIcon } from "./delete.svg";
 export { default as EditorPickIcon } from "./editor-pick.svg";
