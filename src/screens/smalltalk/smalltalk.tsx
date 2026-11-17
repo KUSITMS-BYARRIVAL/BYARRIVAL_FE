@@ -6,19 +6,20 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { EditorPickSmalltalkIcon } from "@/assets/icons";
 import { Header } from "@/components/header/header";
-import { EDITOR_PICK_SMALLTALKS } from "@/mocks/smalltalk";
+import { LoadingDots } from "@/components/loading-dots/loading-dots";
+import { useGetTodaySmalltalks } from "@/hooks/queries/use-get-today-smalltalks";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
+import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 
 // Figma 에디터픽_스몰토크: 홈 '스몰토크 추천 > 더보기'로 들어오는 오늘의 스몰토크 목록
 export function SmalltalkScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  // TODO: 북마크 API 연결 전까지 화면 안에서만 담기 상태를 둔다
-  const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([]);
-
-  const toggleBookmark = (id: string) =>
-    setBookmarkedIds((ids) =>
-      ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id],
-    );
+  const { data, isPending } = useGetTodaySmalltalks();
+  // TODO: 스크랩 API 연결 전까지 서버 값(scrapped) 위에 화면 안에서만 담기 상태를 덮어쓴다
+  const [bookmarkOverrides, setBookmarkOverrides] = useState<
+    Record<number, boolean>
+  >({});
+  const smalltalks = data?.smalltalks ?? [];
 
   return (
     <View className="flex-1 bg-default">
@@ -44,20 +45,45 @@ export function SmalltalkScreen() {
             </Text>
           </View>
         </View>
-        <View className="gap-3.5 px-5">
-          {EDITOR_PICK_SMALLTALKS.map((smalltalk) => (
-            <EditorPickSmalltalkCard
-              key={smalltalk.id}
-              category={smalltalk.category}
-              categoryLabel={smalltalk.label}
-              newsTitle={smalltalk.newsTitle}
-              question={smalltalk.question}
-              isBookmarked={bookmarkedIds.includes(smalltalk.id)}
-              onPress={() => WebBrowser.openBrowserAsync(smalltalk.url)}
-              onBookmarkPress={() => toggleBookmark(smalltalk.id)}
-            />
-          ))}
-        </View>
+        {isPending ? (
+          <LoadingDots className="py-10" />
+        ) : smalltalks.length === 0 ? (
+          // [임시] Empty UI 시안이 없어 문구만 보여준다 (조회 실패도 전역 토스트 후 여기로)
+          <Text className="py-10 text-center text-tertiary text-body2-m">
+            오늘의 스몰토크를 준비하고 있어요
+          </Text>
+        ) : (
+          <View className="gap-3.5 px-5">
+            {smalltalks.map((smalltalk) => {
+              const isBookmarked =
+                bookmarkOverrides[smalltalk.smalltalkId] ?? smalltalk.scrapped;
+              return (
+                <EditorPickSmalltalkCard
+                  key={smalltalk.smalltalkId}
+                  // shortcut: 매핑표에 없는 새 카테고리 id는 경제 색으로 보인다, 카테고리가 늘면 CATEGORY_KEY_BY_ID에 추가
+                  category={
+                    CATEGORY_KEY_BY_ID[smalltalk.categoryId] ?? "economy"
+                  }
+                  categoryLabel={smalltalk.categoryName}
+                  newsTitle={smalltalk.articleTitle}
+                  question={smalltalk.hook}
+                  isBookmarked={isBookmarked}
+                  onPress={() => {
+                    // 서버가 준 주소라도 https 원문만 연다
+                    if (smalltalk.sourceUrl.startsWith("https://"))
+                      WebBrowser.openBrowserAsync(smalltalk.sourceUrl);
+                  }}
+                  onBookmarkPress={() =>
+                    setBookmarkOverrides((overrides) => ({
+                      ...overrides,
+                      [smalltalk.smalltalkId]: !isBookmarked,
+                    }))
+                  }
+                />
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
