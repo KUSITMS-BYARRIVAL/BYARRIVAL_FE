@@ -9,6 +9,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     ...(config.plugins ?? []),
     "expo-apple-authentication",
+    [
+      "expo-image-picker",
+      { photosPermission: "프로필 사진을 바꾸려면 사진 접근 권한이 필요해요." },
+    ],
     // 카카오 Android SDK(com.kakao.sdk)는 Maven Central에 없어 카카오 저장소를 추가해야 의존성을 받는다
     [
       "expo-build-properties",

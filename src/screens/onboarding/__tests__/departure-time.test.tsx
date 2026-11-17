@@ -3,12 +3,14 @@ import {
   render,
   screen,
   userEvent,
+  waitFor,
 } from "@testing-library/react-native";
 import { router } from "expo-router";
 
 import { DialogHost } from "@/screens/_components/dialog-host";
 import { useDialogStore } from "@/stores/dialog-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
+import { useToastStore } from "@/stores/toast-store";
 
 import { DepartureTimeScreen } from "../departure-time";
 
@@ -17,6 +19,15 @@ jest.mock("react-native-safe-area-context", () => ({
 }));
 jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn() },
+}));
+
+const mockRequestPermission = jest.fn();
+jest.mock("@/lib/notification-permission", () => ({
+  requestNotificationPermission: () => mockRequestPermission(),
+}));
+const mockSavePermission = jest.fn();
+jest.mock("@/hooks/mutations/use-update-notification-permission", () => ({
+  useUpdateNotificationPermission: () => ({ mutate: mockSavePermission }),
 }));
 
 const mockUpdate = jest.fn(
@@ -43,6 +54,8 @@ const renderScreen = () =>
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockRequestPermission.mockResolvedValue("GRANTED");
+  useToastStore.getState().hideToast();
   useDialogStore.setState({ options: null, isVisible: false });
   useOnboardingStore.setState({
     userType: "worker",
@@ -112,8 +125,43 @@ describe("DepartureTimeScreen", () => {
       );
       expect(router.push).not.toHaveBeenCalled();
       await user.press(screen.getByRole("button", { name }));
-      expect(router.push).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(router.push).toHaveBeenCalledTimes(1));
       expect(router.push).toHaveBeenCalledWith("/travel-time");
     },
   );
+
+  it("알림 받기는 OS 권한을 묻고 허용 결과를 서버에 저장한다", async () => {
+    const user = userEvent.setup();
+    await renderScreen();
+    await user.press(screen.getByRole("button", { name: "다음으로" }));
+    await user.press(screen.getByRole("button", { name: "알림 받기" }));
+    await waitFor(() =>
+      expect(mockSavePermission).toHaveBeenCalledWith("GRANTED"),
+    );
+    expect(useToastStore.getState().toast).toBeNull();
+  });
+
+  it("알림 권한을 거부하면 저장하고 마이에서 켤 수 있다고 알린 뒤 넘어간다", async () => {
+    mockRequestPermission.mockResolvedValue("DENIED");
+    const user = userEvent.setup();
+    await renderScreen();
+    await user.press(screen.getByRole("button", { name: "다음으로" }));
+    await user.press(screen.getByRole("button", { name: "알림 받기" }));
+    await waitFor(() =>
+      expect(router.push).toHaveBeenCalledWith("/travel-time"),
+    );
+    expect(mockSavePermission).toHaveBeenCalledWith("DENIED");
+    expect(useToastStore.getState().toast?.message).toBe(
+      "마이 > 알림에서 언제든 켤 수 있어요",
+    );
+  });
+
+  it("나중에는 OS 권한을 묻지 않고 저장하지도 않는다", async () => {
+    const user = userEvent.setup();
+    await renderScreen();
+    await user.press(screen.getByRole("button", { name: "다음으로" }));
+    await user.press(screen.getByRole("button", { name: "나중에" }));
+    expect(mockRequestPermission).not.toHaveBeenCalled();
+    expect(mockSavePermission).not.toHaveBeenCalled();
+  });
 });

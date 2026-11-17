@@ -55,6 +55,10 @@ jest.mock("@/hooks/queries/use-get-categories", () => ({
     refetch: jest.fn(),
   }),
 }));
+// 사진 영역은 따로 테스트한다
+jest.mock("../_components/profile-photo", () => ({
+  ProfilePhoto: () => null,
+}));
 const mockLogout = jest.fn(
   (_: undefined, options?: { onSettled?: () => void }) =>
     options?.onSettled?.(),

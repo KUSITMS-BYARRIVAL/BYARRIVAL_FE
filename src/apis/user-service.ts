@@ -3,6 +3,7 @@ import type { ApiResponse } from "@/types/api";
 import type {
   CategoryResponse,
   DailyCommute,
+  NotificationPermission,
   OnboardingResponse,
   OnboardingUpdateRequest,
   RegionSidoResponse,
@@ -78,6 +79,33 @@ export const userService = {
       { categoryIds },
     );
     return res.data.data;
+  },
+  changeProfileImage: async (image: { uri: string; mimeType: string }) => {
+    const form = new FormData();
+    // RN의 FormData는 파일을 { uri, name, type } 객체로 받는다
+    form.append("image", {
+      uri: image.uri,
+      name: image.mimeType === "image/png" ? "profile.png" : "profile.jpg",
+      type: image.mimeType,
+    } as unknown as Blob);
+    const res = await baseApi.put<ApiResponse<UserMeResponse>>(
+      "/users/me/profile-image",
+      form,
+      { headers: { "Content-Type": "multipart/form-data" } },
+    );
+    return res.data.data;
+  },
+  deleteProfileImage: async () => {
+    const res = await baseApi.delete<ApiResponse<UserMeResponse>>(
+      "/users/me/profile-image",
+    );
+    return res.data.data;
+  },
+  updateNotificationPermission: async (permission: NotificationPermission) => {
+    await baseApi.put<ApiResponse<{ permission: NotificationPermission }>>(
+      "/users/me/notification-permission",
+      { permission },
+    );
   },
   withdraw: async () => {
     await baseApi.delete<ApiResponse<null>>("/users/me");

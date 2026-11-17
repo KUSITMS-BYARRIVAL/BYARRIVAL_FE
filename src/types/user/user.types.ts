@@ -73,6 +73,9 @@ export type UserUpdateRequest = Partial<{
   defaultCommuteMinutes: number;
 }>;
 
+/** OS 알림 권한 결과 (PUT /users/me/notification-permission) */
+export type NotificationPermission = "GRANTED" | "DENIED";
+
 export type CategoryResponse = { id: number; name: string };
 
 export type SigunguResponse = { sigunguId: number; name: string };

@@ -14,7 +14,6 @@ import {
   LogoutIcon,
   PaperIcon,
   PenIcon,
-  ProfileLargeIcon,
   SubwayMonoIcon,
 } from "@/assets/icons";
 import { ButtonCard } from "@/components/button-card/button-card";
@@ -30,6 +29,7 @@ import { useDialogStore } from "@/stores/dialog-store";
 import { fromJobGroupCode, fromTravelType } from "@/types/user/user.mappers";
 import type { UserMeResponse } from "@/types/user/user.types";
 
+import { ProfilePhoto } from "./_components/profile-photo";
 import { UserMeState } from "./_components/user-me-state";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -85,7 +85,7 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
   return (
     <>
       <View className="items-center gap-3.5">
-        <ProfileLargeIcon />
+        <ProfilePhoto imageUrl={me.profileImageUrl} />
         {/* TODO: 닉네임 수정 화면은 시안이 없어 연필 아이콘만 둔다 */}
         <View className="flex-row items-center gap-0.5">
           <Text className="text-strong text-title1-sb">{me.nickname}</Text>
