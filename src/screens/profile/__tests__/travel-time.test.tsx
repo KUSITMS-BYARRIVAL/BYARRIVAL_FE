@@ -1,5 +1,7 @@
 import { act, render, screen, userEvent } from "@testing-library/react-native";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { useToastStore } from "@/stores/toast-store";
 
 import { ProfileTravelTimeScreen } from "../travel-time";
@@ -48,6 +50,12 @@ jest.mock("@/hooks/mutations/use-replace-weekly-commute", () => ({
   }),
 }));
 
+const renderScreen = () =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <ProfileTravelTimeScreen />
+    </QueryClientProvider>,
+  );
 const increase = () => screen.getAllByRole("button", { name: "늘리기" });
 const decrease = () => screen.getAllByRole("button", { name: "줄이기" });
 const wait = () => act(() => jest.advanceTimersByTime(600));
@@ -62,14 +70,14 @@ afterEach(() => jest.useRealTimers());
 
 describe("ProfileTravelTimeScreen", () => {
   it("요일별 이동 시간을 보여주고, 서버에 없는 요일은 쉬는 날로 표시한다", async () => {
-    await render(<ProfileTravelTimeScreen />);
+    await renderScreen();
     expect(screen.getByText("약 40분")).toBeOnTheScreen();
     expect(screen.getAllByText("쉬는 날")).toHaveLength(2);
   });
 
   it("요일을 바꾸면 멈춘 뒤 한 번만 요일별 설정을 저장한다", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    await render(<ProfileTravelTimeScreen />);
+    await renderScreen();
     // 0: 기본, 1: 월
     await user.press(increase()[1]!);
     await user.press(increase()[1]!);
@@ -86,7 +94,7 @@ describe("ProfileTravelTimeScreen", () => {
 
   it("쉬는 날을 이동하는 날로 바꾸면 가장 이른 출근 시각으로 채워 저장한다", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    await render(<ProfileTravelTimeScreen />);
+    await renderScreen();
     // 6: 토
     await user.press(increase()[6]!);
     await wait();
@@ -99,10 +107,13 @@ describe("ProfileTravelTimeScreen", () => {
 
   it("기본 이동 시간은 내 정보 수정으로 저장한다", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    await render(<ProfileTravelTimeScreen />);
+    await renderScreen();
     await user.press(increase()[0]!);
     await wait();
-    expect(mockUpdateMe).toHaveBeenCalledWith({ defaultCommuteMinutes: 35 });
+    expect(mockUpdateMe).toHaveBeenCalledWith(
+      { defaultCommuteMinutes: 35 },
+      expect.anything(),
+    );
   });
 
   it("모든 요일을 쉬는 날로 만들면 저장하지 않고 알린다", async () => {
@@ -111,7 +122,7 @@ describe("ProfileTravelTimeScreen", () => {
       weeklyCommute: [{ dayOfWeek: "MONDAY", startTime: "08:00", minutes: 5 }],
     };
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    await render(<ProfileTravelTimeScreen />);
+    await renderScreen();
     await user.press(decrease()[1]!);
     await wait();
     expect(mockReplaceWeekly).not.toHaveBeenCalled();

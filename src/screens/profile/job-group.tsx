@@ -39,7 +39,9 @@ export function ProfileJobGroupScreen() {
                       isSelected={isSelected}
                       disabled={isPending}
                       className="w-[32%]"
-                      onPress={() => mutate([toJobGroupCode(value)])}
+                      onPress={() =>
+                        !isSelected && mutate([toJobGroupCode(value)])
+                      }
                     />
                   );
                 },

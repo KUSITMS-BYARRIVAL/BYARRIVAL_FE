@@ -27,7 +27,10 @@ export function ProfileRegionScreen() {
         {(me) => (
           <RegionPicker
             value={me.region}
-            onSelect={({ sigunguId }) => mutate(sigunguId)}
+            onSelect={({ sigunguId }) => {
+              // 같은 지역을 다시 고르면 저장하지 않는다
+              if (sigunguId !== me.region?.sigunguId) mutate(sigunguId);
+            }}
             province={province ?? me.region?.sidoName ?? null}
             onProvinceChange={setProvince}
             query={query}

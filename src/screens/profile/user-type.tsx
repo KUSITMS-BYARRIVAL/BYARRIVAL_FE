@@ -27,7 +27,10 @@ export function ProfileUserTypeScreen() {
                   description={description}
                   isSelected={userType === type}
                   disabled={isPending}
-                  onPress={() => mutate({ travelType: toTravelType(type) })}
+                  onPress={() =>
+                    userType !== type &&
+                    mutate({ travelType: toTravelType(type) })
+                  }
                 />
               ))}
             </View>

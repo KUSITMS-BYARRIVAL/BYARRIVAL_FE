@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { View } from "react-native";
 
@@ -46,12 +47,16 @@ export function ProfileTravelTimeScreen() {
 function TravelTimeForm({ me }: { me: UserMeResponse }) {
   const { mutate: updateMe } = useUpdateMe();
   const { mutate: replaceWeekly } = useReplaceWeeklyCommute();
+  const queryClient = useQueryClient();
+  // 기본·요일 저장이 함께 나가면 응답 순서에 따라 캐시가 한쪽 변경을 잃으므로, 끝나면 내 정보를 다시 받는다
+  const refreshMe = () =>
+    queryClient.invalidateQueries({ queryKey: ["user", "getMe"] });
   const showToast = useToastStore((state) => state.showToast);
   const [base, setBase] = useState(me.defaultCommuteMinutes ?? DEFAULT_MINUTES);
   const [plan, setPlan] = useState(() => toWeeklyPlan(me.weeklyCommute));
 
   const saveBase = useDebouncedCallback((minutes: number) => {
-    updateMe({ defaultCommuteMinutes: minutes });
+    updateMe({ defaultCommuteMinutes: minutes }, { onSettled: refreshMe });
   }, SAVE_DELAY_MS);
   const saveWeekly = useDebouncedCallback((next: WeeklyPlan) => {
     const days = toDailyCommutes(next);
@@ -60,7 +65,7 @@ function TravelTimeForm({ me }: { me: UserMeResponse }) {
       showToast({ message: NO_COMMUTE_DAY_MESSAGE });
       return;
     }
-    replaceWeekly(days);
+    replaceWeekly(days, { onSettled: refreshMe });
   }, SAVE_DELAY_MS);
 
   const changeDay = (weekday: keyof WeeklyPlan, minutes: number) => {
@@ -85,6 +90,8 @@ function TravelTimeForm({ me }: { me: UserMeResponse }) {
             saveBase(minutes);
           }}
           step={MINUTE_STEP}
+          // 기본 이동 시간에는 쉬는 날(0분)이 없다
+          min={MINUTE_STEP}
           max={MAX_MINUTES}
         />
       }

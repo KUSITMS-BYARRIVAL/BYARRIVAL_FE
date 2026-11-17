@@ -11,7 +11,7 @@ import { useToastStore } from "@/stores/toast-store";
 import { SettingsLayout } from "./_components/settings-layout";
 import { UserMeState } from "./_components/user-me-state";
 import { WeeklySettingsLayout } from "./_components/weekly-settings-layout";
-import { WEEKDAYS, type Weekday } from "./_constants";
+import { DEFAULT_DEPARTURE, WEEKDAYS, type Weekday } from "./_constants";
 import {
   earliestTime,
   toDailyCommutes,
@@ -35,7 +35,7 @@ export function ProfileDepartureTimeScreen() {
   // 시간을 고르는 대상. null이면 바텀시트를 닫는다
   const [target, setTarget] = useState<Target | null>(null);
   // 휠을 돌리는 동안의 값. 확인을 눌러야 저장한다
-  const [draft, setDraft] = useState<Time>({ hour: 8, minute: 0 });
+  const [draft, setDraft] = useState<Time>(DEFAULT_DEPARTURE);
 
   if (!me) {
     return (
