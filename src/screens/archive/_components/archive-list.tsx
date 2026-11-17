@@ -2,94 +2,98 @@ import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
-import type { ARCHIVE_ARTICLES, ARCHIVE_SMALLTALKS } from "@/mocks/archive";
-import { CategoryFilter } from "@/screens/archive/_components/category-filter";
+import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
+import { CategoryFilter } from "@/screens/archive/_components/category-filter";
 import { ScrappedArticleCard } from "@/screens/archive/_components/scrapped-article-card";
 import {
-  ARCHIVE_CATEGORIES,
   ARCHIVE_TABS,
+  ARTICLE_IMAGES,
   type ArchiveTab,
 } from "@/screens/archive/_constants";
-import type { Category } from "@/theme/category";
-
-type ArchiveArticle = (typeof ARCHIVE_ARTICLES)[number];
-type ArchiveSmalltalk = (typeof ARCHIVE_SMALLTALKS)[number];
+import type {
+  Library,
+  LibraryArticle,
+  LibrarySmalltalk,
+} from "@/types/scrap/scrap.types";
 
 type ArchiveListProps = {
   tab: ArchiveTab;
-  articles: ArchiveArticle[];
-  smalltalks: ArchiveSmalltalk[];
-  onRemoveArticle: (article: ArchiveArticle) => void;
-  onRemoveSmalltalk: (smalltalk: ArchiveSmalltalk) => void;
+  /** 보여줄 항목 (지운 항목은 이미 빠져 있다) */
+  articles: LibraryArticle[];
+  smalltalks: LibrarySmalltalk[];
+  categories: Library["categories"];
+  onRemove: (scrapId: number) => void;
+};
+
+// 서버가 준 주소라도 https 원문만 연다
+const openSource = (url: string) => {
+  if (url.startsWith("https://")) WebBrowser.openBrowserAsync(url);
 };
 
 export function ArchiveList({
   tab,
   articles,
   smalltalks,
-  onRemoveArticle,
-  onRemoveSmalltalk,
+  categories,
+  onRemove,
 }: ArchiveListProps) {
-  const [selectedCategory, setCategory] = useState<Category | "all">("all");
+  const [selected, setSelected] = useState<number | "all">("all");
 
-  const items: { category: Category }[] =
+  const items: { categoryId: number }[] =
     tab === "article" ? articles : smalltalks;
-  // Figma 보관함_스몰토크: 담은 항목이 없는 분야도 칩을 모두 보여준다
-  const isVisible = (item: { category: Category }) =>
-    selectedCategory === "all" || item.category === selectedCategory;
-  const isEmpty = !items.some(isVisible);
+  // 지운 항목 때문에 비게 된 카테고리 칩은 숨기고, 고른 칩이 사라지면 '전체'로 보여준다
+  const chips = categories.filter((category) =>
+    items.some((item) => item.categoryId === category.categoryId),
+  );
+  const category = chips.some((chip) => chip.categoryId === selected)
+    ? selected
+    : "all";
+  const isVisible = (item: { categoryId: number }) =>
+    category === "all" || item.categoryId === category;
 
   return (
-    // shortcut: 목데이터 4~7개 기준이라 ScrollView + map. API 연결로 항목이 많아지면 FlatList로 바꿀 것
+    // shortcut: ScrollView + map. 담은 항목이 수백 개로 늘면 FlatList로 바꿀 것
     <ScrollView contentContainerClassName="gap-5 py-5">
       <View className="gap-3.5">
         <Text className="px-5 text-strong text-heading2-sb">
-          스크랩한 {items.length}개의 {ARCHIVE_TABS[tab].label}
+          내가 직접 담은 {items.length}개의 {ARCHIVE_TABS[tab].label}
         </Text>
-        <CategoryFilter
-          chips={ARCHIVE_CATEGORIES}
-          value={selectedCategory}
-          onChange={setCategory}
-        />
+        <CategoryFilter chips={chips} value={category} onChange={setSelected} />
       </View>
       <View className="gap-3.5 px-5">
-        {/* shortcut: 고른 분야에 담은 항목이 없을 때 시안이 없어 탭 빈 문구를 그대로 쓴다 */}
-        {isEmpty && (
-          <Text className="py-10 text-center text-secondary text-body2-m">
-            {ARCHIVE_TABS[tab].empty}
-          </Text>
-        )}
         {tab === "article"
           ? articles
               .filter(isVisible)
               .map((article) => (
                 <ScrappedArticleCard
-                  key={article.id}
-                  category={article.category}
-                  categoryLabel={article.label}
+                  key={article.scrapId}
+                  category={CATEGORY_KEY_BY_ID[article.categoryId]}
+                  categoryLabel={article.categoryName}
                   title={article.title}
-                  image={article.image}
-                  aiSummary={article.aiSummary}
+                  image={
+                    ARTICLE_IMAGES[article.scrapId % ARTICLE_IMAGES.length]
+                  }
+                  aiSummary={article.oneLine}
                   isBookmarked
-                  isDeleted={article.isDeleted}
-                  onPress={() => WebBrowser.openBrowserAsync(article.url)}
-                  onBookmarkPress={() => onRemoveArticle(article)}
+                  isDeleted={!article.available}
+                  onPress={() => openSource(article.sourceUrl)}
+                  onBookmarkPress={() => onRemove(article.scrapId)}
                 />
               ))
           : smalltalks
               .filter(isVisible)
               .map((smalltalk) => (
                 <EditorPickSmalltalkCard
-                  key={smalltalk.id}
-                  category={smalltalk.category}
-                  categoryLabel={smalltalk.label}
-                  newsTitle={smalltalk.newsTitle}
-                  question={smalltalk.question}
+                  key={smalltalk.scrapId}
+                  category={CATEGORY_KEY_BY_ID[smalltalk.categoryId]}
+                  categoryLabel={smalltalk.categoryName}
+                  newsTitle={smalltalk.articleTitle}
+                  question={smalltalk.hook}
                   isBookmarked
-                  isDeleted={smalltalk.isDeleted}
-                  onPress={() => WebBrowser.openBrowserAsync(smalltalk.url)}
-                  onBookmarkPress={() => onRemoveSmalltalk(smalltalk)}
+                  isDeleted={!smalltalk.available}
+                  onPress={() => openSource(smalltalk.sourceUrl)}
+                  onBookmarkPress={() => onRemove(smalltalk.scrapId)}
                 />
               ))}
       </View>
