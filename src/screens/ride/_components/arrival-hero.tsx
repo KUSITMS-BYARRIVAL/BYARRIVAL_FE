@@ -1,8 +1,8 @@
 import { View } from "react-native";
 
 import {
+  ArrivalBearIllustration,
   ArrivalSubwayIllustration,
-  BearCelebrateIllustration,
 } from "@/assets/illustrations";
 import { cn } from "@/lib/cn";
 
@@ -20,7 +20,8 @@ export function ArrivalHero({ className }: ArrivalHeroProps) {
         preserveAspectRatio="xMidYMid slice"
         style={{ position: "absolute" }}
       />
-      <BearCelebrateIllustration style={{ marginTop: 56 }} />
+      {/* Figma 프레임 기준 위치(top 58)에서 곰과 양옆 반짝이를 함께 그린다 */}
+      <ArrivalBearIllustration style={{ marginTop: 58 }} />
     </View>
   );
 }
