@@ -34,6 +34,8 @@ async function reissueTokens(refreshToken: string) {
       { refreshToken },
       { timeout: TIMEOUT_MS },
     );
+    // 재발급을 기다리는 사이 로그아웃했다면 응답으로 세션을 되살리지 않는다
+    if (useAuthStore.getState().refreshToken !== refreshToken) return;
     await useAuthStore.getState().setTokens(res.data.data);
   } catch (error) {
     // 이동 중 네트워크 끊김 · 5xx로는 세션을 잃지 않게 거절(4xx)일 때만 로그아웃한다

@@ -3,6 +3,7 @@ import * as SecureStore from "expo-secure-store";
 import { queryClient } from "@/lib/query-client";
 
 import { useAuthStore } from "../auth-store";
+import { useOnboardingStore } from "../onboarding-store";
 
 jest.mock("expo-secure-store", () => ({
   setItemAsync: jest.fn().mockResolvedValue(undefined),
@@ -75,6 +76,17 @@ describe("useAuthStore", () => {
       await useAuthStore.getState().clearSession();
 
       expect(queryClient.getQueryData(["me"])).toBeUndefined();
+    });
+
+    it("온보딩 초안을 처음 상태로 되돌린다", async () => {
+      useOnboardingStore.setState({ nickname: "홍길동", isOnboarded: true });
+
+      await useAuthStore.getState().clearSession();
+
+      expect(useOnboardingStore.getState()).toMatchObject({
+        nickname: "",
+        isOnboarded: false,
+      });
     });
 
     it("토큰이 없는 초기 상태에서 호출해도 오류 없이 끝난다", async () => {

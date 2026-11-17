@@ -2,6 +2,7 @@ import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
 import { queryClient } from "@/lib/query-client";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 
 // 두 토큰을 한 항목에 묶어 저장 — 따로 저장하다 하나만 실패해 짝이 어긋나는 일을 막는다
 const TOKENS_KEY = "tokens";
@@ -26,10 +27,11 @@ export const useAuthStore = create<AuthState>()((set) => ({
     );
     set({ accessToken, refreshToken });
   },
-  // 이전 사용자 데이터가 남지 않게 캐시까지 비운다
+  // 이전 사용자 데이터가 남지 않게 캐시와 온보딩 초안까지 비운다
   clearSession: async () => {
     await SecureStore.deleteItemAsync(TOKENS_KEY);
     set({ accessToken: null, refreshToken: null });
     queryClient.clear();
+    useOnboardingStore.getState().reset();
   },
 }));

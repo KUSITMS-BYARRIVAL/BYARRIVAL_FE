@@ -84,4 +84,30 @@ describe("useOnboardingStore", () => {
 
     expect(state().travelMinutes).toBe(45);
   });
+
+  it("reset은 바뀐 모든 값을 초기값으로 되돌린다", () => {
+    state().hydrate({
+      nickname: "홍길동",
+      userType: "student",
+      departureTime: { hour: 9, minute: 30 },
+      travelMinutes: 60,
+      interests: ["tech"],
+      jobGroup: "design",
+      region,
+    });
+    state().completeOnboarding();
+
+    state().reset();
+
+    expect(state()).toMatchObject({
+      nickname: "",
+      userType: null,
+      departureTime: { hour: 8, minute: 0 },
+      travelMinutes: 30,
+      interests: [],
+      jobGroup: null,
+      region: null,
+      isOnboarded: false,
+    });
+  });
 });

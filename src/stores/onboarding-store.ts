@@ -32,8 +32,6 @@ export type JobGroup =
   | "public_welfare"
   | "etc";
 
-export type Region = { province: string; district: string };
-
 type OnboardingDraft = {
   nickname: string;
   userType: UserType | null;
@@ -62,10 +60,11 @@ type OnboardingState = OnboardingDraft & {
   setJobGroup: (jobGroup: JobGroup) => void;
   setRegion: (region: RegionResponse | null) => void;
   completeOnboarding: () => void;
+  /** 로그아웃 · 탈퇴 시 처음 상태로 (다음 사용자에게 이전 값이 보이지 않게) */
+  reset: () => void;
 };
 
-// 단계마다 서버에 저장하고, 화면 사이에서는 이 초안으로 값을 넘긴다 (뒤로 가도 유지)
-export const useOnboardingStore = create<OnboardingState>((set) => ({
+const INITIAL: OnboardingDraft & { isOnboarded: boolean } = {
   nickname: "",
   userType: null,
   // 화면설계서 ONB-06 기본값 08:00
@@ -77,6 +76,11 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   region: null,
   // TODO: 로그인 연동 후 서버의 온보딩 완료 여부로 대체 (지금은 앱을 켤 때마다 온보딩부터 시작)
   isOnboarded: false,
+};
+
+// 단계마다 서버에 저장하고, 화면 사이에서는 이 초안으로 값을 넘긴다 (뒤로 가도 유지)
+export const useOnboardingStore = create<OnboardingState>((set) => ({
+  ...INITIAL,
   hydrate: (draft) => set(draft),
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
@@ -91,4 +95,5 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
   setJobGroup: (jobGroup) => set({ jobGroup }),
   setRegion: (region) => set({ region }),
   completeOnboarding: () => set({ isOnboarded: true }),
+  reset: () => set(INITIAL),
 }));

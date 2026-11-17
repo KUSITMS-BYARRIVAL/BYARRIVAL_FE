@@ -1,3 +1,4 @@
+import { waitFor } from "@testing-library/react-native";
 import axios, { type AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 
@@ -123,6 +124,25 @@ describe("baseApi 401 토큰 재발급", () => {
     expect(res.data).toEqual({ ok: true });
     expect(useAuthStore.getState().accessToken).toBe("new-access");
     expect(api.history.get).toHaveLength(2);
+  });
+
+  it("재발급을 기다리는 사이 로그아웃하면 응답 토큰으로 세션이 되살아나지 않는다", async () => {
+    api.onGet("/me").reply(401, { code: "EXPIRED", message: "만료" });
+    let release: () => void = () => undefined;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    reissue.onPost(REISSUE_URL).reply(async () => {
+      await gate;
+      return [200, { data: newTokens }];
+    });
+
+    const request = caught(baseApi.get("/me"));
+    await waitFor(() => expect(reissue.history.post).toHaveLength(1));
+    await useAuthStore.getState().clearSession();
+    release();
+    await request;
+
+    expect(useAuthStore.getState().accessToken).toBeNull();
+    expect(useAuthStore.getState().refreshToken).toBeNull();
   });
 
   it("재발급 요청은 refreshToken을 body에 담아 보낸다", async () => {
