@@ -1,3 +1,5 @@
+import type { CalendarDayLevel } from "@/types/stats/stats.types";
+
 // 컨디션 기록 막대·범례 순서와 색 (Figma 마이홈 - 컨디션 기록)
 export const CONDITION_SEGMENTS = [
   { key: "sunny", label: "맑음", colorClassName: "bg-yellow" },
@@ -13,3 +15,10 @@ export type ConditionCounts = Record<
 
 /** none: 앱 미접속 / visit: 접속만 / partial: 일부 완독 / complete: 전체 완독(노선 완주) */
 export type StripLevel = "none" | "visit" | "partial" | "complete";
+
+export const STRIP_LEVEL_BY_API: Record<CalendarDayLevel, StripLevel> = {
+  NONE: "none",
+  ACCESSED: "visit",
+  PARTIAL: "partial",
+  COMPLETED: "complete",
+};
