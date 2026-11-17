@@ -1,5 +1,6 @@
-import { INTERESTS } from "@/screens/_constants";
+import { INTERESTS, JOB_GROUPS } from "@/screens/_constants";
 import type { Interest } from "@/stores/onboarding-store";
+import { fromJobGroupCode } from "@/types/user/user.mappers";
 import type { CategoryResponse } from "@/types/user/user.types";
 
 // 온보딩 · 마이 관심 분야에서 함께 쓴다
@@ -25,3 +26,11 @@ export const toInterests = (
     const interest = INTERESTS.find(({ title }) => title === name)?.value;
     return interest ? [interest] : [];
   });
+
+// 홈 · 공감대 전체보기 칩 라벨. 직군 코드가 없으면 전체 칩이다
+export const toPopularChipLabel = (jobGroupCode: string | null) => {
+  if (!jobGroupCode) return "전체";
+  const jobGroup = fromJobGroupCode(jobGroupCode);
+  const title = JOB_GROUPS.find(({ value }) => value === jobGroup)?.title;
+  return `내 직군 · ${title ?? jobGroupCode}`;
+};
