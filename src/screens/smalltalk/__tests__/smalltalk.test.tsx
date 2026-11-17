@@ -2,7 +2,7 @@ import { render, screen, userEvent } from "@testing-library/react-native";
 import { router } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 
-import { EDITOR_PICK_SMALLTALKS } from "@/mocks/smalltalk";
+import type { Smalltalk } from "@/types/smalltalk/smalltalk.types";
 
 import { SmalltalkScreen } from "../smalltalk";
 
@@ -12,32 +12,72 @@ jest.mock("react-native-safe-area-context", () => ({
 jest.mock("expo-router", () => ({ router: { back: jest.fn() } }));
 jest.mock("expo-web-browser", () => ({ openBrowserAsync: jest.fn() }));
 
+const mockQuery = jest.fn();
+jest.mock("@/hooks/queries/use-get-today-smalltalks", () => ({
+  useGetTodaySmalltalks: () => mockQuery(),
+}));
+
+const smalltalk = (id: number, overrides?: Partial<Smalltalk>): Smalltalk => ({
+  smalltalkId: id,
+  hook: `한마디 ${id}`,
+  categoryId: 4,
+  categoryName: "경제",
+  articleId: id,
+  articleTitle: `기사 ${id}`,
+  sourceUrl: `https://news.example/${id}`,
+  scrapped: false,
+  ...overrides,
+});
+
+const withSmalltalks = (smalltalks: Smalltalk[]) =>
+  mockQuery.mockReturnValue({
+    data: { serviceDate: "2026-11-17", smalltalks },
+    isPending: false,
+  });
+
+beforeEach(() => jest.clearAllMocks());
+
 describe("SmalltalkScreen", () => {
   it("오늘의 스몰토크를 모두 보여준다", async () => {
+    withSmalltalks([smalltalk(1), smalltalk(2)]);
     await render(<SmalltalkScreen />);
-    expect(screen.getByText("Editor’s Pick")).toBeOnTheScreen();
     expect(screen.getByText("오늘 바로 쓰는 스몰토크")).toBeOnTheScreen();
-    for (const { question } of EDITOR_PICK_SMALLTALKS) {
-      expect(screen.getByText(question)).toBeOnTheScreen();
-    }
+    expect(screen.getByText("한마디 1")).toBeOnTheScreen();
+    expect(screen.getByText("기사 2")).toBeOnTheScreen();
+  });
+
+  it("불러오는 중에는 카드를 보여주지 않는다", async () => {
+    mockQuery.mockReturnValue({ data: undefined, isPending: true });
+    await render(<SmalltalkScreen />);
+    expect(screen.queryByText("오늘의 스몰토크를 준비하고 있어요")).toBeNull();
+    expect(screen.queryAllByRole("button", { name: "북마크" })).toHaveLength(0);
+  });
+
+  it("오늘 스몰토크가 없으면 준비 중 문구를 보여준다", async () => {
+    withSmalltalks([]);
+    await render(<SmalltalkScreen />);
+    expect(
+      screen.getByText("오늘의 스몰토크를 준비하고 있어요"),
+    ).toBeOnTheScreen();
   });
 
   it("카드를 누르면 원문을 열고, 뒤로가기를 누르면 돌아간다", async () => {
+    withSmalltalks([smalltalk(1)]);
     const user = userEvent.setup();
     await render(<SmalltalkScreen />);
-    const [first] = EDITOR_PICK_SMALLTALKS;
-    await user.press(screen.getByText(first.question));
-    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(first.url);
+    await user.press(screen.getByText("한마디 1"));
+    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
+      "https://news.example/1",
+    );
     await user.press(screen.getByRole("button", { name: "뒤로가기" }));
     expect(router.back).toHaveBeenCalled();
   });
 
-  it("북마크를 누르면 담기고, 다시 누르면 빠진다", async () => {
+  it("서버에서 담긴 스몰토크는 북마크된 채로 시작하고, 누르면 빠진다", async () => {
+    withSmalltalks([smalltalk(1, { scrapped: true })]);
     const user = userEvent.setup();
     await render(<SmalltalkScreen />);
-    const [bookmark] = screen.getAllByRole("button", { name: "북마크" });
-    expect(bookmark).not.toBeSelected();
-    await user.press(bookmark);
+    const bookmark = screen.getByRole("button", { name: "북마크" });
     expect(bookmark).toBeSelected();
     await user.press(bookmark);
     expect(bookmark).not.toBeSelected();
