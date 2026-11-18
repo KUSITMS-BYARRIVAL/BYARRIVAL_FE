@@ -19,14 +19,14 @@ export function BoardingPassScreen() {
   const { destination } = useCommuteWords();
   const { mutate: depart, isPending: isDeparting } = useDepart();
   const { mutate: returnToCardSelection } = useReturnToCardSelection();
-  const hasDepartedRef = useRef(false);
+  const hasSentDepartRef = useRef(false);
   const routeId = route?.routeId;
 
-  // 버튼 · iOS 스와이프 · Android 뒤로 버튼 어느 쪽으로 나가도(스택에서 빠지면) 서버를 카드 선택 단계로 되돌린다 (출발 후 제외)
+  // 버튼 · iOS 스와이프 · Android 뒤로 버튼 어느 쪽으로 나가도(스택에서 빠지면) 서버를 카드 선택 단계로 되돌린다 (출발 요청 후 제외)
   useEffect(() => {
     if (routeId === undefined) return;
     return () => {
-      if (!hasDepartedRef.current) returnToCardSelection(routeId);
+      if (!hasSentDepartRef.current) returnToCardSelection(routeId);
     };
   }, [routeId, returnToCardSelection]);
 
@@ -35,11 +35,13 @@ export function BoardingPassScreen() {
 
   const handleDepart = () => {
     if (routeId === undefined) return;
+    // 응답 전에 나가도 되돌리기 요청이 출발과 엇갈리지 않게 보내는 순간부터 막는다 (실패하면 다시 푼다)
+    hasSentDepartRef.current = true;
     depart(routeId, {
-      onSuccess: () => {
-        hasDepartedRef.current = true;
-        // 출발하면 노선이 고정되므로 뒤로 가도 탑승권으로 돌아오지 않게 바꾼다
-        router.replace("/ride/stop");
+      // 출발하면 노선이 고정되므로 뒤로 가도 탑승권으로 돌아오지 않게 바꾼다
+      onSuccess: () => router.replace("/ride/stop"),
+      onError: () => {
+        hasSentDepartRef.current = false;
       },
     });
   };
