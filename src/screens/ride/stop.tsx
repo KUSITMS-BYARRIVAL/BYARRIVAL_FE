@@ -2,7 +2,7 @@ import * as Clipboard from "expo-clipboard";
 import { router, usePreventRemove } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -22,6 +22,7 @@ import {
   SCRAP_TOAST_MESSAGE,
 } from "@/screens/ride/_constants";
 import { StopArticle } from "@/screens/ride/_components/stop-article";
+import { findAvailableStop } from "@/screens/ride/_helpers";
 import { useDialogStore } from "@/stores/dialog-store";
 import { useToastStore } from "@/stores/toast-store";
 import { SEMANTIC } from "@/theme/colors";
@@ -99,17 +100,33 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
     if (leaveTo === "arrival") router.replace("/ride/arrival");
   }, [leaveTo]);
 
-  // 숨겼거나 원문이 삭제된 기사(available: false)는 미리 받아 보고 건너뛴다
+  const findNextStop = useCallback(
+    (from: number) =>
+      findAvailableStop(from, totalStops, (n) =>
+        queryClient.fetchQuery(getStopQuery(routeId, n)),
+      ),
+    [queryClient, routeId, totalStops],
+  );
+  // 볼 수 있는 정거장이 남아 있지 않으면 도착
+  const moveTo = useCallback(
+    (next: number | null) =>
+      next === null ? setLeaveTo("arrival") : setStopNumber(next),
+    [],
+  );
+
+  // 이어서 볼 정거장이 그사이 숨김 · 삭제됐으면 처음부터 건너뛴다 (다음 버튼으로 옮긴 정거장은 항상 볼 수 있다)
+  useEffect(() => {
+    if (stop?.available !== false) return;
+    findNextStop(stopNumber + 1)
+      .then(moveTo)
+      // 조회 실패는 전역 토스트가 알린다
+      .catch(() => {});
+  }, [stop?.available, stopNumber, findNextStop, moveTo]);
+
   const goNext = async () => {
     setIsMoving(true);
     try {
-      for (let next = stopNumber + 1; next <= totalStops; next++) {
-        const nextStop = await queryClient.fetchQuery(
-          getStopQuery(routeId, next),
-        );
-        if (nextStop.available) return setStopNumber(next);
-      }
-      setLeaveTo("arrival");
+      moveTo(await findNextStop(stopNumber + 1));
     } catch {
       // 조회 실패는 전역 토스트가 알린다. 같은 정거장에 머문다
     } finally {
