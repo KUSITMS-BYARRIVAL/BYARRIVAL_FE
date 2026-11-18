@@ -11,7 +11,15 @@ const countSvgs = (node: Node): number =>
 
 describe("ArrivalHero", () => {
   it("지하철 배경과 곰 일러스트를 함께 렌더한다", async () => {
-    await render(<ArrivalHero />);
+    await render(<ArrivalHero userType="worker" />);
     expect(countSvgs(screen.toJSON() as unknown as Node)).toBe(2);
   });
+
+  it.each(["worker", "student", "other"] as const)(
+    "%s 유형이면 그 유형의 곰을 보여준다",
+    async (userType) => {
+      await render(<ArrivalHero userType={userType} />);
+      expect(screen.getByTestId(`arrival-bear-${userType}`)).toBeOnTheScreen();
+    },
+  );
 });

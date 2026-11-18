@@ -25,7 +25,7 @@ import { useToastStore } from "@/stores/toast-store";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  const { route } = useCommuteWords();
+  const { route, userType } = useCommuteWords();
   const { data: today } = useGetTodayRoute();
   const routeId = today?.route?.routeId;
   const { mutate: arrive, data: arrival } = useArrive();
@@ -90,7 +90,7 @@ export function ArrivalScreen() {
       </View>
       <Header title="도착까지" right={<AlarmButton />} />
       <ScrollView className="flex-1">
-        <ArrivalHero />
+        <ArrivalHero userType={userType} />
         <View className="gap-9 p-5">
           <View className="gap-3.5">
             <View className="flex-row items-start justify-between">

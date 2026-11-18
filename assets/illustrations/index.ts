@@ -1,6 +1,6 @@
-export { default as ArrivalBearIllustration } from "./arrival-bear.svg";
 export { default as ArrivalBearOtherIllustration } from "./arrival-bear-other.svg";
 export { default as ArrivalBearStudentIllustration } from "./arrival-bear-student.svg";
+export { default as ArrivalBearWorkerIllustration } from "./arrival-bear-worker.svg";
 export { default as ArrivalShareBearIllustration } from "./arrival-share-bear.svg";
 export { default as ArrivalShareIconIllustration } from "./arrival-share-icon.svg";
 export { default as ArrivalSubwayIllustration } from "./arrival-subway.svg";
