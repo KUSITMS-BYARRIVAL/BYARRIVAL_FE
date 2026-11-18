@@ -1,4 +1,6 @@
 export { default as ArrivalBearIllustration } from "./arrival-bear.svg";
+export { default as ArrivalBearOtherIllustration } from "./arrival-bear-other.svg";
+export { default as ArrivalBearStudentIllustration } from "./arrival-bear-student.svg";
 export { default as ArrivalShareBearIllustration } from "./arrival-share-bear.svg";
 export { default as ArrivalShareIconIllustration } from "./arrival-share-icon.svg";
 export { default as ArrivalSubwayIllustration } from "./arrival-subway.svg";
@@ -7,6 +9,10 @@ export { default as AssetHandleIllustration } from "./asset-handle.svg";
 export { default as AssetSubwayIllustration } from "./asset-subway.svg";
 export { default as AssetSuitIllustration } from "./asset-suit.svg";
 export { default as BearCelebrateIllustration } from "./bear-celebrate.svg";
+export { default as BearCelebrateOtherIllustration } from "./bear-celebrate-other.svg";
+export { default as BearCelebrateStudentIllustration } from "./bear-celebrate-student.svg";
+export { default as BearHomeOtherIllustration } from "./bear-home-other.svg";
+export { default as BearHomeStudentIllustration } from "./bear-home-student.svg";
 export { default as BearMagnifierIllustration } from "./bear-magnifier.svg";
 export { default as BearWorkerIllustration } from "./bear-worker.svg";
 export { default as BuildingIllustration } from "./building.svg";
