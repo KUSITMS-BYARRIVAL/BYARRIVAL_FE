@@ -2,12 +2,11 @@ import { router } from "expo-router";
 import { Pressable } from "react-native";
 
 import { AlarmDotIcon, AlarmIcon } from "@/assets/icons";
-import { useNotificationStore } from "@/stores/notification-store";
+import { useGetUnreadCount } from "@/hooks/queries/use-get-unread-count";
 
 export function AlarmButton() {
-  const hasNewNotification = useNotificationStore(
-    (state) => state.hasNewNotification,
-  );
+  const { data } = useGetUnreadCount();
+  const hasNewNotification = (data?.count ?? 0) > 0;
   const Icon = hasNewNotification ? AlarmDotIcon : AlarmIcon;
 
   return (

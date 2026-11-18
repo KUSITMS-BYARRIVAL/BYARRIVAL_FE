@@ -77,6 +77,7 @@ export { default as MinusIcon } from "./minus.svg";
 export { default as PaperIcon } from "./paper.svg";
 export { default as PenIcon } from "./pen.svg";
 export { default as PlusIcon } from "./plus.svg";
+export { default as PopularArticleIcon } from "./popular-article.svg";
 export { default as ProfileIcon } from "./profile.svg";
 export { default as ProfileLargeIcon } from "./profile-large.svg";
 export { default as QuizIcon } from "./quiz.svg";
