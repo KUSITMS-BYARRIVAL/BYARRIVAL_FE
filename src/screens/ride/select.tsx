@@ -1,5 +1,4 @@
 import { router, useFocusEffect } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -20,10 +19,9 @@ import {
 } from "@/screens/ride/_constants";
 import { NewsCarousel } from "@/screens/ride/_components/news-carousel";
 import { SelectCoachMark } from "@/screens/ride/_components/select-coach-mark";
+import { useSelectCoachMark } from "@/screens/ride/_hooks/use-select-coach-mark";
 import type { Route, RouteCard } from "@/types/ride/ride.types";
 
-// 서버에 저장 필드가 없어 기기에 남긴다 (토큰과 무관한 UI 플래그)
-const COACH_SEEN_KEY = "ride-select-coach-seen";
 // shortcut: 노출 시간이 Figma·사양에 없어 전역 토스트와 같은 2초로 가정
 const TOAST_DURATION_MS = 2000;
 
@@ -60,15 +58,9 @@ function SelectContent({ route }: { route: Route }) {
   const { mutate: board, isPending: isBoarding } = useBoard();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const [isCoachVisible, setIsCoachVisible] = useState(false);
+  const { isCoachVisible, closeCoach } = useSelectCoachMark();
 
-  useEffect(() => {
-    SecureStore.getItemAsync(COACH_SEEN_KEY)
-      .then((seen) => setIsCoachVisible(!seen))
-      // 읽기 실패(키체인 오류 등) 시 안내 없이 바로 쓰게 둔다
-      .catch(() => {});
-    return () => clearTimeout(toastTimer.current);
-  }, []);
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
   // 스와이프마다 보내지 않고 화면을 떠날 때(다음 화면 · 뒤로가기) 한 번 저장한다
   useFocusEffect(
@@ -81,11 +73,6 @@ function SelectContent({ route }: { route: Route }) {
   const handleIndexChange = (next: number) => {
     indexRef.current = next;
     setIndex(next);
-  };
-
-  const closeCoach = () => {
-    setIsCoachVisible(false);
-    void SecureStore.setItemAsync(COACH_SEEN_KEY, "1");
   };
 
   const showToast = (message: string) => {
