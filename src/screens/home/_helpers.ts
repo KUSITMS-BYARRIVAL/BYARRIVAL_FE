@@ -27,12 +27,8 @@ export const getRideButton = (todayRoute: TodayRoute | null) => {
         label: ride
           ? `이어서 탑승하기 (${ride.currentStop}/${ride.totalStops})`
           : "이어서 탑승하기",
-        onPress: () =>
-          router.push({
-            pathname: "/ride/stop",
-            // currentStop은 1부터, start는 0부터 센다
-            params: ride ? { start: ride.currentStop - 1 } : {},
-          }),
+        // 정거장 화면이 서버의 이어서 볼 정거장(currentStop)부터 연다
+        onPress: () => router.push("/ride/stop"),
       };
     }
     // TODO: 지금은 임시로 도착 화면
