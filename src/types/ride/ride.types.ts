@@ -149,3 +149,16 @@ export type Home = {
   /** 고른 직군 칩(고른 순서) 다음에 전체 칩. 칩마다 TOP3 */
   popular: PopularChip[] | null;
 };
+
+export type Arrival = {
+  routeId: number;
+  readCount: number;
+  totalStops: number;
+  /** 완주한 평일이 이어진 일수 (주말은 건너뜀, 오늘 포함) */
+  streakDays: number;
+  /** 출발부터 도착까지(분, 올림) */
+  usedMinutes: number;
+  completedAt: string;
+  /** 오늘 다른 사람들이 많이 담은 뉴스 TOP 3 (이번 노선에서 읽은 기사 제외). 집계에 실패하면 null */
+  top3: Omit<PopularChip, "jobGroup"> | null;
+};

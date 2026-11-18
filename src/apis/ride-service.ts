@@ -1,6 +1,7 @@
 import { baseApi } from "@/lib/api-client";
 import type { ApiResponse } from "@/types/api";
 import type {
+  Arrival,
   BoardingPass,
   Condition,
   Home,
@@ -107,6 +108,13 @@ export const rideService = {
   }) => {
     const res = await baseApi.post<ApiResponse<StopRead>>(
       `/routes/${routeId}/stops/${stopNumber}/read`,
+    );
+    return res.data.data;
+  },
+  /** 남은 기사가 없으면 완주로 기록한다. 이미 완주했으면 같은 결과를 돌려준다 */
+  arrive: async (routeId: number) => {
+    const res = await baseApi.post<ApiResponse<Arrival>>(
+      `/routes/${routeId}/arrival`,
     );
     return res.data.data;
   },
