@@ -58,8 +58,10 @@ export function ArchiveScreen() {
   const articles = (library.data?.articles ?? []).filter(isVisible);
   const smalltalks = (library.data?.smalltalks ?? []).filter(isVisible);
   const count = tab === "article" ? articles.length : smalltalks.length;
+  // 탭을 바꾼 직후에는 이전 탭 응답이 placeholder로 남아 있어 목록은 로딩으로 두고, 개수는 서버 counts를 쓴다
+  const isLoading = library.isPending || library.isPlaceholderData;
   const counts = {
-    [tab]: count,
+    [tab]: library.isPlaceholderData ? library.data?.counts[tab] : count,
     [otherTab]: library.data?.counts[otherTab],
   };
 
@@ -78,7 +80,7 @@ export function ArchiveScreen() {
         />
       </View>
       {/* 조회 실패는 전역 토스트가 알리고, 빈 탭으로 보여준다 */}
-      {library.isPending ? (
+      {isLoading ? (
         <LoadingDots className="flex-1" />
       ) : count === 0 ? (
         // TODO: 빈 화면 디자인 확인 중. 지금은 문구만 둔다.
