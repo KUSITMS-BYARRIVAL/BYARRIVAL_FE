@@ -25,7 +25,7 @@ export function HomeScreen() {
   const home = useGetHome();
   const me = useGetMe();
   const streak = useGetStatsStreak();
-  const { commute, route, person } = useCommuteWords();
+  const { commute, route, person, userType } = useCommuteWords();
   const isPending = home.isPending || me.isPending || streak.isPending;
   const nickname = me.data?.nickname ?? "";
   const rideButton = getRideButton(home.data?.todayRoute ?? null);
@@ -43,12 +43,13 @@ export function HomeScreen() {
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      <View className="mt-3.5 h-6 flex-row items-center justify-between px-5">
+      {/* 보관함 · 마이의 공통 Header(h-11)와 높이를 맞춘다 */}
+      <View className="h-11 flex-row items-center justify-between px-5">
         <LogoIllustration />
         <AlarmButton />
       </View>
       {isPending ? (
-        <LoadingDots className="py-10" />
+        <LoadingDots className="flex-1" />
       ) : (
         <ScrollView className="flex-1" contentContainerClassName="gap-9 p-5">
           <View className="gap-3.5">
@@ -64,6 +65,7 @@ export function HomeScreen() {
             <StreakCard
               nickname={nickname}
               route={route}
+              userType={userType}
               streakDays={home.data?.streakDays ?? 0}
               longestDays={streak.data?.longestStreak ?? 0}
             />
@@ -87,6 +89,7 @@ export function HomeScreen() {
             <TrendingSection
               route={route}
               person={person}
+              userType={userType}
               chips={popular.map((chip) => ({
                 label: toPopularChipLabel(chip.jobGroup),
                 isAggregating: chip.status === "AGGREGATING",

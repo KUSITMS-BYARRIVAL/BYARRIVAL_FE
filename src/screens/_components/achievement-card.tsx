@@ -1,7 +1,12 @@
 import { Text, View } from "react-native";
 
-import { BearCelebrateIllustration } from "@/assets/illustrations";
+import {
+  BearCelebrateIllustration,
+  BearCelebrateOtherIllustration,
+  BearCelebrateStudentIllustration,
+} from "@/assets/illustrations";
 import { cn } from "@/lib/cn";
+import type { UserType } from "@/stores/onboarding-store";
 
 // 일러스트 SVG는 바깥 여백(Figma 기준 좌우 43.59%, 상하 34.62%)을 포함해 곰보다 크다.
 // 레이아웃은 곰 크기 박스로 잡고, SVG는 여백만큼 박스 밖으로 겹쳐 그린다
@@ -11,11 +16,20 @@ const BEAR_RATIO = 89.406 / 71;
 
 const BEAR_WIDTH = { horizontal: 71, vertical: 74 };
 
-function Bear({ width }: { width: number }) {
+// 세 파일 모두 같은 프레임(곰 + 그림자 여백)으로 맞춰 둬 위치 계산을 같이 쓴다
+const BEAR_BY_USER_TYPE = {
+  worker: BearCelebrateIllustration,
+  student: BearCelebrateStudentIllustration,
+  other: BearCelebrateOtherIllustration,
+} satisfies Record<UserType, unknown>;
+
+function Bear({ width, userType }: { width: number; userType: UserType }) {
   const height = width * BEAR_RATIO;
+  const Illustration = BEAR_BY_USER_TYPE[userType];
   return (
     <View style={{ width, height }}>
-      <BearCelebrateIllustration
+      <Illustration
+        testID={`achievement-bear-${userType}`}
         width={width * (1 + BLEED_X * 2)}
         height={height * (1 + BLEED_Y * 2)}
         style={{
@@ -31,6 +45,7 @@ function Bear({ width }: { width: number }) {
 type AchievementCardProps = {
   title: string;
   description: string;
+  userType: UserType;
   orientation?: "horizontal" | "vertical";
   className?: string;
 };
@@ -38,6 +53,7 @@ type AchievementCardProps = {
 export function AchievementCard({
   title,
   description,
+  userType,
   orientation = "horizontal",
   className,
 }: AchievementCardProps) {
@@ -53,7 +69,7 @@ export function AchievementCard({
         className,
       )}
     >
-      <Bear width={BEAR_WIDTH[orientation]} />
+      <Bear width={BEAR_WIDTH[orientation]} userType={userType} />
       <View
         className={cn(
           "gap-2",

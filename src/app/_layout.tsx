@@ -14,6 +14,8 @@ import { useAuthStore } from "@/stores/auth-store";
 
 // 폰트 로딩 · 저장된 세션 확인이 끝날 때까지 스플래시를 유지한다 (컴포넌트 밖, 모듈 스코프에서 호출해야 함)
 SplashScreen.preventAutoHideAsync();
+// 스플래시에서 첫 화면으로 끊기지 않게 넘어가도록 (iOS만 지원)
+SplashScreen.setOptions({ fade: true });
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
@@ -56,8 +58,9 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* 세션에 맞는 그룹만 열어 둔다. 지금 그룹이 닫히면 redirectTo로 이동한다
-          (지정하지 않으면 루트 첫 화면 '/'로 가는데, '/'는 홈 그룹 안이라 열려 있지 않을 때 찾을 수 없는 경로가 된다) */}
-      <Stack screenOptions={{ headerShown: false }}>
+          (지정하지 않으면 루트 첫 화면 '/'로 가는데, '/'는 홈 그룹 안이라 열려 있지 않을 때 찾을 수 없는 경로가 된다)
+          iOS 스와이프 뒤로 가기는 막고 헤더 뒤로가기로만 이동한다. 하위 Stack은 이 옵션을 물려받지 않아 그룹 레이아웃마다 따로 둔다 */}
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: false }}>
         <Stack.Protected guard={!isLoggedIn} redirectTo={entry}>
           <Stack.Screen name="(auth)" />
         </Stack.Protected>

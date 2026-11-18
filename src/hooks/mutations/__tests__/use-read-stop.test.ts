@@ -70,9 +70,10 @@ describe("useReadStop", () => {
     });
   });
 
-  it("성공하면 오늘 노선 · 홈을 무효화한다", async () => {
+  it("성공하면 오늘 노선 · 홈 · 마이 통계를 무효화한다", async () => {
     queryClient.setQueryData(["ride", "getToday"], "today");
     queryClient.setQueryData(["ride", "getHome"], "home");
+    queryClient.setQueryData(["stats", "getSummary", "ALL"], "summary");
     api.onPost("/routes/7/stops/2/read").reply(200, { data: { progress } });
     const { result } = await renderHook(() => useReadStop(), { wrapper });
 
@@ -84,6 +85,9 @@ describe("useReadStop", () => {
     expect(queryClient.getQueryState(["ride", "getHome"])?.isInvalidated).toBe(
       true,
     );
+    expect(
+      queryClient.getQueryState(["stats", "getSummary", "ALL"])?.isInvalidated,
+    ).toBe(true);
   });
 
   it("정거장 캐시가 없으면 새로 만들지 않는다", async () => {

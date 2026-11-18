@@ -1,5 +1,5 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
@@ -25,7 +25,6 @@ export function MyScreen() {
   const today = new Date();
   const year = today.getFullYear();
 
-  // TODO: 탭은 마운트가 유지돼 다시 조회되지 않는다 — 읽기 완료 · 스크랩 API 연동 시 그 mutation onSuccess에서 ['stats'] · ['scrap'] 쿼리를 invalidate
   const all = useGetStatsSummary("ALL");
   const month = useGetStatsSummary("MONTH");
   const yearSummary = useGetStatsSummary("YEAR");
@@ -34,6 +33,13 @@ export function MyScreen() {
   const weekly = useGetStatsWeekly();
   const scraps = useGetScrapLibrary({ type: "ARTICLE", sort: "LATEST" });
   const { commute } = useCommuteWords();
+  const { refetch: refetchScraps } = scraps;
+  // 스크랩 삭제는 [되돌리기] 때문에 stale 표시만 해서, 마운트된 채 남은 탭은 포커스 때 다시 받는다. 처음 포커스는 마운트 조회와 합친다(cancelRefetch: false)
+  useFocusEffect(
+    useCallback(() => {
+      refetchScraps({ cancelRefetch: false });
+    }, [refetchScraps]),
+  );
 
   const queries = [all, month, yearSummary, streak, calendar, weekly, scraps];
   // 실패는 전역 토스트(query-client)가 알리고, 실패한 영역은 0으로 둔다
