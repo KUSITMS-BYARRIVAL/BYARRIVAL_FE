@@ -21,6 +21,19 @@ export const scrapService = {
     );
     return res.data.data;
   },
+  /** 숨겼거나 삭제된 기사면 SCRAP_TARGET_NOT_FOUND */
+  saveArticle: async (articleId: number) => {
+    const res = await baseApi.put<ApiResponse<ScrapStatus>>(
+      `/scraps/articles/${articleId}`,
+    );
+    return res.data.data;
+  },
+  unsaveArticle: async (articleId: number) => {
+    const res = await baseApi.delete<ApiResponse<ScrapStatus>>(
+      `/scraps/articles/${articleId}`,
+    );
+    return res.data.data;
+  },
   saveSmalltalk: async (smalltalkId: number) => {
     const res = await baseApi.put<ApiResponse<ScrapStatus>>(
       `/scraps/smalltalks/${smalltalkId}`,
