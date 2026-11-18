@@ -48,7 +48,7 @@ export function HomeScreen() {
         <AlarmButton />
       </View>
       {isPending ? (
-        <LoadingDots className="py-10" />
+        <LoadingDots className="flex-1" />
       ) : (
         <ScrollView className="flex-1" contentContainerClassName="gap-9 p-5">
           <View className="gap-3.5">
