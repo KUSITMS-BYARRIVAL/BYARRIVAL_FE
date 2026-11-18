@@ -67,3 +67,9 @@ export const OVER_LIMIT_TOAST_MESSAGE = "목표 시간을 넘어서 더 담을 �
 
 // 추천 기사가 0건이라 노선을 만들지 못했을 때 (POST /routes → EMPTY)
 export const EMPTY_ROUTE_MESSAGE = "오늘 준비한 뉴스는 여기까지에요";
+
+// 정거장 토스트
+export const OPEN_FAIL_TOAST_MESSAGE = "원문을 열 수 없어요";
+export const SCRAP_TOAST_MESSAGE = "보관함에 담았어요";
+// [임시] 공유 = 원문 링크 복사. 시안에 문구가 없어 정한 문구
+export const COPY_LINK_TOAST_MESSAGE = "링크를 복사했어요";
