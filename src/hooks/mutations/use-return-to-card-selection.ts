@@ -13,7 +13,8 @@ export function useReturnToCardSelection() {
         state: route.status,
         route,
       });
-      return queryClient.invalidateQueries({ queryKey: ["ride", "getHome"] });
+      // 재조회를 기다리지 않는다 — 기다리면 mutate 콜백의 화면 이동이 재조회만큼 늦어진다
+      void queryClient.invalidateQueries({ queryKey: ["ride", "getHome"] });
     },
   });
 }
