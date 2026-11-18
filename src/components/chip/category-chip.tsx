@@ -37,8 +37,9 @@ export function CategoryChip({
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ ...accessibilityState, selected }}
+      // 이름마다 글자 폭이 달라 칩 너비가 들쭉날쭉하므로 가장 긴 이름(한글 4자 + '·', label2-sb 약 60px) + 좌우 패딩 20px로 맞춘다
       className={cn(
-        "min-h-8 min-w-[58px] items-center justify-center rounded-full px-2.5",
+        "min-h-8 min-w-[80px] items-center justify-center rounded-full px-2.5",
         selected ? selectedBg : bg,
         className,
       )}
