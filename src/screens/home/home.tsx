@@ -43,7 +43,8 @@ export function HomeScreen() {
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      <View className="mt-3.5 h-6 flex-row items-center justify-between px-5">
+      {/* 보관함 · 마이의 공통 Header(h-11)와 높이를 맞춘다 */}
+      <View className="h-11 flex-row items-center justify-between px-5">
         <LogoIllustration />
         <AlarmButton />
       </View>
