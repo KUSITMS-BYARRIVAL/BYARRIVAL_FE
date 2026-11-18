@@ -5,6 +5,7 @@ import type {
   Condition,
   Home,
   PopularChip,
+  RideResponse,
   Route,
   TodayRoute,
 } from "@/types/ride/ride.types";
@@ -64,6 +65,20 @@ export const rideService = {
   board: async (routeId: number) => {
     const res = await baseApi.post<ApiResponse<BoardingPass>>(
       `/routes/${routeId}/boarding`,
+    );
+    return res.data.data;
+  },
+  /** 담은 카드를 유지한 채 카드 선택 단계로 돌아간다 */
+  returnToCardSelection: async (routeId: number) => {
+    const res = await baseApi.delete<ApiResponse<Route>>(
+      `/routes/${routeId}/boarding`,
+    );
+    return res.data.data;
+  },
+  /** 담은 카드 · 순서로 노선을 고정하고 운행을 시작한다. 이미 운행 중이면 그대로 돌려준다 */
+  depart: async (routeId: number) => {
+    const res = await baseApi.post<ApiResponse<RideResponse>>(
+      `/routes/${routeId}/departure`,
     );
     return res.data.data;
   },

@@ -62,6 +62,12 @@ export type Route = {
   ride: RideProgress | null;
 };
 
+export type RideResponse = {
+  routeId: number;
+  status: RouteStatus;
+  progress: RideProgress;
+};
+
 export type BoardingPass = {
   routeId: number;
   articleCount: number;
