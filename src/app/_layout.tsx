@@ -14,6 +14,8 @@ import { useAuthStore } from "@/stores/auth-store";
 
 // 폰트 로딩 · 저장된 세션 확인이 끝날 때까지 스플래시를 유지한다 (컴포넌트 밖, 모듈 스코프에서 호출해야 함)
 SplashScreen.preventAutoHideAsync();
+// 스플래시에서 첫 화면으로 끊기지 않게 넘어가도록 (iOS만 지원)
+SplashScreen.setOptions({ fade: true });
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
