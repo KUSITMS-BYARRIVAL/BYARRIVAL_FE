@@ -68,6 +68,37 @@ export type RideResponse = {
   progress: RideProgress;
 };
 
+/** available이 false면 숨겼거나 원문이 삭제된 기사라 건너뛴다 (기사 내용 필드가 null) */
+export type RouteStop = {
+  routeId: number;
+  /** 1부터, 담은 순서 */
+  stopNumber: number;
+  totalStops: number;
+  available: boolean;
+  articleId: number;
+  title: string;
+  pressName: string;
+  publishedAt: string;
+  categoryId: number;
+  categoryName: string;
+  readingMinutes: number;
+  keywords: string[];
+  oneLine: string;
+  /** AI 3줄 요약 */
+  summary: string[];
+  sourceUrl: string;
+  read: boolean;
+  scrapped: boolean;
+  progress: RideProgress;
+};
+
+export type StopRead = {
+  stopNumber: number;
+  articleId: number;
+  read: boolean;
+  progress: RideProgress;
+};
+
 export type BoardingPass = {
   routeId: number;
   articleCount: number;

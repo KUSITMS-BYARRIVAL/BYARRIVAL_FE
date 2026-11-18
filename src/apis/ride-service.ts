@@ -7,6 +7,8 @@ import type {
   PopularChip,
   RideResponse,
   Route,
+  RouteStop,
+  StopRead,
   TodayRoute,
 } from "@/types/ride/ride.types";
 
@@ -79,6 +81,32 @@ export const rideService = {
   depart: async (routeId: number) => {
     const res = await baseApi.post<ApiResponse<RideResponse>>(
       `/routes/${routeId}/departure`,
+    );
+    return res.data.data;
+  },
+  /** 운행 중이거나 오늘 완주한 노선만 볼 수 있다 */
+  getStop: async ({
+    routeId,
+    stopNumber,
+  }: {
+    routeId: number;
+    stopNumber: number;
+  }) => {
+    const res = await baseApi.get<ApiResponse<RouteStop>>(
+      `/routes/${routeId}/stops/${stopNumber}`,
+    );
+    return res.data.data;
+  },
+  /** '원문 보기'를 누른 순간 완독으로 기록한다. 원문 열기에 실패해도 완독이다 */
+  read: async ({
+    routeId,
+    stopNumber,
+  }: {
+    routeId: number;
+    stopNumber: number;
+  }) => {
+    const res = await baseApi.post<ApiResponse<StopRead>>(
+      `/routes/${routeId}/stops/${stopNumber}/read`,
     );
     return res.data.data;
   },
