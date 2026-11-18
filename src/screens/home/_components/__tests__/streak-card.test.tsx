@@ -10,6 +10,7 @@ describe("StreakCard", () => {
       <StreakCard
         nickname="출근러"
         route="등굣길"
+        userType="worker"
         streakDays={7}
         longestDays={12}
         onPress={onPress}
@@ -21,4 +22,20 @@ describe("StreakCard", () => {
     await user.press(screen.getByRole("button"));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
+
+  it.each(["worker", "student", "other"] as const)(
+    "%s 유형이면 그 유형의 곰을 보여준다",
+    async (userType) => {
+      await render(
+        <StreakCard
+          nickname="출근러"
+          route="출근길"
+          userType={userType}
+          streakDays={0}
+          longestDays={0}
+        />,
+      );
+      expect(screen.getByTestId(`streak-bear-${userType}`)).toBeOnTheScreen();
+    },
+  );
 });

@@ -25,7 +25,7 @@ export function HomeScreen() {
   const home = useGetHome();
   const me = useGetMe();
   const streak = useGetStatsStreak();
-  const { commute, route, person } = useCommuteWords();
+  const { commute, route, person, userType } = useCommuteWords();
   const isPending = home.isPending || me.isPending || streak.isPending;
   const nickname = me.data?.nickname ?? "";
   const rideButton = getRideButton(home.data?.todayRoute ?? null);
@@ -64,6 +64,7 @@ export function HomeScreen() {
             <StreakCard
               nickname={nickname}
               route={route}
+              userType={userType}
               streakDays={home.data?.streakDays ?? 0}
               longestDays={streak.data?.longestStreak ?? 0}
             />

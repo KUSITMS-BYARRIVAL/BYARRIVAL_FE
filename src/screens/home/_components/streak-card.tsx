@@ -1,15 +1,25 @@
 import { Pressable, type PressableProps, Text, View } from "react-native";
 
 import {
+  BearHomeOtherIllustration,
+  BearHomeStudentIllustration,
   BearWorkerIllustration,
   HomeStreakBackgroundIllustration,
 } from "@/assets/illustrations";
 import { cn } from "@/lib/cn";
+import type { UserType } from "@/stores/onboarding-store";
+
+const BEAR_BY_USER_TYPE = {
+  worker: BearWorkerIllustration,
+  student: BearHomeStudentIllustration,
+  other: BearHomeOtherIllustration,
+} satisfies Record<UserType, unknown>;
 
 type StreakCardProps = Omit<PressableProps, "children"> & {
   nickname: string;
   /** 유형별 길 이름 (출근길 · 등굣길 · 이동길) */
   route: string;
+  userType: UserType;
   streakDays: number;
   longestDays: number;
   className?: string;
@@ -18,11 +28,13 @@ type StreakCardProps = Omit<PressableProps, "children"> & {
 export function StreakCard({
   nickname,
   route,
+  userType,
   streakDays,
   longestDays,
   className,
   ...props
 }: StreakCardProps) {
+  const Bear = BEAR_BY_USER_TYPE[userType];
   return (
     <Pressable
       accessibilityRole="button"
@@ -38,7 +50,8 @@ export function StreakCard({
             preserveAspectRatio="xMaxYMid slice"
             style={{ position: "absolute" }}
           />
-          <BearWorkerIllustration
+          <Bear
+            testID={`streak-bear-${userType}`}
             style={{ position: "absolute", right: 0, top: 23 }}
           />
           <View className="flex-1 justify-between p-5">
