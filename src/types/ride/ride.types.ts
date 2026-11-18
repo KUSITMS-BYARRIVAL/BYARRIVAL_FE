@@ -62,6 +62,16 @@ export type Route = {
   ride: RideProgress | null;
 };
 
+export type BoardingPass = {
+  routeId: number;
+  articleCount: number;
+  /** 소수 합을 올림 */
+  totalMinutes: number;
+  targetMinutes: number;
+  /** 담은 순서 */
+  cards: RouteCard[];
+};
+
 export type TodayRoute = {
   state: TodayRouteState;
   /** NONE · EMPTY면 null */
