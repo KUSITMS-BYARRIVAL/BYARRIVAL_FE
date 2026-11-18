@@ -32,6 +32,7 @@ export function ArrivalScreen() {
   // 퀴즈 결과는 완주한 노선만 볼 수 있어 도착 응답을 받은 뒤에 조회한다
   const { data: quizResult } = useGetQuizResult(arrival?.routeId);
   const shareCardRef = useRef<ComponentRef<typeof View>>(null);
+  const isSharingRef = useRef(false);
 
   // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘 노선 다시 보기'로 다시 들어와도 그대로 부른다
   useEffect(() => {
@@ -51,27 +52,42 @@ export function ArrivalScreen() {
 
   // 공유 시트를 닫는 건 실패가 아니다 — 캡처 실패 · 공유 불가 기기만 알린다
   const handleShare = async () => {
+    // 연타로 공유 시트가 겹쳐 열리지 않게 막는다
+    if (isSharingRef.current) return;
+    isSharingRef.current = true;
+    const showFailToast = () =>
+      useToastStore.getState().showToast({ message: "공유하지 못했어요" });
     try {
-      if (!(await Sharing.isAvailableAsync())) throw new Error();
+      if (!(await Sharing.isAvailableAsync())) {
+        showFailToast();
+        return;
+      }
       const uri = await captureRef(shareCardRef, {
         format: "png",
         result: "tmpfile",
       });
       await Sharing.shareAsync(uri, { mimeType: "image/png" });
     } catch {
-      useToastStore.getState().showToast({ message: "공유하지 못했어요" });
+      showFailToast();
+    } finally {
+      isSharingRef.current = false;
     }
   };
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
-      {/* 공유 이미지용 카드 — 캡처하려면 그려져 있어야 해서 화면 밖에 둔다 */}
-      <ArrivalShareCard
-        ref={shareCardRef}
-        readCount={arrival.readCount}
-        streakDays={arrival.streakDays}
+      {/* 공유 이미지용 카드 — 캡처하려면 그려져 있어야 해서 화면 밖에 두고 스크린리더에서 숨긴다 */}
+      <View
         className="absolute left-[-10000px]"
-      />
+        accessibilityElementsHidden
+        importantForAccessibility="no-hide-descendants"
+      >
+        <ArrivalShareCard
+          ref={shareCardRef}
+          readCount={arrival.readCount}
+          streakDays={arrival.streakDays}
+        />
+      </View>
       <Header title="도착까지" right={<AlarmButton />} />
       <ScrollView className="flex-1">
         <ArrivalHero />

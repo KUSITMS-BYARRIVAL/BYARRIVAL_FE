@@ -6,7 +6,6 @@ import {
   ArrivalShareIconIllustration,
   ArrivalSubwayIllustration,
 } from "@/assets/illustrations";
-import { cn } from "@/lib/cn";
 import { PALETTE } from "@/theme/colors";
 
 // Figma 공유 카드 배경: 왼쪽 위 green-500 → 오른쪽 아래 green-300
@@ -18,7 +17,6 @@ type ArrivalShareCardProps = {
   readCount: number;
   streakDays: number;
   ref?: Ref<ComponentRef<typeof View>>;
-  className?: string;
 };
 
 // Figma 3136:37943 — 공유 이미지로 캡처되는 카드라 화면 크기와 상관없이 시안 크기로 고정한다
@@ -26,14 +24,13 @@ export function ArrivalShareCard({
   readCount,
   streakDays,
   ref,
-  className,
 }: ArrivalShareCardProps) {
   return (
     <View
       ref={ref}
       // 캡처 대상 뷰가 네이티브 트리에서 빠지지 않게 한다
       collapsable={false}
-      className={cn("h-[468px] w-[353px] overflow-hidden rounded", className)}
+      className="h-[468px] w-[353px] overflow-hidden rounded"
       style={BACKGROUND}
     >
       <View
