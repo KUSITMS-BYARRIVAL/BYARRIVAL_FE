@@ -5,6 +5,7 @@ import * as SecureStore from "expo-secure-store";
 import { act, createElement, type ReactNode } from "react";
 
 import { baseApi } from "@/lib/api-client";
+import { getFcmToken } from "@/lib/fcm-token";
 import { useAuthStore } from "@/stores/auth-store";
 
 import { useLogout } from "../use-logout";
@@ -13,6 +14,7 @@ jest.mock("expo-secure-store", () => ({
   setItemAsync: jest.fn().mockResolvedValue(undefined),
   deleteItemAsync: jest.fn().mockResolvedValue(undefined),
 }));
+jest.mock("@/lib/fcm-token", () => ({ getFcmToken: jest.fn() }));
 
 const api = new MockAdapter(baseApi);
 
@@ -31,6 +33,7 @@ beforeEach(() => {
     },
   });
   useAuthStore.setState({ accessToken: "access", refreshToken: "refresh" });
+  jest.mocked(getFcmToken).mockResolvedValue("fcm");
 });
 
 afterEach(() => {
@@ -44,7 +47,19 @@ const logout = async () => {
 };
 
 describe("useLogout", () => {
-  it("refreshToken을 body에 담아 POST /auth/logout을 요청한다", async () => {
+  it("refreshToken과 이 기기의 fcmToken을 body에 담아 POST /auth/logout을 요청한다", async () => {
+    api.onPost("/auth/logout").reply(200, { data: null });
+
+    await logout();
+
+    expect(JSON.parse(api.history.post[0]!.data)).toEqual({
+      refreshToken: "refresh",
+      fcmToken: "fcm",
+    });
+  });
+
+  it("fcmToken을 못 얻으면 refreshToken만 보내고 세션을 비운다", async () => {
+    jest.mocked(getFcmToken).mockRejectedValue(new Error("no token"));
     api.onPost("/auth/logout").reply(200, { data: null });
 
     await logout();
@@ -52,6 +67,7 @@ describe("useLogout", () => {
     expect(JSON.parse(api.history.post[0]!.data)).toEqual({
       refreshToken: "refresh",
     });
+    expect(useAuthStore.getState().accessToken).toBeNull();
   });
 
   it("서버 폐기에 성공하면 세션을 비운다", async () => {

@@ -6,6 +6,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
+import { useRegisterPushToken } from "@/hooks/use-register-push-token";
 import { queryClient } from "@/lib/query-client";
 import { DialogHost } from "@/screens/_components/dialog-host";
 import { ToastHost } from "@/screens/_components/toast-host";
@@ -26,6 +27,7 @@ export default function RootLayout() {
   const isLoggedIn = useAuthStore((state) => state.accessToken !== null);
   const isOnboarded = useAuthStore((state) => state.isOnboarded);
   const isTermsAgreed = useAuthStore((state) => state.isTermsAgreed);
+  useRegisterPushToken();
   // 세션에 맞는 첫 화면: 비로그인 → 인트로, 약관 미동의 → 약관, 온보딩 전 → 닉네임, 완료 → 홈
   const entry = !isLoggedIn
     ? "/intro"

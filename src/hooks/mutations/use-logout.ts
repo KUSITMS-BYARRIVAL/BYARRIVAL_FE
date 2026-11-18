@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 
 import { authService } from "@/apis/auth-service";
+import { getFcmToken } from "@/lib/fcm-token";
 import { useAuthStore } from "@/stores/auth-store";
 
 export function useLogout() {
@@ -8,7 +9,11 @@ export function useLogout() {
     mutationFn: async () => {
       const { refreshToken, clearSession } = useAuthStore.getState();
       try {
-        if (refreshToken) await authService.logout(refreshToken);
+        if (refreshToken) {
+          // 토큰을 못 얻으면(시뮬레이터 등) 없이 보낸다
+          const fcmToken = await getFcmToken().catch(() => undefined);
+          await authService.logout(refreshToken, fcmToken);
+        }
       } catch {
         // 서버 폐기에 실패해도 기기에서는 로그아웃한다 (남은 토큰은 서버에서 만료된다)
       } finally {
