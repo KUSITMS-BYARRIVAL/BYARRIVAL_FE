@@ -20,7 +20,7 @@ import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 
 export function TrendingScreen() {
   const { top } = useSafeAreaInsets();
-  const { route, person } = useCommuteWords();
+  const { route, person, userType } = useCommuteWords();
   const queryClient = useQueryClient();
   const { data: me } = useGetMe();
   const jobGroups = me?.jobGroups;
@@ -83,6 +83,7 @@ export function TrendingScreen() {
             <AchievementCard
               title="축하합니다! 당신은 1등 갓생러"
               description="데이터를 집계중이에요"
+              userType={userType}
               orientation="vertical"
             />
           ) : data && data.articles.length > 0 ? (

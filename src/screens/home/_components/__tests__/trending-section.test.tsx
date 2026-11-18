@@ -27,6 +27,7 @@ const renderSection = (
     <TrendingSection
       route="출근길"
       person="직장인"
+      userType="worker"
       chips={CHIPS}
       onSeeAllPress={jest.fn()}
       onArticlePress={jest.fn()}
@@ -143,6 +144,7 @@ describe("TrendingSection", () => {
     const props = {
       route: "출근길",
       person: "직장인",
+      userType: "worker" as const,
       onSeeAllPress: jest.fn(),
       onArticlePress: jest.fn(),
     };

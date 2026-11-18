@@ -88,6 +88,7 @@ export function HomeScreen() {
             <TrendingSection
               route={route}
               person={person}
+              userType={userType}
               chips={popular.map((chip) => ({
                 label: toPopularChipLabel(chip.jobGroup),
                 isAggregating: chip.status === "AGGREGATING",

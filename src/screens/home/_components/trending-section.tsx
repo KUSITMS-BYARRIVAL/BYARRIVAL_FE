@@ -7,6 +7,7 @@ import { RankingRow } from "@/components/button-card/ranking-row";
 import { Chip } from "@/components/chip/chip";
 import { cn } from "@/lib/cn";
 import { AchievementCard } from "@/screens/_components/achievement-card";
+import type { UserType } from "@/stores/onboarding-store";
 
 type TrendingArticle = {
   title: string;
@@ -27,6 +28,8 @@ type TrendingSectionProps = {
   route: string;
   /** 유형별 사람 호칭 (직장인 · 학생 · 유저) */
   person: string;
+  /** 집계중 카드의 곰 캐릭터 */
+  userType: UserType;
   /** 보여줄 순서대로 */
   chips: TrendingChip[];
   onSeeAllPress: () => void;
@@ -37,6 +40,7 @@ type TrendingSectionProps = {
 export function TrendingSection({
   route,
   person,
+  userType,
   chips,
   onSeeAllPress,
   onArticlePress,
@@ -70,6 +74,7 @@ export function TrendingSection({
         <AchievementCard
           title="축하합니다! 당신은 1등 갓생러"
           description="데이터를 집계중이에요"
+          userType={userType}
         />
       ) : (
         <ButtonCard>
