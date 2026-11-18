@@ -8,12 +8,16 @@ export function useReadStop() {
   return useMutation({
     mutationFn: rideService.read,
     // 다시 받기를 기다리지 않고 바로 완독으로 바꿔 다음 버튼을 연다. 진행 정보(오늘 노선 · 홈)는 새로 받는다
+    // 도착 전에 그만둬도 읽은 기사 수가 마이 탭에 반영되도록 통계도 새로 받는다
     onSuccess: ({ progress }, { routeId, stopNumber }) => {
       queryClient.setQueryData<RouteStop>(
         ["ride", "getStop", routeId, stopNumber],
         (stop) => stop && { ...stop, read: true, progress },
       );
-      return queryClient.invalidateQueries({ queryKey: ["ride"] });
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["ride"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]);
     },
   });
 }
