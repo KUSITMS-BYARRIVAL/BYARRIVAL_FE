@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "562790034678",
+    "project_id": "byarrival",
+    "storage_bucket": "byarrival.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:562790034678:android:b6fe6493310bca90ed50d7",
+        "android_client_info": {
+          "package_name": "com.byarrival.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpoBq1t8d7fWo73Cfl-1jJ5XvOfxd2f-U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

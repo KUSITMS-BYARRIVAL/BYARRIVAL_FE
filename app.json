@@ -9,12 +9,17 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.byarrival.app",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": ["remote-notification"]
+      },
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.byarrival.app",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -39,7 +44,15 @@
       ],
       "expo-image",
       "expo-web-browser",
-      "expo-status-bar"
+      "expo-status-bar",
+      "@react-native-firebase/app",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#55C88F"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

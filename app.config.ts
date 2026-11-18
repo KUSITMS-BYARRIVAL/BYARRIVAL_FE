@@ -14,9 +14,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       { photosPermission: "프로필 사진을 바꾸려면 사진 접근 권한이 필요해요." },
     ],
     // 카카오 Android SDK(com.kakao.sdk)는 Maven Central에 없어 카카오 저장소를 추가해야 의존성을 받는다
+    // React Native Firebase는 iOS에서 dynamic frameworks가 필요하다 (static이면 pod install 실패)
     [
       "expo-build-properties",
       {
+        ios: { useFrameworks: "dynamic" },
         android: {
           extraMavenRepos: [
             "https://devrepo.kakao.com/nexus/content/groups/public/",
