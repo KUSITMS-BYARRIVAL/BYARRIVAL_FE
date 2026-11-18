@@ -3,6 +3,7 @@ import type { Href } from "expo-router";
 import {
   ConsecutiveRewardsIcon,
   InspectionIcon,
+  PopularArticleIcon,
   SmallTalkIcon,
   SubwayLineIcon,
 } from "@/assets/icons";
@@ -19,8 +20,8 @@ export const NOTIFICATION_TYPES = {
   // 공지사항 페이지가 없어 홈으로 보낸다
   SERVICE_NOTICE: { Icon: InspectionIcon, href: "/" },
   TEST: { Icon: InspectionIcon, href: "/" },
-  // shortcut: 아이콘 디자인 전이라 점검 아이콘 · 홈 이동, 디자인이 나오면 아이콘과 기사 상세로 교체
-  POPULAR_ARTICLE: { Icon: InspectionIcon, href: "/" },
+  // shortcut: 기사 상세 이동에 필요한 params 키가 [미정]이라 홈으로 보낸다, 키가 정해지면 기사 상세로 교체
+  POPULAR_ARTICLE: { Icon: PopularArticleIcon, href: "/" },
 } satisfies Record<
   NotificationType,
   { Icon: typeof SubwayLineIcon; href: Href }
