@@ -85,8 +85,8 @@ function SelectContent({ route }: { route: Route }) {
   };
 
   const toggle = ({ articleId, carted, addable }: RouteCard) => {
-    // 응답으로 노선이 바뀌기 전에 또 누르면 담기 · 빼기가 엇갈린다
-    if (isAdding || isRemoving) return;
+    // 응답으로 노선이 바뀌기 전에 또 누르면 담기 · 빼기 · 시작이 엇갈린다
+    if (isAdding || isRemoving || isBoarding) return;
     if (carted) return removeCard({ routeId, articleId });
     if (!addable) return showToast(OVER_LIMIT_TOAST_MESSAGE);
     // 뺄 때는 토스트를 띄우지 않는다
@@ -130,7 +130,7 @@ function SelectContent({ route }: { route: Route }) {
           label="시작하기"
           color="neutral"
           size="l"
-          disabled={!cart.startable || isBoarding}
+          disabled={!cart.startable || isAdding || isRemoving || isBoarding}
           onPress={() =>
             board(routeId, {
               onSuccess: () => router.push("/ride/boarding-pass"),
