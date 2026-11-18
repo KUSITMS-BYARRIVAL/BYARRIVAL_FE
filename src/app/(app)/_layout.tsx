@@ -5,5 +5,7 @@ export const unstable_settings = { initialRouteName: "(tabs)" };
 
 // 홈·라이드 등 온보딩을 마친 뒤 쓰는 화면 묶음
 export default function AppLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false, gestureEnabled: false }} />
+  );
 }
