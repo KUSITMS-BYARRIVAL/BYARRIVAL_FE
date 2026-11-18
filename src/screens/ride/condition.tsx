@@ -6,20 +6,39 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Badge } from "@/components/badge/badge";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
+import { useCreateRoute } from "@/hooks/mutations/use-create-route";
+import { useToastStore } from "@/stores/toast-store";
+import { formatMonthDayWeekday } from "@/utils/format-date";
 
 import { ConditionCard } from "./_components/condition-card";
-import { CONDITIONS } from "./_constants";
+import { CONDITIONS, EMPTY_ROUTE_MESSAGE } from "./_constants";
 
 export function ConditionScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { mutate: createRoute, isPending } = useCreateRoute();
+
+  // 오늘 노선이 이미 있으면 서버가 그 노선을 돌려준다 (컨디션은 바뀌지 않는다)
+  const handleStart = () =>
+    createRoute(CONDITIONS[selectedIndex].condition, {
+      onSuccess: ({ state }) => {
+        if (state !== "EMPTY") return router.push("/ride/select");
+        // [임시] EMPTY 화면 모양이 정해지기 전까지 토스트 후 홈으로
+        useToastStore.getState().showToast({ message: EMPTY_ROUTE_MESSAGE });
+        router.dismissTo("/");
+      },
+    });
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
       <Header title="탑승 준비" onBack={router.back} />
       <View className="flex-1 gap-9 p-5">
         <View className="gap-3.5">
-          <Badge label="10월 10일 토요일" size="m" className="self-start" />
+          <Badge
+            label={formatMonthDayWeekday(new Date())}
+            size="m"
+            className="self-start"
+          />
           <View className="gap-1.5">
             {/* Figma Heading1/B(24px·140%·-2%)와 일치하는 토큰이 없어 가장 가까운 heading2-b를 쓴다 */}
             <Text className="text-strong text-heading2-b">
@@ -53,7 +72,8 @@ export function ConditionScreen() {
           label="시작하기"
           color="neutral"
           size="l"
-          onPress={() => router.push("/ride/select")}
+          disabled={isPending}
+          onPress={handleStart}
         />
       </View>
     </View>

@@ -6,25 +6,42 @@ import {
 } from "@testing-library/react-native";
 import { Dimensions } from "react-native";
 
+import type { RouteCard } from "@/types/ride/ride.types";
+
 import { NewsCarousel } from "../news-carousel";
 
-const ARTICLES = [
-  {
-    category: "economy" as const,
-    label: "경제",
+const card = (overrides: Partial<RouteCard>): RouteCard => ({
+  cardOrder: 1,
+  articleId: 1,
+  title: "",
+  categoryId: 4,
+  categoryName: "경제·금융",
+  pressName: "한국경제",
+  difficulty: "EASY",
+  readingMinutes: 2,
+  oneLine: "",
+  recommended: true,
+  carted: false,
+  cartOrder: null,
+  addable: true,
+  read: false,
+  ...overrides,
+});
+
+const CARDS = [
+  card({
+    cardOrder: 1,
+    articleId: 11,
     title: "한국은행, 기준금리 동결",
-    minutes: 2,
-    image: "https://example.com/a.png",
-    summary: ["기준금리 연 3.00% 동결 결정"],
-  },
-  {
-    category: "economy" as const,
-    label: "경제",
+    oneLine: "기준금리 연 3.00% 동결 결정",
+  }),
+  card({
+    cardOrder: 2,
+    articleId: 12,
     title: "코스피 2,600 회복",
-    minutes: 3,
-    image: "https://example.com/b.png",
-    summary: ["외국인 순매수 전환"],
-  },
+    readingMinutes: 3,
+    oneLine: "외국인 순매수 전환",
+  }),
 ];
 
 const renderCarousel = (
@@ -32,8 +49,7 @@ const renderCarousel = (
 ) =>
   render(
     <NewsCarousel
-      articles={ARTICLES}
-      isSelected={() => false}
+      cards={CARDS}
       onToggle={jest.fn()}
       onIndexChange={jest.fn()}
       {...props}
@@ -41,23 +57,26 @@ const renderCarousel = (
   );
 
 describe("NewsCarousel", () => {
-  it("기사 제목을 모두 보여준다", async () => {
+  it("카드마다 제목 · 카테고리 · 읽는 시간 · 한 줄 요약을 보여준다", async () => {
     await renderCarousel();
     expect(screen.getByText("한국은행, 기준금리 동결")).toBeOnTheScreen();
     expect(screen.getByText("코스피 2,600 회복")).toBeOnTheScreen();
+    expect(screen.getAllByText("경제·금융")).toHaveLength(2);
+    expect(screen.getByText("3분")).toBeOnTheScreen();
+    expect(screen.getByText("외국인 순매수 전환")).toBeOnTheScreen();
   });
 
-  it("카드를 누르면 제목과 읽는 시간으로 onToggle을 부른다", async () => {
+  it("카드를 누르면 그 카드로 onToggle을 부른다", async () => {
     const onToggle = jest.fn();
     const user = userEvent.setup();
     await renderCarousel({ onToggle });
     await user.press(screen.getByText("코스피 2,600 회복"));
-    expect(onToggle).toHaveBeenCalledWith("코스피 2,600 회복", 3);
+    expect(onToggle).toHaveBeenCalledWith(CARDS[1]);
   });
 
-  it("고른 카드만 선택 상태로 알린다", async () => {
+  it("담은(carted) 카드만 선택 상태로 알린다", async () => {
     await renderCarousel({
-      isSelected: (title) => title === "한국은행, 기준금리 동결",
+      cards: [{ ...CARDS[0], carted: true }, CARDS[1]],
     });
     const [first, second] = screen.getAllByRole("checkbox");
     expect(first).toBeChecked();

@@ -10,22 +10,25 @@ export const getRideButton = (todayRoute: TodayRoute | null) => {
         label: "뉴스 탑승 시작하기",
         onPress: () => router.push("/ride/condition"),
       };
+    // 출발 전에는 아직 고르는 중이라 마지막 단계(카드 선택 · 탑승권)로 돌아간다
     case "CREATED":
+      return {
+        label: "이어서 탑승하기",
+        onPress: () => router.push("/ride/select"),
+      };
     case "BOARDING":
+      return {
+        label: "이어서 탑승하기",
+        onPress: () => router.push("/ride/boarding-pass"),
+      };
     case "IN_PROGRESS": {
-      // 운행 전(CREATED · BOARDING)에는 진행 정보가 없다
       const ride = todayRoute?.route?.ride;
       return {
         label: ride
           ? `이어서 탑승하기 (${ride.currentStop}/${ride.totalStops})`
           : "이어서 탑승하기",
-        // TODO: CREATED · BOARDING의 이동 화면(카드 선택 · 보딩패스)은 탑승 플로우 API 연동 때 맞춘다
-        onPress: () =>
-          router.push({
-            pathname: "/ride/stop",
-            // currentStop은 1부터, start는 0부터 센다
-            params: ride ? { start: ride.currentStop - 1 } : {},
-          }),
+        // 정거장 화면이 서버의 이어서 볼 정거장(currentStop)부터 연다
+        onPress: () => router.push("/ride/stop"),
       };
     }
     // TODO: 지금은 임시로 도착 화면

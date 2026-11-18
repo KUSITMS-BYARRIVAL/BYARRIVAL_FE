@@ -124,14 +124,29 @@ export const CATEGORY_IMAGES: Record<number, number[]> = {
   ],
 };
 
-// 사용자 유형별로 '출근' · '출근길' · '직장인' 문구를 바꾼다
+// 사용자 유형별로 '출근' · '출근길' · '직장인' · 탑승권 도착지(To) 문구를 바꾼다
 export const COMMUTE_WORDS: Record<
   UserType,
-  { commute: string; route: string; person: string }
+  { commute: string; route: string; person: string; destination: string }
 > = {
-  worker: { commute: "출근", route: "출근길", person: "직장인" },
-  student: { commute: "등교", route: "등굣길", person: "학생" },
-  other: { commute: "이동", route: "이동길", person: "유저" },
+  worker: {
+    commute: "출근",
+    route: "출근길",
+    person: "직장인",
+    destination: "회사",
+  },
+  student: {
+    commute: "등교",
+    route: "등굣길",
+    person: "학생",
+    destination: "학교",
+  },
+  other: {
+    commute: "이동",
+    route: "이동길",
+    person: "유저",
+    destination: "도착지",
+  },
 };
 
 // 이동 유형 선택지 (화면설계서 ONB-05). 온보딩 유형 선택·완료 요약, 마이 이동 상황 설정에서 함께 쓴다

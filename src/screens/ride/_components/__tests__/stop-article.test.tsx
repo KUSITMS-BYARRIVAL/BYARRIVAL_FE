@@ -1,52 +1,69 @@
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
-import { type RideArticle, StopArticle } from "../stop-article";
+import type { RouteStop } from "@/types/ride/ride.types";
 
-type StopArticleData = RideArticle & { summary: string[] };
+import { StopArticle } from "../stop-article";
 
-const ARTICLE: StopArticleData = {
-  category: "economy",
-  label: "경제",
+const STOP: RouteStop = {
+  routeId: 7,
+  stopNumber: 1,
+  totalStops: 3,
+  available: true,
+  articleId: 11,
   title: "한국은행, 기준금리 동결",
-  minutes: 2,
-  date: "2026.11.04",
-  press: "한국경제",
-  keywords: ["#금리", "#오늘의 브리핑"],
-  url: "https://example.com/article",
-  image: "https://example.com/a.png",
+  pressName: "한국경제",
+  // 기기 시간대와 상관없이 같은 날짜가 되도록 정오로 둔다
+  publishedAt: "2026-11-04T12:00:00",
+  categoryId: 4,
+  categoryName: "경제·금융",
+  readingMinutes: 2,
+  keywords: ["금리", "#오늘의 브리핑"],
+  oneLine: "",
   summary: ["기준금리 연 3.00% 동결", "물가 안정세 고려"],
+  sourceUrl: "https://example.com/article",
+  read: false,
+  scrapped: false,
+  progress: {
+    totalStops: 3,
+    readCount: 0,
+    currentStop: 1,
+    remainingStops: 3,
+    remainingMinutes: 7,
+    arrivable: false,
+  },
 };
 
 const renderArticle = (
-  article: Partial<StopArticleData> = {},
+  stop: Partial<RouteStop> = {},
   onOriginalPress = jest.fn(),
 ) =>
   render(
     <StopArticle
-      article={{ ...ARTICLE, ...article }}
+      stop={{ ...STOP, ...stop }}
       onOriginalPress={onOriginalPress}
     />,
   );
 
 describe("StopArticle", () => {
-  it("제목 · 날짜 · 언론사를 보여준다", async () => {
+  it("카테고리 · 제목 · 날짜 · 언론사를 보여준다", async () => {
     await renderArticle();
+    expect(screen.getByText("경제·금융")).toBeOnTheScreen();
     expect(screen.getByText("한국은행, 기준금리 동결")).toBeOnTheScreen();
     expect(screen.getByText("2026.11.04")).toBeOnTheScreen();
     expect(screen.getByText("한국경제")).toBeOnTheScreen();
   });
 
   it("읽는 시간을 'N분 완독'으로 보여준다", async () => {
-    await renderArticle({ minutes: 5 });
+    await renderArticle({ readingMinutes: 5 });
     expect(screen.getByText("5분 완독")).toBeOnTheScreen();
   });
 
   it("읽는 시간이 0이어도 '0분 완독'으로 보여준다", async () => {
-    await renderArticle({ minutes: 0 });
+    await renderArticle({ readingMinutes: 0 });
     expect(screen.getByText("0분 완독")).toBeOnTheScreen();
   });
 
-  it("키워드를 모두 보여준다", async () => {
+  it("키워드를 모두 보여주고 '#'이 없으면 붙인다", async () => {
     await renderArticle();
     expect(screen.getByText("#금리")).toBeOnTheScreen();
     expect(screen.getByText("#오늘의 브리핑")).toBeOnTheScreen();

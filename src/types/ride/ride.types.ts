@@ -7,6 +7,8 @@ export type RouteStatus =
 
 export type TodayRouteState = "NONE" | "EMPTY" | RouteStatus;
 
+export type Condition = "SUNNY" | "NORMAL" | "CLOUDY" | "RAINY";
+
 export type RouteCart = {
   count: number;
   totalMinutes: number;
@@ -47,7 +49,7 @@ export type RideProgress = {
 export type Route = {
   routeId: number;
   status: RouteStatus;
-  condition: "SUNNY" | "NORMAL" | "CLOUDY" | "RAINY";
+  condition: Condition;
   serviceDate: string;
   /** 서비스일 다음 날 04:00 */
   expiresAt: string;
@@ -58,6 +60,53 @@ export type Route = {
   cards: RouteCard[];
   /** 운행 중이거나 완주한 노선만 있다 */
   ride: RideProgress | null;
+};
+
+export type RideResponse = {
+  routeId: number;
+  status: RouteStatus;
+  progress: RideProgress;
+};
+
+/** available이 false면 숨겼거나 원문이 삭제된 기사라 건너뛴다 (기사 내용 필드가 null) */
+export type RouteStop = {
+  routeId: number;
+  /** 1부터, 담은 순서 */
+  stopNumber: number;
+  totalStops: number;
+  available: boolean;
+  articleId: number;
+  title: string;
+  pressName: string;
+  publishedAt: string;
+  categoryId: number;
+  categoryName: string;
+  readingMinutes: number;
+  keywords: string[];
+  oneLine: string;
+  /** AI 3줄 요약 */
+  summary: string[];
+  sourceUrl: string;
+  read: boolean;
+  scrapped: boolean;
+  progress: RideProgress;
+};
+
+export type StopRead = {
+  stopNumber: number;
+  articleId: number;
+  read: boolean;
+  progress: RideProgress;
+};
+
+export type BoardingPass = {
+  routeId: number;
+  articleCount: number;
+  /** 소수 합을 올림 */
+  totalMinutes: number;
+  targetMinutes: number;
+  /** 담은 순서 */
+  cards: RouteCard[];
 };
 
 export type TodayRoute = {
@@ -99,4 +148,17 @@ export type Home = {
   todayVisitorCount: number | null;
   /** 고른 직군 칩(고른 순서) 다음에 전체 칩. 칩마다 TOP3 */
   popular: PopularChip[] | null;
+};
+
+export type Arrival = {
+  routeId: number;
+  readCount: number;
+  totalStops: number;
+  /** 완주한 평일이 이어진 일수 (주말은 건너뜀, 오늘 포함) */
+  streakDays: number;
+  /** 출발부터 도착까지(분, 올림) */
+  usedMinutes: number;
+  completedAt: string;
+  /** 오늘 다른 사람들이 많이 담은 뉴스 TOP 3 (이번 노선에서 읽은 기사 제외). 집계에 실패하면 null */
+  top3: Omit<PopularChip, "jobGroup"> | null;
 };

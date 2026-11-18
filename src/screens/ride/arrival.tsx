@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
+import { router } from "expo-router";
+import { useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -9,18 +9,40 @@ import { Button } from "@/components/button/button";
 import { ButtonCard } from "@/components/button-card/button-card";
 import { RankingRow } from "@/components/button-card/ranking-row";
 import { Header } from "@/components/header/header";
+import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { ShareButton } from "@/components/share-button/share-button";
-import {
-  ARRIVAL_STREAK_DAYS,
-  IS_QUIZ_SOLVED,
-  TRENDING_ARTICLES,
-} from "@/mocks/ride";
+import { useArrive } from "@/hooks/mutations/use-arrive";
+import { useGetQuizResult } from "@/hooks/queries/use-get-quiz-result";
+import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { openArticle } from "@/screens/_helpers";
+import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
 import { ArrivalResultCard } from "@/screens/ride/_components/arrival-result-card";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
-  const { readCount } = useLocalSearchParams<{ readCount?: string }>();
+  const { route } = useCommuteWords();
+  const { data: today } = useGetTodayRoute();
+  const routeId = today?.route?.routeId;
+  const { mutate: arrive, data: arrival } = useArrive();
+  // 퀴즈 결과는 완주한 노선만 볼 수 있어 도착 응답을 받은 뒤에 조회한다
+  const { data: quizResult } = useGetQuizResult(arrival?.routeId);
+
+  // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘 노선 다시 보기'로 다시 들어와도 그대로 부른다
+  useEffect(() => {
+    if (routeId !== undefined) arrive(routeId);
+  }, [routeId, arrive]);
+
+  if (!arrival)
+    return (
+      <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
+        <Header title="도착까지" right={<AlarmButton />} />
+        {/* 완주 기록 전(또는 실패 — 전역 토스트)에는 결과를 그릴 수 없다 */}
+        <LoadingDots className="flex-1" />
+      </View>
+    );
+
+  const top3 = arrival.top3;
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
@@ -35,9 +57,8 @@ export function ArrivalScreen() {
                 <Text className="text-strong text-heading1-b">
                   오늘도 해냈다!
                 </Text>
-                {/* TODO: 사용자 유형별 문구 (직장인 출근길 · 학생 등굣길 · 기타 이동길) */}
                 <Text className="text-secondary text-body2-m">
-                  출근길을 알차게 보냈어요.
+                  {route}을 알차게 보냈어요.
                 </Text>
               </View>
               {/* TODO: 공유 대상이 정해지면 연결 */}
@@ -45,12 +66,12 @@ export function ArrivalScreen() {
             </View>
             <View className="gap-2">
               <ArrivalResultCard
-                readCount={Number(readCount) || 0}
-                streakDays={ARRIVAL_STREAK_DAYS}
+                readCount={arrival.readCount}
+                streakDays={arrival.streakDays}
               />
               <Button
                 label={
-                  IS_QUIZ_SOLVED
+                  quizResult?.finished
                     ? "오늘 퀴즈 결과 보기"
                     : "오늘 읽은 기사, 잘 기억하는지 확인해보기"
                 }
@@ -69,18 +90,29 @@ export function ArrivalScreen() {
               </Text>
             </View>
             <View className="gap-3.5">
-              {/* TODO: 이미 읽은 기사 '읽음' 표시 여부 확인 중 (백엔드 필터링 여부) */}
-              <ButtonCard title="오늘 다른 사람들이 많이 읽은 뉴스 TOP 3">
-                {TRENDING_ARTICLES.map((article, i) => (
-                  <RankingRow
-                    key={article.url}
-                    rank={i + 1}
-                    title={article.title}
-                    subtext={`${article.label} · ${article.minutes}분 · ${article.readers.toLocaleString()}명 읽음`}
-                    onPress={() => WebBrowser.openBrowserAsync(article.url)}
-                  />
-                ))}
-              </ButtonCard>
+              {/* 집계 실패(null)면 숨긴다. 이번 노선에서 읽은 기사는 백엔드가 뺀다 */}
+              {top3?.status === "AGGREGATING" && (
+                <ButtonCard title="오늘 다른 사람들이 많이 읽은 뉴스 TOP 3">
+                  {/* [임시] 집계 중 모양이 시안에 없어 홈과 같은 문구만 둔다 */}
+                  <Text className="px-5 py-4 text-tertiary text-body2-m">
+                    데이터를 집계중이에요
+                  </Text>
+                </ButtonCard>
+              )}
+              {top3?.status === "RANKED" && top3.articles.length > 0 && (
+                <ButtonCard title="오늘 다른 사람들이 많이 읽은 뉴스 TOP 3">
+                  {top3.articles.map((article) => (
+                    <RankingRow
+                      key={article.articleId}
+                      rank={article.rank}
+                      title={article.title}
+                      // [임시] cartedUserCount는 '담은 사람 수'인데 문구는 '읽음' — 기획 확인 전
+                      subtext={`${article.categoryName} · ${article.readingMinutes}분 · ${article.cartedUserCount.toLocaleString("ko-KR")}명 읽음`}
+                      onPress={() => openArticle(article.url)}
+                    />
+                  ))}
+                </ButtonCard>
+              )}
               <Button
                 label="스몰토크 확인하기"
                 color="neutral-weak"
