@@ -7,6 +7,8 @@ export type RouteStatus =
 
 export type TodayRouteState = "NONE" | "EMPTY" | RouteStatus;
 
+export type Condition = "SUNNY" | "NORMAL" | "CLOUDY" | "RAINY";
+
 export type RouteCart = {
   count: number;
   totalMinutes: number;
@@ -47,7 +49,7 @@ export type RideProgress = {
 export type Route = {
   routeId: number;
   status: RouteStatus;
-  condition: "SUNNY" | "NORMAL" | "CLOUDY" | "RAINY";
+  condition: Condition;
   serviceDate: string;
   /** 서비스일 다음 날 04:00 */
   expiresAt: string;
