@@ -62,5 +62,8 @@ export const CONDITIONS: {
 // 뉴스 탑승하기에서 기사를 담을 때 뜨는 토스트 (뺄 때는 띄우지 않는다)
 export const ADD_TOAST_MESSAGE = "1정거장이 추가되었어요";
 
+// 담으면 목표 시간의 120%를 넘는 카드(addable: false)를 눌렀을 때. [임시] 시안이 없어 정한 문구
+export const OVER_LIMIT_TOAST_MESSAGE = "목표 시간을 넘어서 더 담을 수 없어요";
+
 // 추천 기사가 0건이라 노선을 만들지 못했을 때 (POST /routes → EMPTY)
 export const EMPTY_ROUTE_MESSAGE = "오늘 준비한 뉴스는 여기까지에요";
