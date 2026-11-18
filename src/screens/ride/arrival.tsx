@@ -117,7 +117,9 @@ export function ArrivalScreen() {
                     : "오늘 읽은 기사, 잘 기억하는지 확인해보기"
                 }
                 icon="right"
-                onPress={() => router.push("/quiz")}
+                onPress={() =>
+                  router.push(quizResult?.finished ? "/quiz/result" : "/quiz")
+                }
               />
             </View>
           </View>
