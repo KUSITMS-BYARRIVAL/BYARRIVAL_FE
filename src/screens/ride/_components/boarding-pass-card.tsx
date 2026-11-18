@@ -4,16 +4,7 @@ import { AssetSubwayIllustration } from "@/assets/illustrations";
 import { CategoryBadge } from "@/components/badge/category-badge";
 import { ProgressStepperSmall } from "@/components/progress-stepper/progress-stepper-small";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
-import type { Category } from "@/theme/category";
 import type { RouteCard } from "@/types/ride/ride.types";
-
-// shortcut: 정거장 기사 타입(stop-article)이 아직 이 타입을 쓴다, 정거장 API 연동 때 지운다
-export type BoardingArticle = {
-  category: Category;
-  label: string;
-  title: string;
-  minutes: number;
-};
 
 type BoardingPassCardProps = {
   from: string;
