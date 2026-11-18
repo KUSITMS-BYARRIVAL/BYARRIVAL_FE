@@ -8,40 +8,44 @@ import { Chip } from "@/components/chip/chip";
 import { cn } from "@/lib/cn";
 import { AchievementCard } from "@/screens/_components/achievement-card";
 
-type TrendingScope = "jobGroup" | "all";
-
 type TrendingArticle = {
   title: string;
   url: string;
   viewers: number;
 };
 
+type TrendingChip = {
+  /** 예: '내 직군 · 기획·마케팅', '전체' */
+  label: string;
+  /** 칩 범위의 데이터가 모자라 순위를 못 낼 때 true — 목록 자리에 집계중 카드를 보여준다 */
+  isAggregating: boolean;
+  articles: TrendingArticle[];
+};
+
 type TrendingSectionProps = {
-  /** 내 직군 칩에 붙는 직군 이름 (예: 기획·마케팅) */
-  jobGroup: string;
   /** 유형별 길 이름 (출근길 · 등굣길 · 이동길) */
   route: string;
   /** 유형별 사람 호칭 (직장인 · 학생 · 유저) */
   person: string;
-  articles: Record<TrendingScope, TrendingArticle[]>;
-  /** 새벽 4시 집계 전이면 false — 목록 자리에 집계중 카드를 보여준다 */
-  isReady: boolean;
+  /** 보여줄 순서대로 */
+  chips: TrendingChip[];
   onSeeAllPress: () => void;
   onArticlePress: (url: string) => void;
   className?: string;
 };
 
 export function TrendingSection({
-  jobGroup,
   route,
   person,
-  articles,
-  isReady,
+  chips,
   onSeeAllPress,
   onArticlePress,
   className,
 }: TrendingSectionProps) {
-  const [scope, setScope] = useState<TrendingScope>("jobGroup");
+  const [pickedIndex, setPickedIndex] = useState(0);
+  // 다시 받은 칩이 줄어도 비지 않게 마지막 칩으로 맞춘다
+  const selectedIndex = Math.min(pickedIndex, chips.length - 1);
+  const selected = chips[selectedIndex];
 
   return (
     <View className={cn("gap-3.5", className)}>
@@ -51,21 +55,25 @@ export function TrendingSection({
         </Text>
         <TextButton label="전체보기" onPress={onSeeAllPress} />
       </View>
-      <View className="flex-row gap-2">
-        <Chip
-          label={`내 직군 · ${jobGroup}`}
-          selected={scope === "jobGroup"}
-          onPress={() => setScope("jobGroup")}
-        />
-        <Chip
-          label="전체"
-          selected={scope === "all"}
-          onPress={() => setScope("all")}
-        />
+      {/* 고른 직군이 많으면 칩이 화면 밖으로 나가지 않게 줄을 바꾼다 */}
+      <View className="flex-row flex-wrap gap-2">
+        {chips.map((chip, i) => (
+          <Chip
+            key={chip.label}
+            label={chip.label}
+            selected={i === selectedIndex}
+            onPress={() => setPickedIndex(i)}
+          />
+        ))}
       </View>
-      {isReady ? (
+      {selected?.isAggregating ? (
+        <AchievementCard
+          title="축하합니다! 당신은 1등 갓생러"
+          description="데이터를 집계중이에요"
+        />
+      ) : (
         <ButtonCard>
-          {articles[scope].map((article, i) => (
+          {selected?.articles.map((article, i) => (
             <RankingRow
               key={article.url}
               rank={i + 1}
@@ -80,11 +88,6 @@ export function TrendingSection({
             />
           ))}
         </ButtonCard>
-      ) : (
-        <AchievementCard
-          title="축하합니다! 당신은 1등 갓생러"
-          description="데이터를 집계중이에요"
-        />
       )}
     </View>
   );
