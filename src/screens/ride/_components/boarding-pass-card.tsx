@@ -3,8 +3,11 @@ import { Text, View } from "react-native";
 import { AssetSubwayIllustration } from "@/assets/illustrations";
 import { CategoryBadge } from "@/components/badge/category-badge";
 import { ProgressStepperSmall } from "@/components/progress-stepper/progress-stepper-small";
+import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import type { Category } from "@/theme/category";
+import type { RouteCard } from "@/types/ride/ride.types";
 
+// shortcut: 정거장 기사 타입(stop-article)이 아직 이 타입을 쓴다, 정거장 API 연동 때 지운다
 export type BoardingArticle = {
   category: Category;
   label: string;
@@ -12,24 +15,23 @@ export type BoardingArticle = {
   minutes: number;
 };
 
-export const getTotalMinutes = (articles: BoardingArticle[]) =>
-  articles.reduce((sum, { minutes }) => sum + minutes, 0);
-
 type BoardingPassCardProps = {
   from: string;
   to: string;
-  articles: BoardingArticle[];
+  /** 담은 순서 */
+  cards: RouteCard[];
+  /** 서버가 소수 합을 올린 값이라 카드 읽는 시간을 더한 값과 다를 수 있다 */
+  totalMinutes: number;
   className?: string;
 };
 
 export function BoardingPassCard({
   from,
   to,
-  articles,
+  cards,
+  totalMinutes,
   className,
 }: BoardingPassCardProps) {
-  const totalMinutes = getTotalMinutes(articles);
-
   return (
     <View className={className}>
       <View className="gap-1 rounded-t bg-card-brand p-5">
@@ -51,7 +53,7 @@ export function BoardingPassCard({
                 {from}
               </Text>
               <ProgressStepperSmall
-                total={articles.length}
+                total={cards.length}
                 className="flex-1 px-2.5"
               />
               <Text className="text-on-fill-default text-heading2-sb">
@@ -64,7 +66,7 @@ export function BoardingPassCard({
           <View className="flex-row gap-1">
             <Text className="text-tertiary text-caption1-m">기사 수</Text>
             <Text className="text-on-fill-default text-label3-sb">
-              {articles.length}개
+              {cards.length}개
             </Text>
           </View>
           <View className="flex-row gap-1">
@@ -76,18 +78,25 @@ export function BoardingPassCard({
         </View>
       </View>
       <View className="gap-3 rounded-b bg-card-white p-5">
-        {articles.map(({ category, label, title, minutes }) => (
-          <View key={title} className="flex-row items-center gap-2">
-            <CategoryBadge category={category} label={label} />
-            <Text
-              numberOfLines={1}
-              className="flex-1 text-secondary text-body3-m"
-            >
-              {title}
-            </Text>
-            <Text className="text-on-fill-muted text-body3-m">{minutes}분</Text>
-          </View>
-        ))}
+        {cards.map(
+          ({ articleId, categoryId, categoryName, title, readingMinutes }) => (
+            <View key={articleId} className="flex-row items-center gap-2">
+              <CategoryBadge
+                category={CATEGORY_KEY_BY_ID[categoryId]}
+                label={categoryName}
+              />
+              <Text
+                numberOfLines={1}
+                className="flex-1 text-secondary text-body3-m"
+              >
+                {title}
+              </Text>
+              <Text className="text-on-fill-muted text-body3-m">
+                {readingMinutes}분
+              </Text>
+            </View>
+          ),
+        )}
       </View>
     </View>
   );
