@@ -1,7 +1,9 @@
 import { router } from "expo-router";
-import { useEffect } from "react";
+import * as Sharing from "expo-sharing";
+import { type ComponentRef, useEffect, useRef } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { captureRef } from "react-native-view-shot";
 
 import { SmallTalkIcon } from "@/assets/icons";
 import { AlarmButton } from "@/screens/_components/alarm-button";
@@ -18,6 +20,8 @@ import { openArticle } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
 import { ArrivalResultCard } from "@/screens/ride/_components/arrival-result-card";
+import { ArrivalShareCard } from "@/screens/ride/_components/arrival-share-card";
+import { useToastStore } from "@/stores/toast-store";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
@@ -27,6 +31,7 @@ export function ArrivalScreen() {
   const { mutate: arrive, data: arrival } = useArrive();
   // 퀴즈 결과는 완주한 노선만 볼 수 있어 도착 응답을 받은 뒤에 조회한다
   const { data: quizResult } = useGetQuizResult(arrival?.routeId);
+  const shareCardRef = useRef<ComponentRef<typeof View>>(null);
 
   // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘 노선 다시 보기'로 다시 들어와도 그대로 부른다
   useEffect(() => {
@@ -44,8 +49,29 @@ export function ArrivalScreen() {
 
   const top3 = arrival.top3;
 
+  // 공유 시트를 닫는 건 실패가 아니다 — 캡처 실패 · 공유 불가 기기만 알린다
+  const handleShare = async () => {
+    try {
+      if (!(await Sharing.isAvailableAsync())) throw new Error();
+      const uri = await captureRef(shareCardRef, {
+        format: "png",
+        result: "tmpfile",
+      });
+      await Sharing.shareAsync(uri, { mimeType: "image/png" });
+    } catch {
+      useToastStore.getState().showToast({ message: "공유하지 못했어요" });
+    }
+  };
+
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
+      {/* 공유 이미지용 카드 — 캡처하려면 그려져 있어야 해서 화면 밖에 둔다 */}
+      <ArrivalShareCard
+        ref={shareCardRef}
+        readCount={arrival.readCount}
+        streakDays={arrival.streakDays}
+        className="absolute left-[-10000px]"
+      />
       <Header title="도착까지" right={<AlarmButton />} />
       <ScrollView className="flex-1">
         <ArrivalHero />
@@ -61,8 +87,7 @@ export function ArrivalScreen() {
                   {route}을 알차게 보냈어요.
                 </Text>
               </View>
-              {/* TODO: 공유 대상이 정해지면 연결 */}
-              <ShareButton />
+              <ShareButton onPress={handleShare} />
             </View>
             <View className="gap-2">
               <ArrivalResultCard
