@@ -64,7 +64,6 @@ export const CATEGORY_KEY_BY_ID: Record<number, Category> = {
 };
 
 // 기사 이미지가 API에 없어 카테고리(서버 id)별 로컬 이미지 중 하나를 보여준다 (보관함 · 뉴스 탑승)
-// shortcut: PNG(320×180, 장당 약 80KB · 40장 약 3.3MB)로 넣었다. 앱 용량을 더 줄이려면 WebP로 변환하고 require 경로 확장자를 .webp로 바꿀 것 (expo-image가 WebP 지원)
 export const CATEGORY_IMAGES: Record<number, number[]> = {
   1: [
     require("@/assets/images/category/health-1.webp"),
