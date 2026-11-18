@@ -48,16 +48,16 @@ describe("getRideButton", () => {
     });
   });
 
-  it.each(["CREATED", "BOARDING"] as const)(
-    "운행 전(%s)이면 진행 정보 없이 '이어서 탑승하기'만 보여준다",
-    (state) => {
+  it.each([
+    ["CREATED", "/ride/select"],
+    ["BOARDING", "/ride/boarding-pass"],
+  ] as const)(
+    "출발 전(%s)이면 '이어서 탑승하기'를 누르면 %s로 돌아간다",
+    (state, pathname) => {
       const button = getRideButton(todayRoute(state));
       expect(button.label).toBe("이어서 탑승하기");
       button.onPress?.();
-      expect(router.push).toHaveBeenCalledWith({
-        pathname: "/ride/stop",
-        params: {},
-      });
+      expect(router.push).toHaveBeenCalledWith(pathname);
     },
   );
 
