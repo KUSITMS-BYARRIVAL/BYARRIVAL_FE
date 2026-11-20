@@ -131,6 +131,8 @@ describe("ProfileScreen", () => {
     await user.press(screen.getByRole("button", { name: "로그아웃" }));
     expect(mockLogout).not.toHaveBeenCalled();
     expect(useDialogStore.getState().options?.title).toBe("로그아웃할까요?");
+    // 취소 버튼이 있어야 Android 뒤로가기가 로그아웃이 아니라 취소로 동작한다
+    expect(useDialogStore.getState().options?.onCancel).toBeDefined();
 
     useDialogStore.getState().options?.onConfirm();
     expect(mockLogout).toHaveBeenCalledTimes(1);
@@ -142,6 +144,7 @@ describe("ProfileScreen", () => {
     await render(<ProfileScreen />);
     await user.press(screen.getByRole("button", { name: "회원 탈퇴" }));
     expect(mockWithdraw).not.toHaveBeenCalled();
+    expect(useDialogStore.getState().options?.onCancel).toBeDefined();
 
     useDialogStore.getState().options?.onConfirm();
     expect(mockWithdraw).toHaveBeenCalledTimes(1);

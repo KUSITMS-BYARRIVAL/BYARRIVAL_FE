@@ -182,6 +182,8 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
                 confirmColor: "danger",
                 onConfirm: () => logout(undefined, { onSettled: goToSignIn }),
                 cancelLabel: "취소",
+                // onCancel이 없으면 취소 버튼이 안 나오고 Android 뒤로가기가 확인으로 동작한다
+                onCancel: () => {},
               })
             }
           />
@@ -200,6 +202,8 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
                 confirmColor: "danger",
                 onConfirm: () => withdraw(undefined, { onSuccess: goToSignIn }),
                 cancelLabel: "취소",
+                // onCancel이 없으면 취소 버튼이 안 나오고 Android 뒤로가기가 확인으로 동작한다
+                onCancel: () => {},
               })
             }
           />
