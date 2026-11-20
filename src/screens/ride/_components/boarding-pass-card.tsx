@@ -6,6 +6,9 @@ import { ProgressStepperSmall } from "@/components/progress-stepper/progress-ste
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import type { RouteCard } from "@/types/ride/ride.types";
 
+// shortcut: 기사가 많으면 정거장 점이 To 글자를 넘어가 임시로 상한을 둔다. 시안에 많을 때 표현이 나오면 교체
+const MAX_STOP_DOTS = 10;
+
 type BoardingPassCardProps = {
   from: string;
   to: string;
@@ -44,7 +47,7 @@ export function BoardingPassCard({
                 {from}
               </Text>
               <ProgressStepperSmall
-                total={cards.length}
+                total={Math.min(cards.length, MAX_STOP_DOTS)}
                 className="flex-1 px-2.5"
               />
               <Text className="text-on-fill-default text-heading2-sb">

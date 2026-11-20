@@ -68,6 +68,20 @@ describe("BoardingPassCard", () => {
     expect(screen.getByText("도착지")).toBeOnTheScreen();
   });
 
+  it("기사가 많아도 정거장 점은 10개까지만 그리고 기사 수는 그대로 보여준다", async () => {
+    const many = Array.from({ length: 30 }, (_, i) =>
+      card({ articleId: i + 1 }),
+    );
+    await render(
+      <BoardingPassCard from="집" to="회사" cards={many} totalMinutes={72} />,
+    );
+    expect(screen.getByRole("progressbar")).toHaveAccessibilityValue({
+      min: 1,
+      max: 10,
+    });
+    expect(screen.getByText("30개")).toBeOnTheScreen();
+  });
+
   it("기사가 없으면 0개 · 0분으로 보여준다", async () => {
     await render(
       <BoardingPassCard from="집" to="회사" cards={[]} totalMinutes={0} />,
