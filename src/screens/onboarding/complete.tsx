@@ -6,7 +6,7 @@ import { Button } from "@/components/button/button";
 import type { Time } from "@/components/time-picker/time-picker";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { useCompleteOnboarding } from "@/hooks/mutations/use-complete-onboarding";
-import { INTERESTS, USER_TYPES } from "@/screens/_constants";
+import { COMMUTE_WORDS, INTERESTS, USER_TYPES } from "@/screens/_constants";
 import { useAuthStore } from "@/stores/auth-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -24,13 +24,15 @@ export function OnboardingCompleteScreen() {
   const interests = useOnboardingStore((state) => state.interests);
   const setOnboarded = useAuthStore((state) => state.setOnboarded);
   const { mutate, isPending } = useCompleteOnboarding();
+  // 학생은 '등교·등굣길', 기타는 '이동·이동길'
+  const { commute, route } = COMMUTE_WORDS[userType ?? "worker"];
 
   const summary = [
     {
       label: "이동유형",
       value: USER_TYPES.find(({ type }) => type === userType)?.title ?? "-",
     },
-    { label: "출근 시각", value: formatTime(departureTime) },
+    { label: `${commute} 시각`, value: formatTime(departureTime) },
     {
       label: "관심 카테고리",
       value:
@@ -61,9 +63,7 @@ export function OnboardingCompleteScreen() {
               준비 완료!
             </Text>
             <Text className="text-center text-secondary text-body1-m">
-              {
-                "출근길에 맞춰 뉴스를 골라둘게요.\n지금 바로 첫 출근길을 시작해 보세요."
-              }
+              {`${route}에 맞춰 뉴스를 골라둘게요.\n지금 바로 첫 ${route}을 시작해 보세요.`}
             </Text>
           </View>
         </View>
@@ -86,7 +86,7 @@ export function OnboardingCompleteScreen() {
         style={{ paddingBottom: Math.max(bottom, 30) }}
       >
         <Button
-          label="출근길 시작하기"
+          label={`${route} 시작하기`}
           size="l"
           color="neutral"
           disabled={isPending}
