@@ -11,6 +11,8 @@ type ListRowProps = Omit<PressableProps, "children"> & {
   label: string;
   /** 오른쪽 보조 문구 (예: 현재 설정 값) */
   subtext?: string;
+  /** 오른쪽 끝 요소 (예: Toggle) */
+  trailing?: ReactNode;
   hasArrow?: boolean;
   /** danger는 로그아웃·탈퇴처럼 되돌리기 어려운 동작에 쓴다 */
   tone?: "default" | "danger";
@@ -21,6 +23,7 @@ export function ListRow({
   icon,
   label,
   subtext,
+  trailing,
   hasArrow = true,
   tone = "default",
   className,
@@ -50,7 +53,7 @@ export function ListRow({
               {label}
             </Text>
           </View>
-          {(subtext || hasArrow) && (
+          {(subtext || trailing || hasArrow) && (
             <View className="flex-row items-center">
               {subtext && (
                 <Text
@@ -60,6 +63,7 @@ export function ListRow({
                   {subtext}
                 </Text>
               )}
+              {trailing}
               {hasArrow && (
                 <ArrowRightSIcon color={SEMANTIC.icon["on-fill-muted"]} />
               )}
