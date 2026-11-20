@@ -130,12 +130,14 @@ function SelectContent({ route }: { route: Route }) {
           label="시작하기"
           color="neutral"
           size="l"
-          disabled={!cart.startable || isAdding || isRemoving || isBoarding}
-          onPress={() =>
+          disabled={!cart.startable || isBoarding}
+          // 담기 · 빼기 중엔 비활성 대신 누름만 무시 — disabled로 걸면 카드를 누를 때마다 버튼이 깜박인다
+          onPress={() => {
+            if (isAdding || isRemoving) return;
             board(routeId, {
               onSuccess: () => router.push("/ride/boarding-pass"),
-            })
-          }
+            });
+          }}
         />
       </View>
       {isCoachVisible && <SelectCoachMark onClose={closeCoach} />}
