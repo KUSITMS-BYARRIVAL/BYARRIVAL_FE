@@ -1,3 +1,5 @@
+import type { NotificationPermission } from "@/types/user/user.types";
+
 export type DevicePlatform = "IOS" | "ANDROID";
 
 export type DeviceRegisterRequest = {
@@ -37,3 +39,20 @@ export type NotificationPage = {
 };
 
 export type UnreadCount = { count: number };
+
+export type NotificationCategory = "ACTIVITY";
+
+export type NotificationSetting = {
+  category: NotificationCategory;
+  enabled: boolean;
+};
+
+/** GET · PATCH /notification-settings 응답. permission은 서버에 저장된 OS 권한 */
+export type NotificationSettings = {
+  permission: NotificationPermission;
+  settings: NotificationSetting[];
+};
+
+export type NotificationSettingUpdateRequest = {
+  settings: NotificationSetting[];
+};

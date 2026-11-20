@@ -4,10 +4,25 @@ import type {
   DeviceRegisterRequest,
   NotificationPage,
   NotificationPageParams,
+  NotificationSettings,
+  NotificationSettingUpdateRequest,
   UnreadCount,
 } from "@/types/notification/notification.types";
 
 export const notificationService = {
+  getSettings: async () => {
+    const res = await baseApi.get<ApiResponse<NotificationSettings>>(
+      "/notification-settings",
+    );
+    return res.data.data;
+  },
+  updateSettings: async (body: NotificationSettingUpdateRequest) => {
+    const res = await baseApi.patch<ApiResponse<NotificationSettings>>(
+      "/notification-settings",
+      body,
+    );
+    return res.data.data;
+  },
   register: async (body: DeviceRegisterRequest) => {
     const res = await baseApi.put<ApiResponse<null>>("/devices", body);
     return res.data.data;
