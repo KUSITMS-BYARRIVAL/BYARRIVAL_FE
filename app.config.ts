@@ -18,7 +18,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       "expo-build-properties",
       {
-        ios: { useFrameworks: "dynamic" },
+        // 개발 빌드의 네트워크 인스펙터가 카카오 SDK 요청을 가로채 로그인 직후 크래시 (Release에는 없음)
+        ios: { useFrameworks: "dynamic", networkInspector: false },
         android: {
           extraMavenRepos: [
             "https://devrepo.kakao.com/nexus/content/groups/public/",
