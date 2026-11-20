@@ -46,7 +46,7 @@ export function SelectScreen() {
 // 시작 위치(lastViewedCardOrder)를 처음 한 번만 쓰도록 노선을 받은 뒤에 마운트한다
 function SelectContent({ route }: { route: Route }) {
   const { bottom } = useSafeAreaInsets();
-  const { routeId, cards, cart } = route;
+  const { routeId, cards, cart, targetMinutes } = route;
   // 시작 위치는 처음 한 번만 정한다 — 바뀌면 캐러셀이 스크롤 도중 그 위치로 다시 옮겨져 카드 사이에 멈춘다
   const [initialIndex] = useState((route.lastViewedCardOrder ?? 1) - 1);
   const [index, setIndex] = useState(initialIndex);
@@ -95,8 +95,8 @@ function SelectContent({ route }: { route: Route }) {
       { onSuccess: () => showToast(ADD_TOAST_MESSAGE) },
     );
   };
-  // 바는 넘긴 카드 순서만큼 차오르고(담기와 무관), 시간은 담은 기사의 읽는 시간 합계 (탑승권 '예상 시간'과 같은 값)
-  const progress = index / Math.max(cards.length - 1, 1);
+  // 바는 목표 시간(T) 대비 담은 시간 — 담기·빼기 때만 바뀐다 (넘기기와 무관). 시간은 탑승권 '예상 시간'과 같은 값
+  const progress = cart.totalMinutes / targetMinutes;
 
   return (
     <>
