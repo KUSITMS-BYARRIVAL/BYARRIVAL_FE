@@ -18,7 +18,7 @@ export function ConditionScreen() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { mutate: createRoute, isPending } = useCreateRoute();
 
-  // 오늘 노선이 이미 있으면 서버가 그 노선을 돌려준다 (컨디션은 바뀌지 않는다)
+  // 담기 단계(CREATED)에서 다른 컨디션을 고르면 서버가 같은 routeId로 노선을 다시 만든다 (담은 카드 · 위치 초기화). 그 외엔 기존 노선 그대로
   const handleStart = () =>
     createRoute(CONDITIONS[selectedIndex].condition, {
       onSuccess: ({ state }) => {

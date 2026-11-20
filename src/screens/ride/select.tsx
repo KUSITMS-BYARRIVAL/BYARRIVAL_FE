@@ -1,4 +1,9 @@
-import { router, useFocusEffect } from "expo-router";
+import {
+  router,
+  useFocusEffect,
+  useIsFocused,
+  usePreventRemove,
+} from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,10 +21,12 @@ import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
 import {
   ADD_TOAST_MESSAGE,
   OVER_LIMIT_TOAST_MESSAGE,
+  RESELECT_CONDITION_DIALOG,
 } from "@/screens/ride/_constants";
 import { NewsCarousel } from "@/screens/ride/_components/news-carousel";
 import { SelectCoachMark } from "@/screens/ride/_components/select-coach-mark";
 import { useSelectCoachMark } from "@/screens/ride/_hooks/use-select-coach-mark";
+import { useDialogStore } from "@/stores/dialog-store";
 import type { Route, RouteCard } from "@/types/ride/ride.types";
 
 // shortcut: 노출 시간이 Figma·사양에 없어 전역 토스트와 같은 2초로 가정
@@ -46,7 +53,7 @@ export function SelectScreen() {
 // 시작 위치(lastViewedCardOrder)를 처음 한 번만 쓰도록 노선을 받은 뒤에 마운트한다
 function SelectContent({ route }: { route: Route }) {
   const { bottom } = useSafeAreaInsets();
-  const { routeId, cards, cart } = route;
+  const { routeId, cards, cart, targetMinutes } = route;
   // 시작 위치는 처음 한 번만 정한다 — 바뀌면 캐러셀이 스크롤 도중 그 위치로 다시 옮겨져 카드 사이에 멈춘다
   const [initialIndex] = useState((route.lastViewedCardOrder ?? 1) - 1);
   const [index, setIndex] = useState(initialIndex);
@@ -59,8 +66,26 @@ function SelectContent({ route }: { route: Route }) {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const { isCoachVisible, closeCoach } = useSelectCoachMark();
+  const openDialog = useDialogStore((state) => state.openDialog);
+  const isFocused = useIsFocused();
+  const [isLeaving, setIsLeaving] = useState(false);
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  // 헤더 뒤로가기 · iOS 스와이프 · Android 뒤로 버튼 모두 확인을 거친다.
+  // 보이는 동안만 막는다 — 정거장에서 홈으로 나갈 때 뒤에 깔린 이 화면도 함께 빠지므로
+  usePreventRemove(isFocused && !isLeaving, () =>
+    openDialog({
+      ...RESELECT_CONDITION_DIALOG,
+      onConfirm: () => setIsLeaving(true),
+      onCancel: () => {},
+    }),
+  );
+
+  // 막기가 풀린 다음 렌더에서 이동해야 이동 자체가 막히지 않는다. 스택에 컨디션 화면이 없으면(홈 · 탑승권에서 진입) 이 화면을 바꾼다
+  useEffect(() => {
+    if (isLeaving) router.dismissTo("/ride/condition");
+  }, [isLeaving]);
 
   // 스와이프마다 보내지 않고 화면을 떠날 때(다음 화면 · 뒤로가기) 한 번 저장한다
   useFocusEffect(
@@ -95,8 +120,8 @@ function SelectContent({ route }: { route: Route }) {
       { onSuccess: () => showToast(ADD_TOAST_MESSAGE) },
     );
   };
-  // 바는 넘긴 카드 순서만큼 차오르고(담기와 무관), 시간은 담은 기사의 읽는 시간 합계 (탑승권 '예상 시간'과 같은 값)
-  const progress = index / Math.max(cards.length - 1, 1);
+  // 바는 목표 시간(T) 대비 담은 시간 — 담기·빼기 때만 바뀐다 (넘기기와 무관). 시간은 탑승권 '예상 시간'과 같은 값
+  const progress = cart.totalMinutes / targetMinutes;
 
   return (
     <>
@@ -130,12 +155,14 @@ function SelectContent({ route }: { route: Route }) {
           label="시작하기"
           color="neutral"
           size="l"
-          disabled={!cart.startable || isAdding || isRemoving || isBoarding}
-          onPress={() =>
+          disabled={!cart.startable || isBoarding}
+          // 담기 · 빼기 중엔 비활성 대신 누름만 무시 — disabled로 걸면 카드를 누를 때마다 버튼이 깜박인다
+          onPress={() => {
+            if (isAdding || isRemoving) return;
             board(routeId, {
               onSuccess: () => router.push("/ride/boarding-pass"),
-            })
-          }
+            });
+          }}
         />
       </View>
       {isCoachVisible && <SelectCoachMark onClose={closeCoach} />}
