@@ -19,6 +19,7 @@ import {
 import { ButtonCard } from "@/components/button-card/button-card";
 import { ListRow } from "@/components/button-card/list-row";
 import { Header } from "@/components/header/header";
+import { Toggle } from "@/components/toggle/toggle";
 import { useLogout } from "@/hooks/mutations/use-logout";
 import { useWithdraw } from "@/hooks/mutations/use-withdraw";
 import { useGetCategories } from "@/hooks/queries/use-get-categories";
@@ -31,6 +32,7 @@ import type { UserMeResponse } from "@/types/user/user.types";
 
 import { ProfilePhoto } from "./_components/profile-photo";
 import { UserMeState } from "./_components/user-me-state";
+import { useNotificationToggle } from "./_hooks/use-notification-toggle";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -65,6 +67,7 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
   const openDialog = useDialogStore((state) => state.openDialog);
   const { mutate: logout } = useLogout();
   const { mutate: withdraw } = useWithdraw();
+  const notification = useNotificationToggle();
 
   const userType = me.travelType && fromTravelType(me.travelType);
   const jobGroup = me.jobGroups?.[0] && fromJobGroupCode(me.jobGroups[0]);
@@ -106,11 +109,23 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
           />
         </ButtonCard>
         <Section title="개인 설정">
-          {/* TODO: 알림·위젯 설정 화면은 시안이 없어 이동을 연결하지 않았다 */}
+          {/* [임시] 시안이 없어 이동 대신 토글. 줄 자체는 누를 수 없고 토글만 읽힌다 */}
           <ListRow
             icon={<AlarmIcon />}
-            label="알림 · 위젯"
-            subtext="아침 · 저녁"
+            label="알림"
+            hasArrow={false}
+            disabled
+            accessible={false}
+            trailing={
+              <Toggle
+                accessibilityLabel="알림"
+                value={notification.isOn}
+                onValueChange={notification.toggle}
+                disabled={!notification.isReady}
+                // 아래 줄 화살표(>)는 24px 아이콘 안에서 오른쪽 9px가 비어 있어 끝을 맞춘다
+                className="mr-[9px]"
+              />
+            }
           />
           <ListRow
             icon={<SubwayMonoIcon />}

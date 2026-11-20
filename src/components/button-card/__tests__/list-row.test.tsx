@@ -1,4 +1,5 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
+import { Text } from "react-native";
 
 import { ListRow } from "../list-row";
 
@@ -17,5 +18,12 @@ describe("ListRow", () => {
   it("보조 문구 없이 문구만 보여줄 수 있다", async () => {
     await render(<ListRow label="로그아웃" tone="danger" hasArrow={false} />);
     expect(screen.getByRole("button", { name: "로그아웃" })).toBeOnTheScreen();
+  });
+
+  it("오른쪽 끝에 trailing 요소를 보여준다", async () => {
+    await render(
+      <ListRow label="알림" hasArrow={false} trailing={<Text>토글</Text>} />,
+    );
+    expect(screen.getByText("토글")).toBeOnTheScreen();
   });
 });

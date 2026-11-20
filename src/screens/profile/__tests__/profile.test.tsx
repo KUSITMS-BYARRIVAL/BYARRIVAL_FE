@@ -73,6 +73,14 @@ const mockWithdraw = jest.fn(
 jest.mock("@/hooks/mutations/use-withdraw", () => ({
   useWithdraw: () => ({ mutate: mockWithdraw }),
 }));
+// 토글 동작은 훅 테스트에서 따로 본다
+jest.mock("../_hooks/use-notification-toggle", () => ({
+  useNotificationToggle: () => ({
+    isOn: true,
+    isReady: true,
+    toggle: jest.fn(),
+  }),
+}));
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -88,6 +96,7 @@ describe("ProfileScreen", () => {
     expect(screen.getByText("IT개발·데이터")).toBeOnTheScreen();
     expect(screen.getByText("서울 강남구")).toBeOnTheScreen();
     expect(screen.getByText("경제·금융, 건강·생활")).toBeOnTheScreen();
+    expect(screen.getByRole("switch", { name: "알림" })).toBeChecked();
   });
 
   it("내 정보를 불러오는 중이면 안내를 보여준다", async () => {
