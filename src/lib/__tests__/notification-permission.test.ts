@@ -1,12 +1,17 @@
 import {
+  getPermissionsAsync,
   requestPermissionsAsync,
   setNotificationChannelAsync,
 } from "expo-notifications";
 import { Platform } from "react-native";
 
-import { requestNotificationPermission } from "../notification-permission";
+import {
+  getNotificationPermission,
+  requestNotificationPermission,
+} from "../notification-permission";
 
 jest.mock("expo-notifications", () => ({
+  getPermissionsAsync: jest.fn(),
   requestPermissionsAsync: jest.fn(),
   setNotificationChannelAsync: jest.fn().mockResolvedValue(null),
   AndroidImportance: { DEFAULT: 3 },
@@ -46,5 +51,17 @@ describe("requestNotificationPermission", () => {
       "default",
       expect.objectContaining({ importance: 3 }),
     );
+  });
+});
+
+describe("getNotificationPermission", () => {
+  it("팝업 없이 지금 권한과 다시 물을 수 있는지를 돌려준다", async () => {
+    jest
+      .mocked(getPermissionsAsync)
+      .mockResolvedValue({ granted: false, canAskAgain: false } as never);
+    await expect(getNotificationPermission()).resolves.toEqual({
+      permission: "DENIED",
+      canAskAgain: false,
+    });
   });
 });
