@@ -1,6 +1,7 @@
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import type { ReactNode } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Linking, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
@@ -33,6 +34,11 @@ import type { UserMeResponse } from "@/types/user/user.types";
 import { ProfilePhoto } from "./_components/profile-photo";
 import { UserMeState } from "./_components/user-me-state";
 import { useNotificationToggle } from "./_hooks/use-notification-toggle";
+
+// 카카오톡 오픈채팅 '도착까지 고객센터'
+const CUSTOMER_CENTER_URL = "https://open.kakao.com/o/sch3rQXi";
+const PRIVACY_POLICY_URL =
+  "https://hyunjin-lee.notion.site/406a5a5532818056926be2b8a92583f1";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -152,10 +158,18 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
             onPress={() => router.push("/profile/interests")}
           />
         </Section>
-        {/* TODO: 고객센터·개인정보 처리방침 링크는 연동 방식이 정해지면 연결 */}
         <Section title="기타">
-          <ListRow icon={<CallIcon />} label="고객센터" />
-          <ListRow icon={<PaperIcon />} label="개인정보 처리방침" />
+          <ListRow
+            icon={<CallIcon />}
+            label="고객센터"
+            // 인앱 브라우저는 카카오톡 앱으로 넘어가지 않아 시스템으로 연다 (설치돼 있으면 카카오톡 실행)
+            onPress={() => Linking.openURL(CUSTOMER_CENTER_URL)}
+          />
+          <ListRow
+            icon={<PaperIcon />}
+            label="개인정보 처리방침"
+            onPress={() => WebBrowser.openBrowserAsync(PRIVACY_POLICY_URL)}
+          />
           <ListRow
             icon={<LogoutIcon />}
             label="로그아웃"
