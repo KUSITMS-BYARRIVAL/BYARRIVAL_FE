@@ -65,6 +65,15 @@ export const ADD_TOAST_MESSAGE = "1정거장이 추가되었어요";
 // 담으면 목표 시간의 120%를 넘는 카드(addable: false)를 눌렀을 때. [임시] 시안이 없어 정한 문구
 export const OVER_LIMIT_TOAST_MESSAGE = "목표 시간을 넘어서 더 담을 수 없어요";
 
+// 뉴스 탑승하기에서 뒤로가기 → 컨디션 화면. [임시] 시안이 없어 정한 문구
+export const RESELECT_CONDITION_DIALOG = {
+  title: "컨디션을 다시 고를까요?",
+  // 같은 컨디션을 다시 고르면 서버가 담은 카드를 유지한다
+  description: "다른 컨디션을 고르면 담은 뉴스가 사라져요",
+  confirmLabel: "다시 고르기",
+  cancelLabel: "취소",
+};
+
 // 추천 기사가 0건이라 노선을 만들지 못했을 때 (POST /routes → EMPTY)
 export const EMPTY_ROUTE_MESSAGE = "오늘 준비한 뉴스는 여기까지에요";
 
