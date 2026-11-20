@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react-native";
-import { Linking } from "react-native";
+import { AppState, type AppStateStatus, Linking } from "react-native";
 
 import {
   getNotificationPermission,
@@ -18,10 +18,13 @@ jest.mock("@/hooks/queries/use-get-notification-settings", () => ({
   useGetNotificationSettings: () => ({ data: mockSettings }),
 }));
 const mockUpdateSettings = jest.fn();
+let mockPending = false;
+let mockVariables: unknown;
 jest.mock("@/hooks/mutations/use-update-notification-settings", () => ({
   useUpdateNotificationSettings: () => ({
     mutate: mockUpdateSettings,
-    isPending: false,
+    isPending: mockPending,
+    variables: mockVariables,
   }),
 }));
 const mockSavePermission = jest.fn();
@@ -42,6 +45,8 @@ const activity = (enabled: boolean) => ({
 beforeEach(() => {
   jest.clearAllMocks();
   mockSettings = settings("GRANTED", true);
+  mockPending = false;
+  mockVariables = undefined;
   getPermission.mockResolvedValue({ permission: "GRANTED", canAskAgain: true });
 });
 
@@ -119,5 +124,36 @@ describe("useNotificationToggle", () => {
     await waitFor(() =>
       expect(mockSavePermission).toHaveBeenCalledWith("GRANTED"),
     );
+  });
+
+  it("휴대폰 설정에서 권한을 바꾸고 앱으로 돌아오면 바뀐 권한을 저장한다", async () => {
+    let onChange: (state: AppStateStatus) => void = () => undefined;
+    // jest-expo가 이미 mock으로 둔 함수라 mockRestore 대신 한 번만 바꾼다
+    jest
+      .spyOn(AppState, "addEventListener")
+      .mockImplementationOnce((_, handler) => {
+        onChange = handler;
+        return { remove: jest.fn() };
+      });
+    await renderHook(() => useNotificationToggle());
+    expect(mockSavePermission).not.toHaveBeenCalled();
+
+    getPermission.mockResolvedValue({
+      permission: "DENIED",
+      canAskAgain: false,
+    });
+    await act(async () => onChange("active"));
+
+    await waitFor(() =>
+      expect(mockSavePermission).toHaveBeenCalledWith("DENIED"),
+    );
+  });
+
+  it("저장 응답을 기다리는 동안에는 누른 값을 보여준다", async () => {
+    mockSettings = settings("GRANTED", false);
+    mockPending = true;
+    mockVariables = activity(true);
+    const { result } = await renderHook(() => useNotificationToggle());
+    expect(result.current.isOn).toBe(true);
   });
 });
