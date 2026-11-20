@@ -40,6 +40,21 @@ export function ProgressStepper({
       onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
       className={cn("h-5 justify-center", className)}
     >
+      {/* 아이콘 박스(38px) 아래쪽이 트랙 위에 닿도록 Figma 위치(top -19) 그대로 둔다.
+          트랙·점이 아이콘 위에 보이도록 가장 먼저 그린다 (나중에 그린 요소가 위로 온다) */}
+      {showVehicle && width > 0 && (
+        <View
+          className="absolute items-center justify-center"
+          style={{
+            top: -19,
+            left: dotCenter - VEHICLE_BOX / 2,
+            width: VEHICLE_BOX,
+            height: VEHICLE_BOX,
+          }}
+        >
+          <SubwaySideIcon />
+        </View>
+      )}
       <View className="h-1 overflow-hidden rounded-full bg-green-100">
         <View
           className="h-full rounded-full bg-green-500"
@@ -63,20 +78,6 @@ export function ProgressStepper({
           ),
         )}
       </View>
-      {/* 아이콘 박스(38px) 아래쪽이 트랙 위에 닿도록 Figma 위치(top -19) 그대로 둔다 */}
-      {showVehicle && width > 0 && (
-        <View
-          className="absolute items-center justify-center"
-          style={{
-            top: -19,
-            left: dotCenter - VEHICLE_BOX / 2,
-            width: VEHICLE_BOX,
-            height: VEHICLE_BOX,
-          }}
-        >
-          <SubwaySideIcon />
-        </View>
-      )}
     </View>
   );
 }

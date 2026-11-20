@@ -116,7 +116,7 @@ export function DepartureTimeScreen() {
               hour={departureTime.hour}
               minute={departureTime.minute}
               accessibilityHint="눌러서 시각을 바꿀 수 있어요"
-              className="mx-5"
+              className="mx-5 justify-center"
               onPress={openPicker}
             />
           </View>
