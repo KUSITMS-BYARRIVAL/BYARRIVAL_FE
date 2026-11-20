@@ -55,14 +55,12 @@ beforeEach(() => {
 });
 
 describe("TermsScreen", () => {
-  it("서버 약관과 [선택] 마케팅 항목을 Figma 문구로 보여준다", async () => {
+  it("서버 약관만 Figma 문구로 보여준다 (마케팅 수신 항목 없음)", async () => {
     await render(<TermsScreen />);
     expect(screen.getByRole("header", { name: "반가워요!" })).toBeOnTheScreen();
     expect(screen.getByText("[필수] 이용약관 동의")).toBeOnTheScreen();
     expect(screen.getByText("[필수] 개인정보 처리방침 동의")).toBeOnTheScreen();
-    expect(
-      screen.getByText("[선택] 마케팅·이벤트 알림 수신"),
-    ).toBeOnTheScreen();
+    expect(screen.queryByText("[선택] 마케팅·이벤트 알림 수신")).toBeNull();
   });
 
   it("필수 약관을 모두 체크해야 다음으로가 켜진다", async () => {
