@@ -97,8 +97,8 @@ describe("QuizScreen", () => {
     expect(screen.getByRole("button", { name: "다음 문제" })).toBeDisabled();
   });
 
-  it("보기를 누르면 서버에 답을 보내고, 정답이면 정답으로 표시한 뒤 다음 문제로 넘어간다", async () => {
-    grade(2);
+  it("보기를 누르면 서버에 답을 보내고, 정답이면 정답 표시와 해설을 보여준 뒤 다음 문제로 넘어간다", async () => {
+    grade(2, "나가 정답인 이유");
     const user = userEvent.setup();
     await render(<QuizScreen />);
     await user.press(screen.getByText("1-나"));
@@ -109,6 +109,8 @@ describe("QuizScreen", () => {
     expect(
       screen.getByRole("button", { name: "2 1-나" }),
     ).toHaveAccessibilityValue({ text: "정답" });
+    expect(screen.getByText("정답이에요!")).toBeOnTheScreen();
+    expect(screen.getByText("나가 정답인 이유")).toBeOnTheScreen();
     await user.press(screen.getByRole("button", { name: "다음 문제" }));
     expect(screen.getByText("문제 2")).toBeOnTheScreen();
   });
@@ -223,8 +225,9 @@ describe("QuizScreen", () => {
 
     await user.press(screen.getByRole("button", { name: "다음 문제" }));
     expect(screen.getByText("문제 2")).toBeOnTheScreen();
-    // 맞힌 문제는 해설 없이 정답만 표시한다
-    expect(screen.queryByText("정답 해설")).toBeNull();
+    // 맞힌 문제도 해설을 보여준다
+    expect(screen.getByText("정답이에요!")).toBeOnTheScreen();
+    expect(screen.getByText("정답 해설")).toBeOnTheScreen();
 
     await user.press(screen.getByRole("button", { name: "결과 보기" }));
     expect(router.replace).toHaveBeenCalledWith("/quiz/result");

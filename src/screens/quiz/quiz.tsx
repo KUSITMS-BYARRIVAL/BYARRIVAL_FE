@@ -12,6 +12,7 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { useAnswerQuiz } from "@/hooks/mutations/use-answer-quiz";
 import { useGetQuizzes } from "@/hooks/queries/use-get-quizzes";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { cn } from "@/lib/cn";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import type { Quiz, QuizAnswer } from "@/types/quiz/quiz.types";
 
@@ -148,16 +149,25 @@ export function QuizScreen() {
                 />
               ))}
             </View>
-            {/* Figma 도착·퀴즈 - 오답: 틀렸을 때만 해설을 보여준다 */}
-            {graded?.correct === false && (
+            {/* Figma 도착·퀴즈 - 오답 해설 박스. 정답도 같은 모양에 파란색으로 해설을 보여준다 (디자인 QA, 시맨틱 토큰이 없어 팔레트 사용) */}
+            {graded && (
               <View
                 accessibilityLiveRegion="polite"
-                className="gap-1 rounded-md bg-card-wrong px-5 py-4"
+                className={cn(
+                  "gap-1 rounded-md px-5 py-4",
+                  graded.correct ? "bg-royal-blue-200" : "bg-card-wrong",
+                )}
               >
                 <Text className="text-primary text-body2-m">
-                  아쉬워요, 오답이에요.
+                  {/* shortcut: 정답 문구는 시안이 없어 임시로 정했다 */}
+                  {graded.correct ? "정답이에요!" : "아쉬워요, 오답이에요."}
                 </Text>
-                <Text className="text-danger text-body2-m">
+                <Text
+                  className={cn(
+                    "text-body2-m",
+                    graded.correct ? "text-royal-blue-600" : "text-danger",
+                  )}
+                >
                   {graded.explanation}
                 </Text>
               </View>
