@@ -97,8 +97,8 @@ describe("QuizScreen", () => {
     expect(screen.getByRole("button", { name: "다음 문제" })).toBeDisabled();
   });
 
-  it("보기를 누르면 서버에 답을 보내고, 정답이면 정답으로 표시한 뒤 다음 문제로 넘어간다", async () => {
-    grade(2);
+  it("보기를 누르면 서버에 답을 보내고, 정답이면 정답 표시와 해설을 보여준 뒤 다음 문제로 넘어간다", async () => {
+    grade(2, "나가 정답인 이유");
     const user = userEvent.setup();
     await render(<QuizScreen />);
     await user.press(screen.getByText("1-나"));
@@ -109,6 +109,8 @@ describe("QuizScreen", () => {
     expect(
       screen.getByRole("button", { name: "2 1-나" }),
     ).toHaveAccessibilityValue({ text: "정답" });
+    expect(screen.getByText("정답이에요!")).toBeOnTheScreen();
+    expect(screen.getByText("나가 정답인 이유")).toBeOnTheScreen();
     await user.press(screen.getByRole("button", { name: "다음 문제" }));
     expect(screen.getByText("문제 2")).toBeOnTheScreen();
   });
@@ -179,11 +181,61 @@ describe("QuizScreen", () => {
     expect(router.replace).toHaveBeenCalledWith("/quiz/result");
   });
 
-  it.each([
-    ["이미 다 풀었으면", quizSet({ nextQuizOrder: null })],
-    [
-      "낼 문제가 없으면",
-      quizSet({
+  it("이미 다 풀었으면 1번부터 고른 답 · 해설을 다시 보여주고, 마지막 뒤에 결과로 간다", async () => {
+    mockQuizzes.mockReturnValue({
+      data: quizSet({
+        nextQuizOrder: null,
+        quizzes: [
+          // 1번 오답(가 선택, 정답 다), 2번 정답(나)
+          {
+            ...quiz(1),
+            answered: true,
+            selectedSeq: 1,
+            answerSeq: 3,
+            correct: false,
+            explanation: "정답은 1-다예요",
+          },
+          {
+            ...quiz(2),
+            answered: true,
+            selectedSeq: 2,
+            answerSeq: 2,
+            correct: true,
+            explanation: "정답 해설",
+          },
+        ],
+        progress: {
+          total: 2,
+          answeredCount: 2,
+          correctCount: 1,
+          finished: true,
+        },
+      }),
+      isPending: false,
+    });
+    const user = userEvent.setup();
+    await render(<QuizScreen />);
+
+    expect(router.replace).not.toHaveBeenCalled();
+    expect(screen.getByText("문제 1")).toBeOnTheScreen();
+    expect(screen.getByText("정답은 1-다예요")).toBeOnTheScreen();
+    // 다시 보기에서는 답을 바꿀 수 없다
+    await user.press(screen.getByText("1-나"));
+    expect(mockAnswer).not.toHaveBeenCalled();
+
+    await user.press(screen.getByRole("button", { name: "다음 문제" }));
+    expect(screen.getByText("문제 2")).toBeOnTheScreen();
+    // 맞힌 문제도 해설을 보여준다
+    expect(screen.getByText("정답이에요!")).toBeOnTheScreen();
+    expect(screen.getByText("정답 해설")).toBeOnTheScreen();
+
+    await user.press(screen.getByRole("button", { name: "결과 보기" }));
+    expect(router.replace).toHaveBeenCalledWith("/quiz/result");
+  });
+
+  it("낼 문제가 없으면 결과 화면으로 보낸다", async () => {
+    mockQuizzes.mockReturnValue({
+      data: quizSet({
         nextQuizOrder: null,
         quizzes: [],
         progress: {
@@ -193,9 +245,8 @@ describe("QuizScreen", () => {
           finished: true,
         },
       }),
-    ],
-  ])("%s 결과 화면으로 보낸다", async (_, data) => {
-    mockQuizzes.mockReturnValue({ data, isPending: false });
+      isPending: false,
+    });
     await render(<QuizScreen />);
     expect(router.replace).toHaveBeenCalledWith("/quiz/result");
   });

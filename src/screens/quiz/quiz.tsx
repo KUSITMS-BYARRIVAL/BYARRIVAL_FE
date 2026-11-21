@@ -12,16 +12,22 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { useAnswerQuiz } from "@/hooks/mutations/use-answer-quiz";
 import { useGetQuizzes } from "@/hooks/queries/use-get-quizzes";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { cn } from "@/lib/cn";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
-import type { QuizAnswer } from "@/types/quiz/quiz.types";
+import type { Quiz, QuizAnswer } from "@/types/quiz/quiz.types";
 
 import { QuizOptionButton } from "./_components/quiz-option-button";
 
+type Graded = Pick<
+  Quiz,
+  "selectedSeq" | "answerSeq" | "correct" | "explanation"
+>;
+
 // 채점 결과로 각 보기의 표시 상태를 정한다
-function optionState(seq: number, answer: QuizAnswer | null) {
-  if (!answer) return "default";
-  if (seq === answer.answerSeq) return "correct";
-  return seq === answer.selectedSeq ? "dimmed" : "default";
+function optionState(seq: number, graded: Graded | null) {
+  if (!graded) return "default";
+  if (seq === graded.answerSeq) return "correct";
+  return seq === graded.selectedSeq ? "dimmed" : "default";
 }
 
 // 결과 화면에서 뒤로 가도 이미 푼 퀴즈로 돌아오지 않도록 교체한다
@@ -39,18 +45,18 @@ export function QuizScreen() {
   const [answer, setAnswer] = useState<QuizAnswer | null>(null);
 
   const quizzes = quizSet?.quizzes ?? [];
-  const isAllAnswered =
-    !!quizSet &&
-    (quizSet.progress.total === 0 || quizSet.nextQuizOrder === null);
+  const isEmpty = quizSet?.progress.total === 0;
+  // 다 풀었으면(nextQuizOrder null) 1번부터 다시 보여준다
   const current = index ?? (quizSet?.nextQuizOrder ?? 1) - 1;
   const quiz = quizzes[current];
   const isLast = current === quizzes.length - 1;
+  // 이미 푼 문제(다시 보기)는 서버가 저장한 채점 결과로 보여준다
+  const graded: Graded | null = answer ?? (quiz?.answered ? quiz : null);
 
-  // 들어올 때 이미 낼 문제가 없거나 다 풀었으면 결과로 보낸다
-  // (풀다가 다 푼 경우는 해설을 보여준 뒤 '결과 보기'로만 간다)
+  // 낼 문제가 없으면 결과로 보낸다
   useEffect(() => {
-    if (isAllAnswered && index === null) goResult();
-  }, [isAllAnswered, index]);
+    if (isEmpty) goResult();
+  }, [isEmpty]);
 
   const pick = (choiceSeq: number) => {
     if (!quiz || routeId === undefined) return;
@@ -88,7 +94,7 @@ export function QuizScreen() {
     return (
       <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
         {header}
-        {isLoading || isAllAnswered ? (
+        {isLoading || isEmpty ? (
           <LoadingDots className="flex-1" />
         ) : (
           // 도착하지 않았거나 조회에 실패하면(전역 토스트) 풀 문제가 없다
@@ -136,24 +142,33 @@ export function QuizScreen() {
                   key={seq}
                   number={i + 1}
                   label={content}
-                  state={optionState(seq, answer)}
+                  state={optionState(seq, graded)}
                   // 한 번 답하면 바꿀 수 없다 (서버도 처음 낸 답만 저장한다)
-                  disabled={!!answer || isAnswering}
+                  disabled={!!graded || isAnswering}
                   onPress={() => pick(seq)}
                 />
               ))}
             </View>
-            {/* Figma 도착·퀴즈 - 오답: 틀렸을 때만 해설을 보여준다 */}
-            {answer && !answer.correct && (
+            {/* Figma 도착·퀴즈 - 오답 해설 박스. 정답도 같은 모양에 파란색으로 해설을 보여준다 (디자인 QA, 시맨틱 토큰이 없어 팔레트 사용) */}
+            {graded && (
               <View
                 accessibilityLiveRegion="polite"
-                className="gap-1 rounded-md bg-card-wrong px-5 py-4"
+                className={cn(
+                  "gap-1 rounded-md px-5 py-4",
+                  graded.correct ? "bg-royal-blue-200" : "bg-card-wrong",
+                )}
               >
                 <Text className="text-primary text-body2-m">
-                  아쉬워요, 오답이에요.
+                  {/* shortcut: 정답 문구는 시안이 없어 임시로 정했다 */}
+                  {graded.correct ? "정답이에요!" : "아쉬워요, 오답이에요."}
                 </Text>
-                <Text className="text-danger text-body2-m">
-                  {answer.explanation}
+                <Text
+                  className={cn(
+                    "text-body2-m",
+                    graded.correct ? "text-royal-blue-600" : "text-danger",
+                  )}
+                >
+                  {graded.explanation}
                 </Text>
               </View>
             )}
@@ -166,7 +181,7 @@ export function QuizScreen() {
           label={isLast ? "결과 보기" : "다음 문제"}
           size="l"
           color="neutral"
-          disabled={!answer}
+          disabled={!graded}
           onPress={goNext}
         />
       </View>

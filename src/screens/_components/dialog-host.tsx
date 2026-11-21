@@ -11,6 +11,7 @@ export function DialogHost() {
     <Dialog
       {...options}
       visible={isVisible}
+      onDismiss={closeDialog}
       onConfirm={() => {
         closeDialog();
         onConfirm();

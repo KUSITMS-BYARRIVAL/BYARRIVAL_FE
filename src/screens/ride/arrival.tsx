@@ -117,9 +117,8 @@ export function ArrivalScreen() {
                     : "오늘 읽은 기사, 잘 기억하는지 확인해보기"
                 }
                 icon="right"
-                onPress={() =>
-                  router.push(quizResult?.finished ? "/quiz/result" : "/quiz")
-                }
+                // 다 풀었으면 퀴즈 화면이 1번부터 고른 답 · 정답 · 해설을 다시 보여준 뒤 결과로 간다
+                onPress={() => router.push("/quiz")}
               />
             </View>
           </View>
