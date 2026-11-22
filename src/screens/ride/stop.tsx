@@ -195,7 +195,12 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
         }
       />
       {/* 정거장이 바뀌면 스크롤을 맨 위로 되돌린다 */}
-      <ScrollView key={stopNumber} className="flex-1">
+      <ScrollView
+        key={stopNumber}
+        className="flex-1"
+        // 화면이 짧아 스크롤될 때 원문 보기가 다음 버튼에 붙지 않게
+        contentContainerClassName="pb-5"
+      >
         <View className="px-5 py-7">
           <ProgressStepper total={totalStops} current={stopNumber} />
         </View>
@@ -210,9 +215,11 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
       <View className="px-5" style={{ paddingBottom: Math.max(bottom, 30) }}>
         <Button
           label={
-            isLast ? "도착까지" : `다음 정거장 ${stopNumber + 1}/${totalStops}`
+            isLast
+              ? "오늘의 뉴스 완주하기"
+              : `다음 정거장 ${stopNumber + 1}/${totalStops}`
           }
-          color="neutral-weak"
+          color="brand"
           size="l"
           // 원문 보기를 눌러 완독해야 다음으로 넘어간다
           disabled={!stop?.read || isMoving}

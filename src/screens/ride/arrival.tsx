@@ -6,16 +6,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
 import { SmallTalkIcon } from "@/assets/icons";
-import { AlarmButton } from "@/screens/_components/alarm-button";
 import { Button } from "@/components/button/button";
 import { ButtonCard } from "@/components/button-card/button-card";
 import { RankingRow } from "@/components/button-card/ranking-row";
-import { Header } from "@/components/header/header";
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { ShareButton } from "@/components/share-button/share-button";
 import { useArrive } from "@/hooks/mutations/use-arrive";
 import { useGetQuizResult } from "@/hooks/queries/use-get-quiz-result";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { LogoHeader } from "@/screens/_components/logo-header";
 import { openArticle } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
@@ -42,7 +41,7 @@ export function ArrivalScreen() {
   if (!arrival)
     return (
       <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>
-        <Header title="도착까지" right={<AlarmButton />} />
+        <LogoHeader onLogoPress={() => router.dismissTo("/")} />
         {/* 완주 기록 전(또는 실패 — 전역 토스트)에는 결과를 그릴 수 없다 */}
         <LoadingDots className="flex-1" />
       </View>
@@ -88,7 +87,7 @@ export function ArrivalScreen() {
           streakDays={arrival.streakDays}
         />
       </View>
-      <Header title="도착까지" right={<AlarmButton />} />
+      <LogoHeader onLogoPress={() => router.dismissTo("/")} />
       <ScrollView className="flex-1">
         <ArrivalHero userType={userType} />
         <View className="gap-9 p-5">

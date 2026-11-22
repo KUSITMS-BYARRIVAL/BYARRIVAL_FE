@@ -11,6 +11,8 @@ import { useReturnToCardSelection } from "@/hooks/mutations/use-return-to-card-s
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { BoardingPassCard } from "@/screens/ride/_components/boarding-pass-card";
+import { OVER_LIMIT_TOAST_MESSAGE } from "@/screens/ride/_constants";
+import { useToastStore } from "@/stores/toast-store";
 
 export function BoardingPassScreen() {
   const { top, bottom } = useSafeAreaInsets();
@@ -32,6 +34,15 @@ export function BoardingPassScreen() {
 
   // 담은 카드를 유지한 채 뉴스 탑승하기로 돌아간다. 알림에서 바로 들어와 스택에 없으면 그 화면으로 바꾼다
   const backToSelect = () => router.dismissTo("/ride/select");
+
+  // [임시] 이미 목표 시간의 120%(서버 담기 한도)를 넘었으면 돌아가지 않고 토스트만 띄운다 (시안 없음)
+  const handleMoreNews = () => {
+    if (route && route.cart.totalMinutes > route.targetMinutes * 1.2) {
+      useToastStore.getState().showToast({ message: OVER_LIMIT_TOAST_MESSAGE });
+      return;
+    }
+    backToSelect();
+  };
 
   const handleDepart = () => {
     if (routeId === undefined) return;
@@ -82,7 +93,7 @@ export function BoardingPassScreen() {
           label="다른 뉴스 더 탑승시키기"
           color="neutral-weak"
           size="l"
-          onPress={backToSelect}
+          onPress={handleMoreNews}
         />
       </View>
     </View>
