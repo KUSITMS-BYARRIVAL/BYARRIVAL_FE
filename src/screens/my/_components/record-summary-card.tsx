@@ -1,3 +1,4 @@
+// 마이 홈에서 일시 제거, 추후 재사용 예정
 import { Text, View } from "react-native";
 
 import { cn } from "@/lib/cn";
