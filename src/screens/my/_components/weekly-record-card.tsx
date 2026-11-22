@@ -10,26 +10,36 @@ type WeeklyRecordCardProps = {
 export function WeeklyRecordCard({ weeklyMinutes }: WeeklyRecordCardProps) {
   const [lastWeek = 0, thisWeek = 0] = weeklyMinutes.slice(-2);
   const lastWeekDiff = thisWeek - lastWeek;
+  const isEmpty = weeklyMinutes.every((minutes) => minutes === 0);
 
   return (
     <View className="gap-3.5 rounded bg-white p-5">
       <View className="flex-row items-center justify-between">
         <Text className="text-primary text-title2-sb">쌓이는 기록</Text>
         <Text className="text-tertiary text-caption1-m">
-          최근 {weeklyMinutes.length}주 읽은 시간
+          최근 {weeklyMinutes.length}주동안 읽은 시간
         </Text>
       </View>
-      <View className="gap-3">
-        <BarChart weeklyMinutes={weeklyMinutes} />
-        {/* 사양: 지난주보다 늘었을 때만 보여주고, 줄었거나 같으면 문구 없음 */}
-        {lastWeekDiff > 0 && (
-          <View className="items-center rounded-md bg-green-50 p-2.5">
-            <Text className="text-brand text-body2-m">
-              지난주보다 {lastWeekDiff}분 더 읽었어요. 꾸준히 늘고 있어요!
-            </Text>
-          </View>
-        )}
-      </View>
+      {/* 사양: 6주 모두 0분이면 그래프·비교 문구 대신 안내 문구만 */}
+      {isEmpty ? (
+        <View className="items-center p-2.5">
+          <Text className="text-brand text-body2-m">
+            뉴스를 읽어주세요. 기록이 쌓여요
+          </Text>
+        </View>
+      ) : (
+        <View className="gap-3">
+          <BarChart weeklyMinutes={weeklyMinutes} />
+          {/* 사양: 지난주보다 늘었을 때만 보여주고, 줄었거나 같으면 문구 없음 */}
+          {lastWeekDiff > 0 && (
+            <View className="items-center rounded-md bg-green-50 p-2.5">
+              <Text className="text-brand text-body2-m">
+                지난주보다 {lastWeekDiff}분 더 읽었어요. 꾸준히 늘고 있어요!
+              </Text>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }
