@@ -210,7 +210,9 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
       <View className="px-5" style={{ paddingBottom: Math.max(bottom, 30) }}>
         <Button
           label={
-            isLast ? "도착까지" : `다음 정거장 ${stopNumber + 1}/${totalStops}`
+            isLast
+              ? "오늘의 뉴스 완주하기"
+              : `다음 정거장 ${stopNumber + 1}/${totalStops}`
           }
           color="brand"
           size="l"
