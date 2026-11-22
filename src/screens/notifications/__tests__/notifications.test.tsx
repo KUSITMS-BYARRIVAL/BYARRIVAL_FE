@@ -18,7 +18,7 @@ jest.mock("react-native-safe-area-context", () => ({
   useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
 }));
 jest.mock("expo-router", () => ({
-  router: { push: jest.fn(), back: jest.fn() },
+  router: { push: jest.fn(), navigate: jest.fn(), back: jest.fn() },
 }));
 jest.mock("expo-secure-store", () => ({
   setItemAsync: jest.fn().mockResolvedValue(undefined),
@@ -101,13 +101,15 @@ describe("NotificationsScreen", () => {
 
   it("안 읽은 알림을 누르면 읽음 처리하고 유형별 화면으로 이동한다", async () => {
     const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-    api.onGet("/notifications").reply(200, page([item(7)]));
+    api
+      .onGet("/notifications")
+      .reply(200, page([item(7, { type: "STREAK_MILESTONE" })]));
     api.onPatch("/notifications/7/read").reply(200, { data: null });
 
     await renderScreen();
     await user.press(await screen.findByText("알림 7"));
 
-    expect(router.push).toHaveBeenCalledWith("/ride/boarding-pass");
+    expect(router.navigate).toHaveBeenCalledWith("/my");
     await waitFor(() => expect(api.history.patch).toHaveLength(1));
     expect(api.history.patch[0]!.url).toBe("/notifications/7/read");
   });
