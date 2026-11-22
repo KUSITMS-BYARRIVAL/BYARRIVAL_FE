@@ -16,8 +16,12 @@ import { EditorPickSection } from "@/screens/home/_components/editor-pick-sectio
 import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
-import { getGreeting, getRideButton } from "@/screens/home/_helpers";
-import { openArticle, toPopularChipLabel } from "@/screens/_helpers";
+import {
+  getRideButton,
+  openArticle,
+  toPopularChipLabel,
+} from "@/screens/_helpers";
+import { getGreeting } from "@/screens/home/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 
 export function HomeScreen() {

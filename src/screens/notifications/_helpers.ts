@@ -2,8 +2,7 @@ import { router } from "expo-router";
 
 import { getTodayRouteQuery } from "@/hooks/queries/use-get-today-route";
 import { queryClient } from "@/lib/query-client";
-import { openArticle } from "@/screens/_helpers";
-import { getRideButton } from "@/screens/home/_helpers";
+import { getRideButton, openArticle } from "@/screens/_helpers";
 import type { NotificationItem } from "@/types/notification/notification.types";
 
 /**
