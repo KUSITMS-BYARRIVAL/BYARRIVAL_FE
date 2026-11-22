@@ -59,6 +59,7 @@ export function HomeScreen() {
               </Text>
             </View>
             <StreakCard
+              onPress={() => router.navigate("/my")}
               nickname={nickname}
               route={route}
               userType={userType}
