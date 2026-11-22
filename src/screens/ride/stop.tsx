@@ -195,7 +195,12 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
         }
       />
       {/* 정거장이 바뀌면 스크롤을 맨 위로 되돌린다 */}
-      <ScrollView key={stopNumber} className="flex-1">
+      <ScrollView
+        key={stopNumber}
+        className="flex-1"
+        // 화면이 짧아 스크롤될 때 원문 보기가 다음 버튼에 붙지 않게
+        contentContainerClassName="pb-5"
+      >
         <View className="px-5 py-7">
           <ProgressStepper total={totalStops} current={stopNumber} />
         </View>
