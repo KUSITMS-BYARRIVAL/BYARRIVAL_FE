@@ -1,23 +1,17 @@
-import { router, useFocusEffect } from "expo-router";
-import { useCallback, useState } from "react";
+import { router } from "expo-router";
+import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
-import { useGetScrapLibrary } from "@/hooks/queries/use-get-scrap-library";
 import { useGetStatsCalendar } from "@/hooks/queries/use-get-stats-calendar";
-import { useGetStatsStreak } from "@/hooks/queries/use-get-stats-streak";
 import { useGetStatsSummary } from "@/hooks/queries/use-get-stats-summary";
 import { useGetStatsWeekly } from "@/hooks/queries/use-get-stats-weekly";
-import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { MySummaryHero } from "@/screens/my/_components/my-summary-hero";
-import { RecordSummaryCard } from "@/screens/my/_components/record-summary-card";
-import { RecentSavedArticlesCard } from "@/screens/my/_components/recent-saved-articles-card";
 import { WeeklyRecordCard } from "@/screens/my/_components/weekly-record-card";
 import { YearStripsCard } from "@/screens/my/_components/year-strips-card";
 import { STRIP_LEVEL_BY_API } from "@/screens/my/_constants";
 
-const RECENT_ARTICLE_COUNT = 3;
 const toHours = (minutes = 0) => Math.floor(minutes / 60);
 
 export function MyScreen() {
@@ -27,21 +21,11 @@ export function MyScreen() {
 
   const all = useGetStatsSummary("ALL");
   const month = useGetStatsSummary("MONTH");
-  const yearSummary = useGetStatsSummary("YEAR");
-  const streak = useGetStatsStreak();
   const calendar = useGetStatsCalendar(year);
   const weekly = useGetStatsWeekly();
-  const scraps = useGetScrapLibrary({ type: "ARTICLE", sort: "LATEST" });
   const { commute } = useCommuteWords();
-  const { refetch: refetchScraps } = scraps;
-  // 스크랩 삭제는 [되돌리기] 때문에 stale 표시만 해서, 마운트된 채 남은 탭은 포커스 때 다시 받는다. 처음 포커스는 마운트 조회와 합친다(cancelRefetch: false)
-  useFocusEffect(
-    useCallback(() => {
-      refetchScraps({ cancelRefetch: false });
-    }, [refetchScraps]),
-  );
 
-  const queries = [all, month, yearSummary, streak, calendar, weekly, scraps];
+  const queries = [all, month, calendar, weekly];
   // 실패는 전역 토스트(query-client)가 알리고, 실패한 영역은 0으로 둔다
   if (queries.some((query) => query.isPending))
     return <LoadingDots className="flex-1 bg-default" />;
@@ -54,14 +38,6 @@ export function MyScreen() {
       STRIP_LEVEL_BY_API[day.level],
     ]),
   );
-  const articles = (scraps.data?.articles ?? [])
-    .slice(0, RECENT_ARTICLE_COUNT)
-    .map((article) => ({
-      id: String(article.scrapId),
-      category: CATEGORY_KEY_BY_ID[article.categoryId],
-      label: article.categoryName,
-      title: article.title,
-    }));
 
   return (
     <ScrollView
@@ -78,13 +54,6 @@ export function MyScreen() {
         minHeight={viewportHeight}
       />
       <View className="gap-3.5 px-5 pb-[30px] pt-5">
-        <RecordSummaryCard
-          year={year}
-          streakDays={streak.data?.currentStreak ?? 0}
-          readCount={yearSummary.data?.readArticleCount ?? 0}
-          readHours={toHours(yearSummary.data?.usedMinutes)}
-          longestStreakDays={streak.data?.longestStreak ?? 0}
-        />
         <YearStripsCard
           levels={levels}
           today={today}
@@ -92,15 +61,6 @@ export function MyScreen() {
         />
         {/* 컨디션 기록 카드(ConditionCard)는 기획 확정 후 이 자리에 추가 */}
         <WeeklyRecordCard weeklyMinutes={weeklyMinutes} />
-        <RecentSavedArticlesCard
-          articles={articles}
-          onPressMore={() =>
-            router.navigate({
-              pathname: "/archive",
-              params: { tab: "article" },
-            })
-          }
-        />
       </View>
     </ScrollView>
   );
