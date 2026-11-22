@@ -16,7 +16,7 @@ export function WeeklyRecordCard({ weeklyMinutes }: WeeklyRecordCardProps) {
       <View className="flex-row items-center justify-between">
         <Text className="text-primary text-title2-sb">쌓이는 기록</Text>
         <Text className="text-tertiary text-caption1-m">
-          최근 {weeklyMinutes.length}주 읽은 시간
+          최근 {weeklyMinutes.length}주동안 읽은 시간
         </Text>
       </View>
       <View className="gap-3">
