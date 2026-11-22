@@ -7,7 +7,7 @@ import type {
   TodayRouteState,
 } from "@/types/ride/ride.types";
 
-import { getRideButton } from "../_helpers";
+import { getGreeting, getRideButton } from "../_helpers";
 
 jest.mock("expo-router", () => ({ router: { push: jest.fn() } }));
 
@@ -75,4 +75,18 @@ describe("getRideButton", () => {
       expect(button.onPress).toBeUndefined();
     },
   );
+});
+
+describe("getGreeting", () => {
+  it.each([
+    [4, "좋은 아침이에요!"],
+    [11, "좋은 아침이에요!"],
+    [12, "좋은 오후예요!"],
+    [17, "좋은 오후예요!"],
+    [18, "오늘 하루도 수고했어요"],
+    [0, "오늘 하루도 수고했어요"],
+    [3, "오늘 하루도 수고했어요"],
+  ])("%i시에는 '%s'", (hour, greeting) => {
+    expect(getGreeting(hour)).toBe(greeting);
+  });
 });

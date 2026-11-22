@@ -16,7 +16,7 @@ import { EditorPickSection } from "@/screens/home/_components/editor-pick-sectio
 import { StreakCard } from "@/screens/home/_components/streak-card";
 import { TrendingSection } from "@/screens/home/_components/trending-section";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
-import { getRideButton } from "@/screens/home/_helpers";
+import { getGreeting, getRideButton } from "@/screens/home/_helpers";
 import { openArticle, toPopularChipLabel } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 
@@ -52,7 +52,7 @@ export function HomeScreen() {
             <View className="gap-2">
               {/* Figma는 22px Bold(140%·-2%)지만 같은 토큰이 없어 heading2-b(24px·135%)를 쓴다 */}
               <Text className="text-primary text-heading2-b">
-                {nickname}님 좋은 아침이에요!
+                {nickname}님 {getGreeting(new Date().getHours())}
               </Text>
               <Text className="text-secondary text-body2-m">
                 오늘도 우리 모두 {commute} 중이에요
