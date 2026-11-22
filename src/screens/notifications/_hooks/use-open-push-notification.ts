@@ -12,7 +12,9 @@ export function useOpenPushNotification() {
     () =>
       // notificationId · type 외의 키가 유형별 params
       onPushOpened(({ notificationId, type, ...params }) => {
-        if (notificationId) markRead(Number(notificationId));
+        // 서버 data가 숫자가 아니면 잘못된 요청 · 에러 토스트가 되므로 읽음 처리만 건너뛴다
+        const id = Number(notificationId);
+        if (Number.isInteger(id) && id > 0) markRead(id);
         openNotification(type ?? "", params);
       }),
     [markRead],
