@@ -11,7 +11,8 @@
       "bundleIdentifier": "com.byarrival.app",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": ["remote-notification"],
+        "NSPhotoLibraryAddUsageDescription": "카드를 사진첩에 저장하려면 사진 저장 권한이 필요해요."
       },
       "config": {
         "usesNonExemptEncryption": false
