@@ -45,7 +45,7 @@ export function Dialog({
           <View className="w-full gap-2 px-5 pt-5">
             <Text
               accessibilityRole="header"
-              className="text-center text-primary text-title1-sb"
+              className="text-center text-primary text-title2-sb"
             >
               {title}
             </Text>

@@ -42,6 +42,15 @@ describe("OnboardingCompleteScreen", () => {
 
     expect(screen.getByRole("header")).toHaveTextContent("준비 완료!");
     expect(screen.getByText("학생")).toBeOnTheScreen();
+    expect(screen.getByText("등교 시각")).toBeOnTheScreen();
+    expect(
+      screen.getByText(
+        "등굣길에 맞춰 뉴스를 골라둘게요.\n지금 바로 첫 등굣길을 시작해 보세요.",
+      ),
+    ).toBeOnTheScreen();
+    expect(
+      screen.getByRole("button", { name: "등굣길 시작하기" }),
+    ).toBeOnTheScreen();
     expect(screen.getByText("오후 6:05")).toBeOnTheScreen();
     // 고른 순서가 아니라 화면 목록 순서로 보여준다
     expect(screen.getByText("경제·금융, IT·기술")).toBeOnTheScreen();
@@ -56,6 +65,7 @@ describe("OnboardingCompleteScreen", () => {
   it("출근길 시작하기를 누르면 온보딩 완료를 요청하고, 성공하면 세션에 완료로 기록한다 (홈 이동은 가드)", async () => {
     const user = userEvent.setup();
     useAuthStore.setState({ isOnboarded: false });
+    useOnboardingStore.setState({ userType: "worker" });
     await render(<OnboardingCompleteScreen />);
     await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
     expect(mockComplete).toHaveBeenCalledTimes(1);
@@ -66,6 +76,7 @@ describe("OnboardingCompleteScreen", () => {
     mockSucceeds = false;
     const user = userEvent.setup();
     useAuthStore.setState({ isOnboarded: false });
+    useOnboardingStore.setState({ userType: "worker" });
     await render(<OnboardingCompleteScreen />);
     await user.press(screen.getByRole("button", { name: "출근길 시작하기" }));
     expect(useAuthStore.getState().isOnboarded).toBe(false);

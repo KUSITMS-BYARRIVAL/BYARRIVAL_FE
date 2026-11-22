@@ -21,8 +21,6 @@ const TERMS_LABEL: Record<string, string> = {
   SERVICE: "이용약관 동의",
   PRIVACY: "개인정보 처리방침 동의",
 };
-// [임시] 서버에 마케팅 약관이 없어 화면에서만 체크한다 (서버에 보내지 않음)
-const MARKETING_LABEL = "[선택] 마케팅·이벤트 알림 수신";
 
 const labelOf = ({ type, title, required }: TermsResponse) =>
   `${required ? "[필수]" : "[선택]"} ${TERMS_LABEL[type] ?? title}`;
@@ -33,7 +31,6 @@ export function TermsScreen() {
   const { data: terms = [], isPending, isError, refetch } = useGetTerms();
   const { mutate: agree, isPending: isAgreeing } = useAgreeTerms();
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
-  const [isMarketingChecked, setIsMarketingChecked] = useState(false);
 
   // 어두운 배경이라 이 화면에 있는 동안만 상태바 글자를 밝게 한다
   // 리렌더마다 다시 실행되지 않게 고정한다 (실행될 때마다 상태바가 깜빡인다)
@@ -52,10 +49,7 @@ export function TermsScreen() {
     }, []),
   );
 
-  const isAllChecked =
-    terms.length > 0 &&
-    checkedIds.length === terms.length &&
-    isMarketingChecked;
+  const isAllChecked = terms.length > 0 && checkedIds.length === terms.length;
   const canAgree =
     terms.length > 0 &&
     terms.every(
@@ -68,10 +62,8 @@ export function TermsScreen() {
         ? ids.filter((id) => id !== termsId)
         : [...ids, termsId],
     );
-  const toggleAll = () => {
+  const toggleAll = () =>
     setCheckedIds(isAllChecked ? [] : terms.map(({ termsId }) => termsId));
-    setIsMarketingChecked(!isAllChecked);
-  };
   const view = (url: string) => {
     // 서버가 준 주소라도 https 본문만 연다
     if (url.startsWith("https://")) WebBrowser.openBrowserAsync(url);
@@ -135,11 +127,6 @@ export function TermsScreen() {
                     onView={() => view(item.contentUrl)}
                   />
                 ))}
-                <TermsCheckRow
-                  label={MARKETING_LABEL}
-                  isChecked={isMarketingChecked}
-                  onToggle={() => setIsMarketingChecked((value) => !value)}
-                />
               </View>
             </View>
           )}

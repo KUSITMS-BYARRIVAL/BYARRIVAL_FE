@@ -14,7 +14,8 @@ async function renderStepper(current: number, total = 7) {
 type Node = ReturnType<typeof screen.getByRole>;
 // 자식은 모두 View라 문자열 노드가 없다
 const child = (node: Node, i: number) => node.children[i] as Node;
-const fill = (bar: Node) => child(child(bar, 0), 0);
+// showVehicle이면 0번째가 지하철 아이콘, 1번째가 트랙이다
+const fill = (bar: Node) => child(child(bar, 1), 0);
 
 describe("ProgressStepper", () => {
   it("현재 단계를 progressbar 값으로 알린다", async () => {
@@ -30,6 +31,12 @@ describe("ProgressStepper", () => {
   it("마지막 단계면 트랙 끝까지 채운다", async () => {
     const bar = await renderStepper(7);
     expect(fill(bar)).toHaveStyle({ width: 353 });
+  });
+
+  it("지하철 아이콘은 트랙·점보다 먼저 그려 뒤 레이어에 둔다", async () => {
+    const bar = await renderStepper(1);
+    // 아이콘 박스 위치(Figma top -19)로 첫 자식이 아이콘인지 확인한다
+    expect(child(bar, 0)).toHaveStyle({ top: -19 });
   });
 
   it("범위 밖 단계는 끝값으로 자른다", async () => {
