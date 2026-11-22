@@ -4,8 +4,8 @@ import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SubwaySideIcon } from "@/assets/icons";
-import { LogoIllustration } from "@/assets/illustrations";
 import { AlarmButton } from "@/screens/_components/alarm-button";
+import { LogoHeader } from "@/screens/_components/logo-header";
 import { Button } from "@/components/button/button";
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useGetHome } from "@/hooks/queries/use-get-home";
@@ -43,11 +43,7 @@ export function HomeScreen() {
 
   return (
     <View className="flex-1 bg-default" style={{ paddingTop: top }}>
-      {/* 보관함 · 마이의 공통 Header(h-11)와 높이를 맞춘다 */}
-      <View className="h-11 flex-row items-center justify-between px-5">
-        <LogoIllustration />
-        <AlarmButton />
-      </View>
+      <LogoHeader right={<AlarmButton />} />
       {isPending ? (
         <LoadingDots className="flex-1" />
       ) : (
