@@ -89,12 +89,13 @@ describe("TrendingSection", () => {
     expect(onArticlePress).toHaveBeenCalledWith("https://example.com/j2");
   });
 
-  it("전체보기를 누르면 onSeeAllPress를 호출한다", async () => {
+  it("전체보기를 누르면 지금 고른 칩 위치를 넘긴다", async () => {
     const user = userEvent.setup();
     const onSeeAllPress = jest.fn();
     await renderSection({ onSeeAllPress });
+    await user.press(screen.getByText("전체"));
     await user.press(screen.getByRole("button", { name: "전체보기" }));
-    expect(onSeeAllPress).toHaveBeenCalledTimes(1);
+    expect(onSeeAllPress).toHaveBeenCalledWith(1);
   });
 
   it("고른 직군이 여러 개면 받은 순서대로 칩을 모두 보여준다", async () => {

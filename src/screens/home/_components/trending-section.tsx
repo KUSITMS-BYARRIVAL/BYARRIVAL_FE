@@ -32,7 +32,8 @@ type TrendingSectionProps = {
   userType: UserType;
   /** 보여줄 순서대로 */
   chips: TrendingChip[];
-  onSeeAllPress: () => void;
+  /** 전체보기에서도 같은 칩을 고르도록 지금 고른 칩 위치를 넘긴다 */
+  onSeeAllPress: (chipIndex: number) => void;
   onArticlePress: (url: string) => void;
   className?: string;
 };
@@ -57,7 +58,10 @@ export function TrendingSection({
         <Text className="text-primary text-title2-sb">
           지금 {route}에서 많이 봐요
         </Text>
-        <TextButton label="전체보기" onPress={onSeeAllPress} />
+        <TextButton
+          label="전체보기"
+          onPress={() => onSeeAllPress(selectedIndex)}
+        />
       </View>
       {/* 고른 직군이 많으면 칩이 화면 밖으로 나가지 않게 줄을 바꾼다 */}
       <View className="flex-row flex-wrap gap-2">

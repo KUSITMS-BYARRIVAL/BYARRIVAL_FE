@@ -96,7 +96,12 @@ export function HomeScreen() {
                   viewers: article.cartedUserCount,
                 })),
               }))}
-              onSeeAllPress={() => router.push("/trending")}
+              onSeeAllPress={(chipIndex) =>
+                router.push({
+                  pathname: "/trending",
+                  params: { chip: chipIndex },
+                })
+              }
               onArticlePress={openArticle}
             />
           )}

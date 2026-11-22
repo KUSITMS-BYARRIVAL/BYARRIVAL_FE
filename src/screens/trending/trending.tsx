@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -27,7 +27,9 @@ export function TrendingScreen() {
   // 고른 직군(고른 순서) 다음에 전체(null) — 홈 칩과 같은 순서
   const chips = [...(jobGroups ?? []), null];
   // 칩 위치로 고른다 — 내 정보가 늦게 와도 첫 칩(내 직군)이 기본이 되고, 칩이 줄면 마지막 칩으로 맞춘다
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  // 홈과 칩 순서가 같아 홈에서 고른 칩 위치를 그대로 처음 선택으로 쓴다
+  const { chip } = useLocalSearchParams<{ chip?: string }>();
+  const [selectedIndex, setSelectedIndex] = useState(Number(chip ?? 0));
   const selected = chips[Math.min(selectedIndex, chips.length - 1)];
   const { data, isPending, dataUpdatedAt } = useGetPopular(
     selected ?? undefined,
