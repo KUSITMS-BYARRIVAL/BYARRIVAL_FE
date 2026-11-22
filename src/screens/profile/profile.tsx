@@ -14,7 +14,6 @@ import {
   LocationIcon,
   LogoutIcon,
   PaperIcon,
-  PenIcon,
   SubwayMonoIcon,
 } from "@/assets/icons";
 import { ButtonCard } from "@/components/button-card/button-card";
@@ -95,11 +94,8 @@ function ProfileContent({ me }: { me: UserMeResponse }) {
     <>
       <View className="items-center gap-3.5">
         <ProfilePhoto imageUrl={me.profileImageUrl} />
-        {/* TODO: 닉네임 수정 화면은 시안이 없어 연필 아이콘만 둔다 */}
-        <View className="flex-row items-center gap-0.5">
-          <Text className="text-strong text-title1-sb">{me.nickname}</Text>
-          <PenIcon />
-        </View>
+        {/* TODO: 닉네임 수정 화면이 없어 눌러도 반응 없는 연필 아이콘은 뺐다. 수정 화면이 생기면 다시 넣는다 */}
+        <Text className="text-strong text-title1-sb">{me.nickname}</Text>
       </View>
       <View className="gap-9">
         <ButtonCard>
