@@ -1,15 +1,20 @@
 import {
+  getInitialNotification,
   getMessaging,
   getToken,
+  onNotificationOpenedApp,
   onTokenRefresh,
+  type RemoteMessage,
 } from "@react-native-firebase/messaging";
 
-import { getFcmToken, onFcmTokenRefresh } from "../fcm-token";
+import { getFcmToken, onFcmTokenRefresh, onPushOpened } from "../fcm-token";
 
 jest.mock("@react-native-firebase/messaging", () => ({
   getMessaging: jest.fn(() => "messaging"),
   getToken: jest.fn(),
   onTokenRefresh: jest.fn(),
+  getInitialNotification: jest.fn(),
+  onNotificationOpenedApp: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -43,3 +48,44 @@ describe("onFcmTokenRefresh", () => {
     expect(onTokenRefresh).toHaveBeenCalledWith("messaging", listener);
   });
 });
+
+describe("onPushOpened", () => {
+  const data = { notificationId: "104", type: "SMALLTALK", smalltalkId: "3" };
+
+  it("꺼진 상태에서 푸시로 열렸으면 그 푸시의 data를 넘긴다", async () => {
+    jest
+      .mocked(getInitialNotification)
+      .mockResolvedValue({ data } as RemoteMessage);
+    const listener = jest.fn();
+
+    onPushOpened(listener);
+
+    await waitForPromises();
+    expect(listener).toHaveBeenCalledWith(data);
+  });
+
+  it("푸시로 열리지 않았으면 넘기지 않는다", async () => {
+    jest.mocked(getInitialNotification).mockResolvedValue(null);
+    const listener = jest.fn();
+
+    onPushOpened(listener);
+
+    await waitForPromises();
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("백그라운드에서 푸시로 열리면 data를 넘기고, 해제 함수를 돌려준다", () => {
+    jest.mocked(getInitialNotification).mockResolvedValue(null);
+    const unsubscribe = jest.fn();
+    jest.mocked(onNotificationOpenedApp).mockReturnValue(unsubscribe);
+    const listener = jest.fn();
+
+    expect(onPushOpened(listener)).toBe(unsubscribe);
+    const handle = jest.mocked(onNotificationOpenedApp).mock.calls[0]![1];
+    handle({ data } as RemoteMessage);
+    expect(listener).toHaveBeenCalledWith(data);
+  });
+});
+
+const waitForPromises = () =>
+  new Promise<void>((resolve) => setImmediate(resolve));
