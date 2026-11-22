@@ -2,6 +2,7 @@ import {
   getInitialNotification,
   getMessaging,
   getToken,
+  onMessage,
   onNotificationOpenedApp,
   onTokenRefresh,
   type RemoteMessage,
@@ -28,3 +29,7 @@ export const onPushOpened = (listener: (data: PushData) => void) => {
     .catch(() => undefined);
   return onNotificationOpenedApp(messaging, handle);
 };
+
+/** 앱을 보고 있을 때 푸시가 오면 알린다 (FCM은 이때 OS 알림을 띄우지 않는다). 해제 함수를 돌려준다 */
+export const onForegroundPush = (listener: () => void) =>
+  onMessage(getMessaging(), listener);

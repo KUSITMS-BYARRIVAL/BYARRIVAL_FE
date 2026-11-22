@@ -2,12 +2,18 @@ import {
   getInitialNotification,
   getMessaging,
   getToken,
+  onMessage,
   onNotificationOpenedApp,
   onTokenRefresh,
   type RemoteMessage,
 } from "@react-native-firebase/messaging";
 
-import { getFcmToken, onFcmTokenRefresh, onPushOpened } from "../fcm-token";
+import {
+  getFcmToken,
+  onFcmTokenRefresh,
+  onForegroundPush,
+  onPushOpened,
+} from "../fcm-token";
 
 jest.mock("@react-native-firebase/messaging", () => ({
   getMessaging: jest.fn(() => "messaging"),
@@ -15,6 +21,7 @@ jest.mock("@react-native-firebase/messaging", () => ({
   onTokenRefresh: jest.fn(),
   getInitialNotification: jest.fn(),
   onNotificationOpenedApp: jest.fn(),
+  onMessage: jest.fn(),
 }));
 
 beforeEach(() => {
@@ -84,6 +91,17 @@ describe("onPushOpened", () => {
     const handle = jest.mocked(onNotificationOpenedApp).mock.calls[0]![1];
     handle({ data } as RemoteMessage);
     expect(listener).toHaveBeenCalledWith(data);
+  });
+});
+
+describe("onForegroundPush", () => {
+  it("포그라운드 메시지 리스너를 등록하고 해제 함수를 돌려준다", () => {
+    const unsubscribe = jest.fn();
+    jest.mocked(onMessage).mockReturnValue(unsubscribe);
+    const listener = jest.fn();
+
+    expect(onForegroundPush(listener)).toBe(unsubscribe);
+    expect(onMessage).toHaveBeenCalledWith("messaging", listener);
   });
 });
 
