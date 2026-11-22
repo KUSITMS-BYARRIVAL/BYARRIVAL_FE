@@ -35,9 +35,9 @@ export function BoardingPassScreen() {
   // 담은 카드를 유지한 채 뉴스 탑승하기로 돌아간다. 알림에서 바로 들어와 스택에 없으면 그 화면으로 바꾼다
   const backToSelect = () => router.dismissTo("/ride/select");
 
-  // [임시] 목표 시간을 이미 넘었으면 돌아가지 않고 토스트만 띄운다 (시안 없음)
+  // [임시] 이미 목표 시간의 120%(서버 담기 한도)를 넘었으면 돌아가지 않고 토스트만 띄운다 (시안 없음)
   const handleMoreNews = () => {
-    if (route && route.cart.totalMinutes > route.targetMinutes) {
+    if (route && route.cart.totalMinutes > route.targetMinutes * 1.2) {
       useToastStore.getState().showToast({ message: OVER_LIMIT_TOAST_MESSAGE });
       return;
     }
