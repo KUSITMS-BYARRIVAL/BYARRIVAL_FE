@@ -58,11 +58,11 @@ describe("getRideButton", () => {
     },
   );
 
-  it("완주(COMPLETED)면 '오늘 노선 다시 보기'를 누르면 도착 화면으로 간다", () => {
+  it("완주(COMPLETED)면 '오늘의 노선 돌아보기'를 누르면 도착 화면으로 간다", () => {
     const button = getRideButton(
       todayRoute("COMPLETED", { currentStop: 5, totalStops: 5 }),
     );
-    expect(button.label).toBe("오늘 노선 다시 보기");
+    expect(button.label).toBe("오늘의 노선 돌아보기");
     button.onPress?.();
     expect(router.push).toHaveBeenCalledWith("/ride/arrival");
   });

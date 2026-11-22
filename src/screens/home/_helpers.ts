@@ -34,7 +34,7 @@ export const getRideButton = (todayRoute: TodayRoute | null) => {
     // TODO: 지금은 임시로 도착 화면
     case "COMPLETED":
       return {
-        label: "오늘 노선 다시 보기",
+        label: "오늘의 노선 돌아보기",
         onPress: () => router.push("/ride/arrival"),
       };
     // [임시] EMPTY(오늘 추천 기사 0건) · EXPIRED 문구 — 기획 확인 전
