@@ -1,4 +1,4 @@
-import { Pressable, type PressableProps } from "react-native";
+import { Pressable, type PressableProps, View } from "react-native";
 
 import { ShareIcon } from "@/assets/icons";
 import { cn } from "@/lib/cn";
@@ -20,7 +20,15 @@ export function ShareButton({ className, ...props }: ShareButtonProps) {
       )}
       {...props}
     >
-      <ShareIcon color={SEMANTIC.icon.brand} />
+      {({ pressed }) => (
+        <>
+          {/* QA: 누르면 원 전체를 Grey 300으로 */}
+          {pressed && (
+            <View className="absolute inset-0 rounded-full bg-grey-300" />
+          )}
+          <ShareIcon color={SEMANTIC.icon.brand} />
+        </>
+      )}
     </Pressable>
   );
 }
