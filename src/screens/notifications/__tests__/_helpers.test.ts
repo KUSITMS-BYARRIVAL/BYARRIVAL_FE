@@ -4,6 +4,7 @@ import * as WebBrowser from "expo-web-browser";
 
 import { baseApi } from "@/lib/api-client";
 import { queryClient } from "@/lib/query-client";
+import { useToastStore } from "@/stores/toast-store";
 import type { NotificationItem } from "@/types/notification/notification.types";
 
 import {
@@ -82,6 +83,7 @@ describe("openNotification", () => {
     jest.clearAllMocks();
     api.reset();
     queryClient.clear();
+    useToastStore.getState().hideToast();
   });
 
   it.each(["ROUTE_READY", "ROUTE_INCOMPLETE", "STREAK_BREAK"])(
@@ -103,11 +105,12 @@ describe("openNotification", () => {
     expect(router.navigate).toHaveBeenCalledWith("/");
   });
 
-  it("오늘 노선 조회에 실패하면 홈으로 보낸다", async () => {
+  it("오늘 노선 조회에 실패하면 토스트 없이 홈으로 보낸다", async () => {
     // 5xx는 전역 설정이 재시도해 느려지므로 재시도하지 않는 4xx로 실패시킨다
     api.onGet("/routes/today").reply(400);
     await openNotification("ROUTE_READY", {});
     expect(router.navigate).toHaveBeenCalledWith("/");
+    expect(useToastStore.getState().toast).toBeNull();
   });
 
   it("연속 기록 달성은 마이 탭, 스몰토크는 스몰토크 목록으로 보낸다", async () => {
