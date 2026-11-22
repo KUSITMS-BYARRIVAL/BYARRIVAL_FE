@@ -18,16 +18,30 @@ export const onFcmTokenRefresh = (listener: (token: string) => void) =>
 
 type PushData = Record<string, string>;
 
+// 로그아웃 후 재로그인처럼 다시 구독할 때 같은 초기 알림이 또 와도 한 번만 처리한다
+const handledMessageIds = new Set<string>();
+
 /** 푸시를 눌러 앱이 열리면(꺼진 상태 · 백그라운드 모두) 그 푸시의 data를 넘긴다. 해제 함수를 돌려준다 */
 export const onPushOpened = (listener: (data: PushData) => void) => {
   const messaging = getMessaging();
+  // 해제 뒤에 초기 알림 조회가 끝나도 넘기지 않는다 (로그아웃 상태에서 읽음 처리 · 이동 방지)
+  let isUnsubscribed = false;
   const handle = (message: RemoteMessage | null) => {
-    if (message?.data) listener(message.data as PushData);
+    if (isUnsubscribed || !message?.data) return;
+    if (message.messageId) {
+      if (handledMessageIds.has(message.messageId)) return;
+      handledMessageIds.add(message.messageId);
+    }
+    listener(message.data as PushData);
   };
   getInitialNotification(messaging)
     .then(handle)
     .catch(() => undefined);
-  return onNotificationOpenedApp(messaging, handle);
+  const unsubscribe = onNotificationOpenedApp(messaging, handle);
+  return () => {
+    isUnsubscribed = true;
+    unsubscribe();
+  };
 };
 
 /** 앱을 보고 있을 때 푸시가 오면 알린다 (FCM은 이때 OS 알림을 띄우지 않는다). 해제 함수를 돌려준다 */

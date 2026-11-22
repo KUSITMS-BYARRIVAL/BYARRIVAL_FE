@@ -81,16 +81,46 @@ describe("onPushOpened", () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
-  it("백그라운드에서 푸시로 열리면 data를 넘기고, 해제 함수를 돌려준다", () => {
+  it("백그라운드에서 푸시로 열리면 data를 넘기고, 해제하면 구독을 끊는다", () => {
     jest.mocked(getInitialNotification).mockResolvedValue(null);
     const unsubscribe = jest.fn();
     jest.mocked(onNotificationOpenedApp).mockReturnValue(unsubscribe);
     const listener = jest.fn();
 
-    expect(onPushOpened(listener)).toBe(unsubscribe);
+    const off = onPushOpened(listener);
     const handle = jest.mocked(onNotificationOpenedApp).mock.calls[0]![1];
     handle({ data } as RemoteMessage);
     expect(listener).toHaveBeenCalledWith(data);
+
+    off();
+    expect(unsubscribe).toHaveBeenCalled();
+  });
+
+  it("초기 알림 조회가 끝나기 전에 해제하면 넘기지 않는다", async () => {
+    jest
+      .mocked(getInitialNotification)
+      .mockResolvedValue({ data } as RemoteMessage);
+    jest.mocked(onNotificationOpenedApp).mockReturnValue(jest.fn());
+    const listener = jest.fn();
+
+    onPushOpened(listener)();
+
+    await waitForPromises();
+    expect(listener).not.toHaveBeenCalled();
+  });
+
+  it("다시 구독해도 이미 처리한 푸시(messageId)는 또 넘기지 않는다", async () => {
+    jest
+      .mocked(getInitialNotification)
+      .mockResolvedValue({ messageId: "m-1", data } as RemoteMessage);
+    jest.mocked(onNotificationOpenedApp).mockReturnValue(jest.fn());
+    const listener = jest.fn();
+
+    onPushOpened(listener);
+    onPushOpened(listener);
+
+    await waitForPromises();
+    expect(listener).toHaveBeenCalledTimes(1);
   });
 });
 
