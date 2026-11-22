@@ -13,7 +13,7 @@ import { useGetTodaySmalltalks } from "@/hooks/queries/use-get-today-smalltalks"
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 
-// Figma 에디터픽_스몰토크: 홈 '스몰토크 추천 > 더보기'로 들어오는 오늘의 스몰토크 목록
+// Figma 에디터픽_스몰토크: 홈 '오늘의 대화거리를 챙겨가요 > 더보기'로 들어오는 오늘의 스몰토크 목록
 export function SmalltalkScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const { data, isPending } = useGetTodaySmalltalks();

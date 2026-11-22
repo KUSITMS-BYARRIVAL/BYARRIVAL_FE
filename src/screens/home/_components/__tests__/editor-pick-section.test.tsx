@@ -18,7 +18,7 @@ describe("EditorPickSection", () => {
         onSmalltalkPress={jest.fn()}
       />,
     );
-    expect(screen.getByText("스몰토크 추천")).toBeOnTheScreen();
+    expect(screen.getByText("오늘의 대화거리를 챙겨가요")).toBeOnTheScreen();
     expect(screen.getByText(SMALLTALK.newsTitle)).toBeOnTheScreen();
     expect(screen.getByText(SMALLTALK.question)).toBeOnTheScreen();
   });
