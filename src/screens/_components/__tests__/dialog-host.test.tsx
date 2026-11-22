@@ -46,4 +46,21 @@ describe("DialogHost", () => {
     expect(onConfirm).not.toHaveBeenCalled();
     expect(screen.queryByRole("header")).toBeNull();
   });
+
+  it("바깥(딤)을 누르면 콜백 없이 닫힌다", async () => {
+    const user = userEvent.setup();
+    const onConfirm = jest.fn();
+    const onCancel = jest.fn();
+    await render(<DialogHost />);
+    await open({ title: "로그아웃할까요?", onConfirm, onCancel });
+
+    // 카드가 accessibilityViewIsModal이라 딤은 스크린리더에서 숨겨진다
+    await user.press(
+      screen.getByLabelText("닫기", { includeHiddenElements: true }),
+    );
+
+    expect(onConfirm).not.toHaveBeenCalled();
+    expect(onCancel).not.toHaveBeenCalled();
+    expect(screen.queryByRole("header")).toBeNull();
+  });
 });

@@ -1,4 +1,4 @@
-import { Modal, Text, View } from "react-native";
+import { Modal, Pressable, Text, View } from "react-native";
 
 import { Button } from "@/components/button/button";
 import { cn } from "@/lib/cn";
@@ -13,6 +13,8 @@ type DialogProps = {
   cancelLabel?: string;
   /** 넘기면 취소 버튼이 생겨 버튼 2개가 된다 */
   onCancel?: () => void;
+  /** 넘기면 바깥(딤)을 눌러 아무것도 고르지 않고 닫을 수 있다 */
+  onDismiss?: () => void;
 };
 
 // Figma 그림자(0 0 10 black 5%)에 맞는 토큰이 없어 값으로 지정한다
@@ -27,6 +29,7 @@ export function Dialog({
   onConfirm,
   cancelLabel = "취소",
   onCancel,
+  onDismiss,
 }: DialogProps) {
   return (
     <Modal
@@ -37,6 +40,14 @@ export function Dialog({
       onRequestClose={onCancel ?? onConfirm}
     >
       <View className="flex-1 items-center justify-center bg-dim">
+        {/* 카드보다 먼저 깔아 카드 안을 누를 때는 닫히지 않게 한다 */}
+        {onDismiss && (
+          <Pressable
+            accessibilityLabel="닫기"
+            className="absolute inset-0"
+            onPress={onDismiss}
+          />
+        )}
         <View
           accessibilityViewIsModal
           className="w-[313px] items-center rounded bg-white"

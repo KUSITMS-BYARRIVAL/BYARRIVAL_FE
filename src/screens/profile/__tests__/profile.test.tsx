@@ -1,5 +1,7 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
 import { router } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
+import { Linking } from "react-native";
 
 import { useDialogStore } from "@/stores/dialog-store";
 
@@ -11,6 +13,7 @@ jest.mock("react-native-safe-area-context", () => ({
 jest.mock("expo-router", () => ({
   router: { back: jest.fn(), push: jest.fn(), replace: jest.fn() },
 }));
+jest.mock("expo-web-browser", () => ({ openBrowserAsync: jest.fn() }));
 const ME = {
   userId: 1,
   nickname: "출근러",
@@ -105,12 +108,31 @@ describe("ProfileScreen", () => {
     expect(screen.getByText("내 정보를 불러오는 중이에요")).toBeOnTheScreen();
   });
 
+  it("고객센터는 카카오톡 오픈채팅 링크를 연다", async () => {
+    const openURL = jest.spyOn(Linking, "openURL").mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    await render(<ProfileScreen />);
+    await user.press(screen.getByRole("button", { name: "고객센터" }));
+    expect(openURL).toHaveBeenCalledWith("https://open.kakao.com/o/sch3rQXi");
+  });
+
+  it("개인정보 처리방침은 노션 페이지를 인앱 브라우저로 연다", async () => {
+    const user = userEvent.setup();
+    await render(<ProfileScreen />);
+    await user.press(screen.getByRole("button", { name: "개인정보 처리방침" }));
+    expect(WebBrowser.openBrowserAsync).toHaveBeenCalledWith(
+      "https://hyunjin-lee.notion.site/406a5a5532818056926be2b8a92583f1",
+    );
+  });
+
   it("로그아웃은 확인한 뒤 실행하고 로그인 화면으로 간다", async () => {
     const user = userEvent.setup();
     await render(<ProfileScreen />);
     await user.press(screen.getByRole("button", { name: "로그아웃" }));
     expect(mockLogout).not.toHaveBeenCalled();
     expect(useDialogStore.getState().options?.title).toBe("로그아웃할까요?");
+    // 취소 버튼이 있어야 Android 뒤로가기가 로그아웃이 아니라 취소로 동작한다
+    expect(useDialogStore.getState().options?.onCancel).toBeDefined();
 
     useDialogStore.getState().options?.onConfirm();
     expect(mockLogout).toHaveBeenCalledTimes(1);
@@ -122,6 +144,7 @@ describe("ProfileScreen", () => {
     await render(<ProfileScreen />);
     await user.press(screen.getByRole("button", { name: "회원 탈퇴" }));
     expect(mockWithdraw).not.toHaveBeenCalled();
+    expect(useDialogStore.getState().options?.onCancel).toBeDefined();
 
     useDialogStore.getState().options?.onConfirm();
     expect(mockWithdraw).toHaveBeenCalledTimes(1);
