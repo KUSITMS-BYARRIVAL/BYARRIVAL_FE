@@ -14,10 +14,21 @@ describe("WeeklyRecordCard", () => {
     expect(screen.getByText(/지난주보다 30분 더 읽었어요/)).toBeOnTheScreen();
   });
 
-  it.each([[[100, 100]], [[100, 80]], [[]]])(
+  it.each([[[100, 100]], [[100, 80]]])(
     "지난주보다 늘지 않았으면(%j) 문구를 숨긴다",
     async (weeklyMinutes) => {
       await render(<WeeklyRecordCard weeklyMinutes={weeklyMinutes} />);
+      expect(screen.queryByText(/지난주보다/)).not.toBeOnTheScreen();
+    },
+  );
+
+  it.each([[[0, 0, 0]], [[]]])(
+    "기록이 없으면(%j) 그래프·비교 문구 대신 안내 문구를 표시한다",
+    async (weeklyMinutes) => {
+      await render(<WeeklyRecordCard weeklyMinutes={weeklyMinutes} />);
+      expect(
+        screen.getByText("뉴스를 읽어주세요. 기록이 쌓여요"),
+      ).toBeOnTheScreen();
       expect(screen.queryByText(/지난주보다/)).not.toBeOnTheScreen();
     },
   );
