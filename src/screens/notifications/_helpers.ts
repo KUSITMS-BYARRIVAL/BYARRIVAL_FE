@@ -18,9 +18,13 @@ export async function openNotification(
     case "ROUTE_READY":
     case "ROUTE_INCOMPLETE":
     case "STREAK_BREAK": {
-      // 실패해도 홈으로 보내고 홈이 다시 조회하므로 여기서는 토스트를 띄우지 않는다
+      // 실패해도 홈으로 보내고 홈이 다시 조회하므로 여기서는 재시도(이동 지연) · 토스트 없이 넘어간다
       const todayRoute = await queryClient
-        .fetchQuery({ ...getTodayRouteQuery(), meta: { skipToast: true } })
+        .fetchQuery({
+          ...getTodayRouteQuery(),
+          retry: false,
+          meta: { skipToast: true },
+        })
         .catch(() => null);
       // getRideButton은 null을 시작 전으로 보므로 조회 실패는 먼저 걸러 홈으로 보낸다
       const onPress = todayRoute && getRideButton(todayRoute).onPress;
