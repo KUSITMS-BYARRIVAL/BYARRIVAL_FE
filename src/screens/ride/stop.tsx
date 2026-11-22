@@ -212,7 +212,7 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
           label={
             isLast ? "도착까지" : `다음 정거장 ${stopNumber + 1}/${totalStops}`
           }
-          color="neutral-weak"
+          color="brand"
           size="l"
           // 원문 보기를 눌러 완독해야 다음으로 넘어간다
           disabled={!stop?.read || isMoving}
