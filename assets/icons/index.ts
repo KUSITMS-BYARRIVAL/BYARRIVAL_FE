@@ -81,6 +81,7 @@ export { default as PopularArticleIcon } from "./popular-article.svg";
 export { default as ProfileIcon } from "./profile.svg";
 export { default as ProfileLargeIcon } from "./profile-large.svg";
 export { default as QuizIcon } from "./quiz.svg";
+export { default as ScrollDownArrowIcon } from "./scroll-down-arrow.svg";
 export { default as SearchIcon } from "./search.svg";
 export { default as SendIcon } from "./send.svg";
 export { default as SettingIcon } from "./setting.svg";

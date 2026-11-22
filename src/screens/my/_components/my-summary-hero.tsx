@@ -5,6 +5,8 @@ import { ProfileIcon } from "@/assets/icons";
 import { MyHomeTrainIllustration } from "@/assets/illustrations";
 import { Header } from "@/components/header/header";
 
+import { ScrollDownIndicator } from "./scroll-down-indicator";
+
 type MySummaryHeroProps = {
   totalHours: number;
   monthMinutes: number;
@@ -65,6 +67,7 @@ export function MySummaryHero({
       {/* Figma 배경 프레임에서 문구 아래(y=367~)만 viewBox로 잘라 쓴다. 기기 너비에 맞춰 비율대로 늘어나고, 남는 높이는 위쪽 여백(mt-auto)이 흡수한다 */}
       <View className="mt-auto aspect-[393/396] w-full">
         <MyHomeTrainIllustration width="100%" height="100%" />
+        <ScrollDownIndicator className="absolute bottom-[20px]" />
       </View>
     </View>
   );
