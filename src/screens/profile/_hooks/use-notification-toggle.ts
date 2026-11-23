@@ -56,7 +56,7 @@ export function useNotificationToggle() {
       if (!canAskAgain) {
         return openDialog({
           title: "알림 권한이 꺼져 있어요",
-          description: "휴대폰 설정에서 BYARRIVAL 알림을\n허용해 주세요.",
+          description: "휴대폰 설정에서 도착까지 알림을\n허용해 주세요.",
           confirmLabel: "이동",
           onConfirm: () => void Linking.openSettings(),
           cancelLabel: "취소",
