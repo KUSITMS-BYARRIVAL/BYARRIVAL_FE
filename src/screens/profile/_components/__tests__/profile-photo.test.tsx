@@ -4,14 +4,47 @@ import {
   userEvent,
   waitFor,
 } from "@testing-library/react-native";
+import type { ReactNode } from "react";
+import { Platform } from "react-native";
 
 import { useToastStore } from "@/stores/toast-store";
 
 import { ProfilePhoto } from "../profile-photo";
 
-jest.mock("react-native-safe-area-context", () => ({
-  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
-}));
+// Jest의 Modal은 닫혀도 onDismiss를 부르지 않아, iOS처럼 닫히면 onDismiss를 부르는 시트로 바꾼다
+jest.mock("@/components/bottom-sheet/bottom-sheet", () => {
+  const { useEffect, useRef } = jest.requireActual("react");
+  const { Pressable, Text } = jest.requireActual("react-native");
+  return {
+    BottomSheet: ({
+      visible,
+      onDismiss,
+      buttonLabel,
+      onButtonPress,
+      children,
+    }: {
+      visible: boolean;
+      onDismiss?: () => void;
+      buttonLabel: string;
+      onButtonPress: () => void;
+      children: ReactNode;
+    }) => {
+      const wasVisible = useRef(visible);
+      useEffect(() => {
+        if (wasVisible.current && !visible) onDismiss?.();
+        wasVisible.current = visible;
+      }, [visible, onDismiss]);
+      return visible ? (
+        <>
+          {children}
+          <Pressable accessibilityRole="button" onPress={onButtonPress}>
+            <Text>{buttonLabel}</Text>
+          </Pressable>
+        </>
+      ) : null;
+    },
+  };
+});
 const mockPick = jest.fn();
 jest.mock("@/lib/pick-image", () => ({
   pickSquareImage: () => mockPick(),
@@ -32,6 +65,10 @@ beforeEach(() => {
   mockPick.mockResolvedValue(IMAGE);
 });
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 async function openSheet(imageUrl: string | null) {
   const user = userEvent.setup();
   await render(<ProfilePhoto imageUrl={imageUrl} />);
@@ -41,6 +78,19 @@ async function openSheet(imageUrl: string | null) {
 
 describe("ProfilePhoto", () => {
   it("앨범에서 고른 사진을 업로드한다", async () => {
+    const user = await openSheet(null);
+    await user.press(screen.getByRole("button", { name: "앨범에서 선택" }));
+    await waitFor(() => expect(mockChange).toHaveBeenCalledWith(IMAGE));
+  });
+
+  it("시트를 그냥 닫으면 앨범을 열지 않는다", async () => {
+    const user = await openSheet(null);
+    await user.press(screen.getByRole("button", { name: "취소" }));
+    expect(mockPick).not.toHaveBeenCalled();
+  });
+
+  it("Android는 시트를 닫으며 바로 앨범을 연다 (onDismiss가 없음)", async () => {
+    jest.replaceProperty(Platform, "OS", "android");
     const user = await openSheet(null);
     await user.press(screen.getByRole("button", { name: "앨범에서 선택" }));
     await waitFor(() => expect(mockChange).toHaveBeenCalledWith(IMAGE));
