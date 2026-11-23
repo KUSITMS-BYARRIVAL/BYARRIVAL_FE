@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { Pressable, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -13,6 +14,8 @@ type MySummaryHeroProps = {
   readCount: number;
   /** 사용자 유형별 '출근' · '등교' · '이동' (COMMUTE_WORDS) */
   commute: string;
+  /** 업로드한 프로필 사진. 없으면 기본 아이콘 */
+  profileImageUrl: string | null;
   onPressProfile: () => void;
   /** 첫 화면을 꽉 채우도록 사용처가 잰 화면 높이 */
   minHeight?: number;
@@ -23,6 +26,7 @@ export function MySummaryHero({
   monthMinutes,
   readCount,
   commute,
+  profileImageUrl,
   onPressProfile,
   minHeight,
 }: MySummaryHeroProps) {
@@ -43,7 +47,18 @@ export function MySummaryHero({
             hitSlop={10}
             onPress={onPressProfile}
           >
-            <ProfileIcon />
+            {profileImageUrl ? (
+              <Image
+                testID="my-profile-image"
+                source={profileImageUrl}
+                accessibilityIgnoresInvertColors
+                // expo-image는 NativeWind className을 받지 않아 style로 지정 (기본 아이콘과 같은 24, 원형)
+                style={{ width: 24, height: 24, borderRadius: 12 }}
+                contentFit="cover"
+              />
+            ) : (
+              <ProfileIcon />
+            )}
           </Pressable>
         }
       />

@@ -33,7 +33,7 @@ export function ListRow({
     <Pressable
       accessibilityRole="button"
       className={cn(
-        "flex-row items-center justify-between bg-white px-5 py-4",
+        "flex-row items-center justify-between gap-3 bg-white px-5 py-4",
         className,
       )}
       {...props}
@@ -41,7 +41,7 @@ export function ListRow({
       {({ pressed }) => (
         <>
           {pressed && <View className="absolute inset-0 bg-btn-pressed" />}
-          <View className="flex-1 flex-row items-center gap-2">
+          <View className="shrink-0 flex-row items-center gap-2">
             {icon}
             <Text
               numberOfLines={1}
@@ -54,11 +54,12 @@ export function ListRow({
             </Text>
           </View>
           {(subtext || trailing || hasArrow) && (
-            <View className="flex-row items-center">
+            // 라벨이 먼저 자리를 잡고, 보조 문구는 남은 너비 안에서 말줄임된다
+            <View className="flex-1 flex-row items-center justify-end">
               {subtext && (
                 <Text
                   numberOfLines={1}
-                  className="max-w-[213px] text-tertiary text-body3-r"
+                  className="max-w-[213px] shrink text-tertiary text-body3-r"
                 >
                   {subtext}
                 </Text>

@@ -18,6 +18,7 @@ const renderHero = (
         monthMinutes={92}
         readCount={37}
         commute="출근"
+        profileImageUrl={null}
         onPressProfile={jest.fn()}
         {...props}
       />
@@ -55,6 +56,18 @@ describe("MySummaryHero", () => {
     await renderHero({ onPressProfile });
     await fireEvent.press(screen.getByLabelText("프로필"));
     expect(onPressProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it("프로필 사진이 있으면 헤더에 사진을 표시한다", async () => {
+    await renderHero({ profileImageUrl: "https://example.com/me.jpg" });
+    expect(screen.getByTestId("my-profile-image")).toHaveProp("source", [
+      { uri: "https://example.com/me.jpg" },
+    ]);
+  });
+
+  it("프로필 사진이 없으면 사진 대신 기본 아이콘을 표시한다", async () => {
+    await renderHero({ profileImageUrl: null });
+    expect(screen.queryByTestId("my-profile-image")).toBeNull();
   });
 
   it("사용자 유형 문구를 넣어 이번 달 읽은 기사 수를 표시한다", async () => {

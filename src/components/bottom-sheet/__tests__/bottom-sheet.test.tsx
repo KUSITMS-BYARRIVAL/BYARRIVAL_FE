@@ -17,6 +17,7 @@ const METRICS = {
 async function renderSheet(visible = true) {
   const onClose = jest.fn();
   const onButtonPress = jest.fn();
+  const onDismiss = jest.fn();
   await render(
     <BottomSheet
       visible={visible}
@@ -24,6 +25,7 @@ async function renderSheet(visible = true) {
       onClose={onClose}
       buttonLabel="적용"
       onButtonPress={onButtonPress}
+      onDismiss={onDismiss}
     >
       <Text>본문</Text>
     </BottomSheet>,
@@ -33,7 +35,7 @@ async function renderSheet(visible = true) {
       ),
     },
   );
-  return { onClose, onButtonPress };
+  return { onClose, onButtonPress, onDismiss };
 }
 
 describe("BottomSheet", () => {
@@ -79,6 +81,15 @@ describe("BottomSheet", () => {
       "accessibilityEscape",
     );
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it("Modal이 닫힘을 마치면 onDismiss를 호출한다", async () => {
+    const { onDismiss } = await renderSheet();
+    // 닫힘 완료는 네이티브 Modal이 보내는 이벤트라 직접 보낸다. dismiss는 버블링되지 않아 Modal(SafeAreaProvider 래퍼의 첫 자식)에 보낸다
+    const modal = screen.root!.children[0];
+    if (typeof modal === "string") throw new Error("Modal을 찾지 못함");
+    await fireEvent(modal, "dismiss");
+    expect(onDismiss).toHaveBeenCalledTimes(1);
   });
 
   it("visible이 false면 렌더하지 않는다", async () => {

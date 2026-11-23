@@ -10,6 +10,10 @@ type BottomSheetProps = {
   onClose: () => void;
   buttonLabel: string;
   onButtonPress: () => void;
+  /** 열고 닫을 때 애니메이션. 닫기 직전에 'none'으로 바꾸면 바로 사라진다 (기본 'fade') */
+  animationType?: "fade" | "none";
+  /** 닫힘이 끝났을 때 (iOS만 호출) — 시트가 닫힌 뒤 사진 선택 화면 등 다른 네이티브 화면을 띄울 때 쓴다 */
+  onDismiss?: () => void;
   /** OptionList · TimePicker 등 본문 */
   children: ReactNode;
 };
@@ -20,6 +24,8 @@ export function BottomSheet({
   onClose,
   buttonLabel,
   onButtonPress,
+  animationType = "fade",
+  onDismiss,
   children,
 }: BottomSheetProps) {
   const { bottom } = useSafeAreaInsets();
@@ -28,9 +34,10 @@ export function BottomSheet({
   return (
     <Modal
       transparent
-      animationType="fade"
+      animationType={animationType}
       visible={visible}
       onRequestClose={onClose}
+      onDismiss={onDismiss}
     >
       <View className="flex-1 justify-end">
         <Pressable
