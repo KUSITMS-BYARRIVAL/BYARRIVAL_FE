@@ -24,7 +24,9 @@ export function EditorPickSection({
   return (
     <View className={cn("gap-3.5", className)}>
       <View className="flex-row items-start justify-between">
-        <Text className="text-primary text-title2-sb">스몰토크 추천</Text>
+        <Text className="text-primary text-title2-sb">
+          오늘의 대화거리를 챙겨가요
+        </Text>
         <TextButton label="더보기" onPress={onMorePress} />
       </View>
       <EditorPickSmalltalkCard {...smalltalk} onPress={onSmalltalkPress} />

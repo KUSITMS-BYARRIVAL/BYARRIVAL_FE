@@ -1,4 +1,50 @@
+import { router } from "expo-router";
+
+import { getTodayRouteQuery } from "@/hooks/queries/use-get-today-route";
+import { queryClient } from "@/lib/query-client";
+import { getRideButton, openArticle } from "@/screens/_helpers";
 import type { NotificationItem } from "@/types/notification/notification.types";
+
+/**
+ * 알림함 항목 · OS 푸시를 눌렀을 때 유형과 params로 화면을 연다.
+ * 모르는 유형이거나 필요한 params가 없으면 알림함으로 보낸다 (유형 · 키가 늘어도 앱이 깨지지 않게)
+ */
+export async function openNotification(
+  type: string,
+  params: Record<string, string>,
+) {
+  switch (type) {
+    // 노선은 사람마다 하나라 id 없이 지금 상태를 다시 받아 홈 탑승 버튼과 같은 곳으로 보낸다
+    case "ROUTE_READY":
+    case "ROUTE_INCOMPLETE":
+    case "STREAK_BREAK": {
+      // 실패해도 홈으로 보내고 홈이 다시 조회하므로 여기서는 재시도(이동 지연) · 토스트 없이 넘어간다
+      const todayRoute = await queryClient
+        .fetchQuery({
+          ...getTodayRouteQuery(),
+          retry: false,
+          meta: { skipToast: true },
+        })
+        .catch(() => null);
+      // getRideButton은 null을 시작 전으로 보므로 조회 실패는 먼저 걸러 홈으로 보낸다
+      const onPress = todayRoute && getRideButton(todayRoute).onPress;
+      // 만료 · 기사 없음처럼 갈 곳이 없어도 홈
+      return onPress ? onPress() : router.navigate("/");
+    }
+    case "STREAK_MILESTONE":
+      return router.navigate("/my");
+    // 스몰토크 상세 화면이 없어 목록으로 보낸다
+    case "SMALLTALK":
+      return router.push("/smalltalk");
+    case "POPULAR_ARTICLE":
+      if (params.url) return openArticle(params.url);
+      break;
+    // 공지사항 페이지가 없어 홈으로 보낸다
+    case "SERVICE_NOTICE":
+      return router.navigate("/");
+  }
+  router.navigate("/notifications");
+}
 
 const startOfDay = (date: Date, daysAgo = 0) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate() - daysAgo);

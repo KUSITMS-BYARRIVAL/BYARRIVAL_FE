@@ -33,7 +33,7 @@ export function ArrivalScreen() {
   const shareCardRef = useRef<ComponentRef<typeof View>>(null);
   const isSharingRef = useRef(false);
 
-  // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘 노선 다시 보기'로 다시 들어와도 그대로 부른다
+  // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘의 노선 돌아보기'로 다시 들어와도 그대로 부른다
   useEffect(() => {
     if (routeId !== undefined) arrive(routeId);
   }, [routeId, arrive]);

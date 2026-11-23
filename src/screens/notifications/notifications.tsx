@@ -13,6 +13,7 @@ import { NOTIFICATION_TYPES } from "@/screens/notifications/_constants";
 import {
   formatNotificationTime,
   groupNotifications,
+  openNotification,
 } from "@/screens/notifications/_helpers";
 import { useToastStore } from "@/stores/toast-store";
 
@@ -65,8 +66,8 @@ export function NotificationsScreen() {
           </Text>
         )}
         renderItem={({ item }) => {
-          // 앱이 모르는 새 유형이 와도 목록이 깨지지 않게 홈 이동으로 둔다
-          const { Icon, href } =
+          // 앱이 모르는 새 유형이 와도 목록이 깨지지 않게 TEST 아이콘으로 둔다
+          const { Icon } =
             NOTIFICATION_TYPES[item.type] ?? NOTIFICATION_TYPES.TEST;
           return (
             <Notification
@@ -77,7 +78,7 @@ export function NotificationsScreen() {
               isUnread={!item.read}
               onPress={() => {
                 if (!item.read) markRead(item.id);
-                router.push(href);
+                openNotification(item.type, item.params);
               }}
             />
           );
