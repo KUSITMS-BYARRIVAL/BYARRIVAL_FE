@@ -3,6 +3,7 @@ import { useState } from "react";
 import { ScrollView, View } from "react-native";
 
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
+import { useGetMe } from "@/hooks/queries/use-get-me";
 import { useGetStatsCalendar } from "@/hooks/queries/use-get-stats-calendar";
 import { useGetStatsSummary } from "@/hooks/queries/use-get-stats-summary";
 import { useGetStatsWeekly } from "@/hooks/queries/use-get-stats-weekly";
@@ -24,6 +25,8 @@ export function MyScreen() {
   const calendar = useGetStatsCalendar(year);
   const weekly = useGetStatsWeekly();
   const { commute } = useCommuteWords();
+  // 사진은 받는 동안 기본 아이콘으로 두면 되므로 로딩 대기(queries)에 넣지 않는다
+  const me = useGetMe();
 
   const queries = [all, month, calendar, weekly];
   // 실패는 전역 토스트(query-client)가 알리고, 실패한 영역은 0으로 둔다
@@ -50,6 +53,7 @@ export function MyScreen() {
         monthMinutes={month.data?.usedMinutes ?? 0}
         readCount={month.data?.readArticleCount ?? 0}
         commute={commute}
+        profileImageUrl={me.data?.profileImageUrl ?? null}
         onPressProfile={() => router.push("/profile")}
         minHeight={viewportHeight}
       />
