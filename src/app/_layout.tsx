@@ -43,7 +43,16 @@ export default function RootLayout() {
       : "/";
   // 로딩 실패 시에는 시스템 폰트로라도 앱을 띄운다
   const isReady = (fontsLoaded || !!fontError) && isRestored;
-  useTrackScreen(isReady);
+  // 가드가 여는 그룹과 같은 기준 (아래 Stack.Protected)
+  useTrackScreen(
+    !isReady
+      ? null
+      : !isLoggedIn
+        ? "auth"
+        : !isOnboarded
+          ? "onboarding"
+          : "app",
+  );
 
   useEffect(() => {
     // 읽기에 실패하면 비로그인으로 시작한다 (스플래시는 복원 완료 표시로 풀린다)
