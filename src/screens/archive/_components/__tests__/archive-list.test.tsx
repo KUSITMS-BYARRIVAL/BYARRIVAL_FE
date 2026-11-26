@@ -1,6 +1,7 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
 import * as WebBrowser from "expo-web-browser";
 
+import { posthog } from "@/lib/analytics";
 import type {
   LibraryArticle,
   LibrarySmalltalk,
@@ -112,6 +113,26 @@ describe("ArchiveList", () => {
     );
     await user.press(screen.getByRole("button", { name: "북마크" }));
     expect(onRemove).toHaveBeenCalledWith(1);
+  });
+
+  it("기사 탭 항목을 누르면 saved_item_open을 article_id와 함께 보낸다", async () => {
+    const user = userEvent.setup();
+    await renderList({ articles: [article(1)] });
+    await user.press(screen.getByText("기사 1"));
+    expect(posthog.capture).toHaveBeenCalledWith("saved_item_open", {
+      tab: "article",
+      article_id: 1,
+    });
+  });
+
+  it("스몰토크 탭 항목을 누르면 saved_item_open을 talk_id와 함께 보낸다", async () => {
+    const user = userEvent.setup();
+    await renderList({ tab: "smalltalk", smalltalks: [smalltalk(3)] });
+    await user.press(screen.getByText("한마디 3"));
+    expect(posthog.capture).toHaveBeenCalledWith("saved_item_open", {
+      tab: "smalltalk",
+      talk_id: 3,
+    });
   });
 
   it("https가 아닌 원문 주소는 열지 않는다", async () => {
