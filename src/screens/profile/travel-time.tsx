@@ -7,6 +7,7 @@ import { useReplaceWeeklyCommute } from "@/hooks/mutations/use-replace-weekly-co
 import { useUpdateMe } from "@/hooks/mutations/use-update-me";
 import { useGetMe } from "@/hooks/queries/use-get-me";
 import { useDebouncedCallback } from "@/hooks/use-debounced-callback";
+import { track } from "@/lib/analytics";
 import { useToastStore } from "@/stores/toast-store";
 import type { UserMeResponse } from "@/types/user/user.types";
 
@@ -55,8 +56,12 @@ function TravelTimeForm({ me }: { me: UserMeResponse }) {
   const [base, setBase] = useState(me.defaultCommuteMinutes ?? DEFAULT_MINUTES);
   const [plan, setPlan] = useState(() => toWeeklyPlan(me.weeklyCommute));
 
+  const trackChange = () => track("setting_change", { field: "commute_time" });
   const saveBase = useDebouncedCallback((minutes: number) => {
-    updateMe({ defaultCommuteMinutes: minutes }, { onSettled: refreshMe });
+    updateMe(
+      { defaultCommuteMinutes: minutes },
+      { onSuccess: trackChange, onSettled: refreshMe },
+    );
   }, SAVE_DELAY_MS);
   const saveWeekly = useDebouncedCallback((next: WeeklyPlan) => {
     const days = toDailyCommutes(next);
@@ -65,7 +70,7 @@ function TravelTimeForm({ me }: { me: UserMeResponse }) {
       showToast({ message: NO_COMMUTE_DAY_MESSAGE });
       return;
     }
-    replaceWeekly(days, { onSettled: refreshMe });
+    replaceWeekly(days, { onSuccess: trackChange, onSettled: refreshMe });
   }, SAVE_DELAY_MS);
 
   const changeDay = (weekday: keyof WeeklyPlan, minutes: number) => {

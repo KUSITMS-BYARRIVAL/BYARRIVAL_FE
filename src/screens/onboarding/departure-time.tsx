@@ -11,6 +11,7 @@ import { type Time, TimePicker } from "@/components/time-picker/time-picker";
 import { TimeSelector } from "@/components/time-selector/time-selector";
 import { useUpdateNotificationPermission } from "@/hooks/mutations/use-update-notification-permission";
 import { useUpdateOnboarding } from "@/hooks/mutations/use-update-onboarding";
+import { track } from "@/lib/analytics";
 import { requestNotificationPermission } from "@/lib/notification-permission";
 import { useDialogStore } from "@/stores/dialog-store";
 import { type UserType, useOnboardingStore } from "@/stores/onboarding-store";
@@ -76,6 +77,10 @@ export function DepartureTimeScreen() {
   const allowNotification = async () => {
     try {
       const permission = await requestNotificationPermission();
+      track("push_permission_result", {
+        result: permission === "GRANTED" ? "granted" : "denied",
+        source: "onboarding",
+      });
       savePermission(permission);
       if (permission === "DENIED") showToast({ message: DENIED_MESSAGE });
     } catch {
@@ -143,7 +148,13 @@ export function DepartureTimeScreen() {
                     confirmLabel: "알림 받기",
                     onConfirm: allowNotification,
                     cancelLabel: "나중에",
-                    onCancel: goNext,
+                    onCancel: () => {
+                      track("push_permission_result", {
+                        result: "skipped",
+                        source: "onboarding",
+                      });
+                      goNext();
+                    },
                   }),
               },
             )

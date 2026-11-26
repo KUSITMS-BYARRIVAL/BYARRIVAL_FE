@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { Chip } from "@/components/chip/chip";
 import { useChangeRegion } from "@/hooks/mutations/use-change-region";
+import { track } from "@/lib/analytics";
 import {
   RegionPicker,
   regionLabelOf,
@@ -29,7 +30,10 @@ export function ProfileRegionScreen() {
             value={me.region}
             onSelect={({ sigunguId }) => {
               // 같은 지역을 다시 고르면 저장하지 않는다
-              if (sigunguId !== me.region?.sigunguId) mutate(sigunguId);
+              if (sigunguId !== me.region?.sigunguId)
+                mutate(sigunguId, {
+                  onSuccess: () => track("setting_change", { field: "region" }),
+                });
             }}
             province={province ?? me.region?.sidoName ?? null}
             onProvinceChange={setProvince}

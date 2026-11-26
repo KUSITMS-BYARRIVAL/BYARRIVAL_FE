@@ -70,6 +70,9 @@ export function NicknameScreen() {
   // 입력하는 대로 스토어에 저장해, 다음으로를 누르기 전에 화면을 떠났다 와도 초안이 남는다
   const nickname = useOnboardingStore((state) => state.nickname);
   const setNickname = useOnboardingStore((state) => state.setNickname);
+  // 온보딩 소요 시간(onboarding_complete)의 시작. 약관을 거쳐 왔으면 약관 진입 시각이 유지된다
+  const markStarted = useOnboardingStore((state) => state.markStarted);
+  useEffect(() => markStarted(), [markStarted]);
   useResumeOnboarding();
   const showToast = useToastStore((state) => state.showToast);
   // 닉네임 검사 오류만 입력창 아래에 보여주고, 그 외(네트워크·서버 오류)는 토스트로 알린다

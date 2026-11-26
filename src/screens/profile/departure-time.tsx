@@ -6,6 +6,7 @@ import { TimeSetting } from "@/components/time-setting/time-setting";
 import { TimeSettingRow } from "@/components/time-setting/time-setting-row";
 import { useReplaceWeeklyCommute } from "@/hooks/mutations/use-replace-weekly-commute";
 import { useGetMe } from "@/hooks/queries/use-get-me";
+import { track } from "@/lib/analytics";
 import { useToastStore } from "@/stores/toast-store";
 
 import { SettingsLayout } from "./_components/settings-layout";
@@ -66,7 +67,9 @@ export function ProfileDepartureTimeScreen() {
       showToast({ message: NO_COMMUTE_DAY_MESSAGE });
       return;
     }
-    mutate(days);
+    mutate(days, {
+      onSuccess: () => track("setting_change", { field: "commute_start" }),
+    });
   };
 
   return (

@@ -3,6 +3,7 @@ import { Text, View } from "react-native";
 import { TextButton } from "@/components/button/text-button";
 import { useReplaceInterestCategories } from "@/hooks/mutations/use-replace-interest-categories";
 import { useGetCategories } from "@/hooks/queries/use-get-categories";
+import { track } from "@/lib/analytics";
 import { InterestTile } from "@/screens/_components/interest-tile";
 import { INTERESTS } from "@/screens/_constants";
 import { toCategoryIds, toInterests } from "@/screens/_helpers";
@@ -38,7 +39,9 @@ export function ProfileInterestsScreen() {
       showToast({ message: SAVE_ERROR_MESSAGE });
       return;
     }
-    mutate(ids);
+    mutate(ids, {
+      onSuccess: () => track("setting_change", { field: "category" }),
+    });
   };
 
   if (isCategoriesError) {
