@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 
 import { TextButton } from "@/components/button/text-button";
 import { ButtonCard } from "@/components/button-card/button-card";
 import { RankingRow } from "@/components/button-card/ranking-row";
 import { Chip } from "@/components/chip/chip";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { AchievementCard } from "@/screens/_components/achievement-card";
 import type { UserType } from "@/stores/onboarding-store";
@@ -18,6 +19,8 @@ type TrendingArticle = {
 type TrendingChip = {
   /** 예: '내 직군 · 기획·마케팅', '전체' */
   label: string;
+  /** 서버 직군 코드. 전체는 null */
+  jobGroup: string | null;
   /** 칩 범위의 데이터가 모자라 순위를 못 낼 때 true — 목록 자리에 집계중 카드를 보여준다 */
   isAggregating: boolean;
   articles: TrendingArticle[];
@@ -51,6 +54,17 @@ export function TrendingSection({
   // 다시 받은 칩이 줄어도 비지 않게 마지막 칩으로 맞춘다
   const selectedIndex = Math.min(pickedIndex, chips.length - 1);
   const selected = chips[selectedIndex];
+  const aggregatingChip = selected?.isAggregating
+    ? (selected.jobGroup ?? "all")
+    : null;
+  const hasSentAggregatingRef = useRef(false);
+
+  // 칩마다 집계중 여부가 달라 집계중 칩이 처음 보일 때 1번 보낸다 (홈 탭은 마운트된 채 남아 앱을 다시 켜기 전까지 1번)
+  useEffect(() => {
+    if (aggregatingChip === null || hasSentAggregatingRef.current) return;
+    hasSentAggregatingRef.current = true;
+    track("home_aggregating_view", { screen: "home", chip: aggregatingChip });
+  }, [aggregatingChip]);
 
   return (
     <View className={cn("gap-3.5", className)}>

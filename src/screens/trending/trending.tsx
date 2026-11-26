@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -14,6 +14,7 @@ import {
   getPopularQuery,
   useGetPopular,
 } from "@/hooks/queries/use-get-popular";
+import { track } from "@/lib/analytics";
 import { AchievementCard } from "@/screens/_components/achievement-card";
 import { openArticle, toPopularChipLabel } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
@@ -41,6 +42,14 @@ export function TrendingScreen() {
     );
   }, [queryClient, jobGroups]);
   const isAggregating = data?.status === "AGGREGATING";
+  const aggregatingChip = isAggregating ? (selected ?? "all") : null;
+  const hasSentAggregatingRef = useRef(false);
+  // 칩마다 집계중 여부가 달라 집계중 칩이 처음 보일 때 화면 진입당 1번 보낸다
+  useEffect(() => {
+    if (aggregatingChip === null || hasSentAggregatingRef.current) return;
+    hasSentAggregatingRef.current = true;
+    track("home_aggregating_view", { screen: "top10", chip: aggregatingChip });
+  }, [aggregatingChip]);
   // [임시] 서버에 집계 시각 필드가 없어 앱이 받은 시각을 보여준다 — 백엔드에 필드 요청 중
   const updatedAt = new Date(dataUpdatedAt).toLocaleTimeString("ko-KR", {
     hour: "numeric",

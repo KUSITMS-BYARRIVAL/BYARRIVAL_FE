@@ -11,7 +11,7 @@ import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useGetHome } from "@/hooks/queries/use-get-home";
 import { useGetMe } from "@/hooks/queries/use-get-me";
 import { useGetStatsStreak } from "@/hooks/queries/use-get-stats-streak";
-import { posthog } from "@/lib/analytics";
+import { posthog, track } from "@/lib/analytics";
 import { CommuterCountCard } from "@/screens/home/_components/commuter-count-card";
 import { EditorPickSection } from "@/screens/home/_components/editor-pick-section";
 import { StreakCard } from "@/screens/home/_components/streak-card";
@@ -99,6 +99,7 @@ export function HomeScreen() {
               userType={userType}
               chips={popular.map((chip) => ({
                 label: toPopularChipLabel(chip.jobGroup),
+                jobGroup: chip.jobGroup,
                 isAggregating: chip.status === "AGGREGATING",
                 // [임시] cartedUserCount는 '담은 사람 수'인데 문구는 '보고 있어요' — 기획 확인 전
                 articles: chip.articles.map((article) => ({
@@ -125,7 +126,13 @@ export function HomeScreen() {
                 question: smalltalk.hook,
               }}
               onMorePress={() => router.push("/smalltalk")}
-              onSmalltalkPress={() => openArticle(smalltalk.sourceUrl)}
+              onSmalltalkPress={() => {
+                track("smalltalk_card_click", {
+                  talk_id: smalltalk.smalltalkId,
+                  source: "home",
+                });
+                openArticle(smalltalk.sourceUrl);
+              }}
             />
           )}
         </ScrollView>
