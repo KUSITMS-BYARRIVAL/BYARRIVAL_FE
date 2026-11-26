@@ -1,5 +1,5 @@
 import { router, useFocusEffect } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -11,6 +11,7 @@ import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useGetHome } from "@/hooks/queries/use-get-home";
 import { useGetMe } from "@/hooks/queries/use-get-me";
 import { useGetStatsStreak } from "@/hooks/queries/use-get-stats-streak";
+import { posthog } from "@/lib/analytics";
 import { CommuterCountCard } from "@/screens/home/_components/commuter-count-card";
 import { EditorPickSection } from "@/screens/home/_components/editor-pick-section";
 import { StreakCard } from "@/screens/home/_components/streak-card";
@@ -32,6 +33,11 @@ export function HomeScreen() {
   const { commute, route, person, userType } = useCommuteWords();
   const isPending = home.isPending || me.isPending || streak.isPending;
   const nickname = me.data?.nickname ?? "";
+  const userId = me.data?.userId;
+  // PostHog 도입 전에 로그인해 로그인 화면을 다시 거치지 않는 사용자도 DB 유저와 묶는다
+  useEffect(() => {
+    if (userId !== undefined) posthog.identify(String(userId));
+  }, [userId]);
   const rideButton = getRideButton(home.data?.todayRoute ?? null);
   const popular = home.data?.popular;
   const smalltalk = home.data?.smalltalks?.[0];
