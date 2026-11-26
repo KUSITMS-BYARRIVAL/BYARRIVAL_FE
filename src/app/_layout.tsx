@@ -8,6 +8,7 @@ import { PostHogProvider } from "posthog-react-native";
 import { useEffect } from "react";
 
 import { useRegisterPushToken } from "@/hooks/use-register-push-token";
+import { useTrackScreen } from "@/hooks/use-track-screen";
 import { posthog } from "@/lib/analytics";
 import { queryClient } from "@/lib/query-client";
 import { DialogHost } from "@/screens/_components/dialog-host";
@@ -42,6 +43,7 @@ export default function RootLayout() {
       : "/";
   // 로딩 실패 시에는 시스템 폰트로라도 앱을 띄운다
   const isReady = (fontsLoaded || !!fontError) && isRestored;
+  useTrackScreen(isReady);
 
   useEffect(() => {
     // 읽기에 실패하면 비로그인으로 시작한다 (스플래시는 복원 완료 표시로 풀린다)
