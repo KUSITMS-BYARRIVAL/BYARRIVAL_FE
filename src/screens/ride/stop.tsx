@@ -16,6 +16,7 @@ import { useSaveArticle } from "@/hooks/mutations/use-save-article";
 import { useUnsaveArticle } from "@/hooks/mutations/use-unsave-article";
 import { getStopQuery, useGetStop } from "@/hooks/queries/use-get-stop";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { track } from "@/lib/analytics";
 import {
   COPY_LINK_TOAST_MESSAGE,
   OPEN_FAIL_TOAST_MESSAGE,
@@ -80,13 +81,23 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
   const [isMoving, setIsMoving] = useState(false);
   // 멈추기(홈) · 도착으로 나갈 때만 뒤로가기 막기를 푼다
   const [leaveTo, setLeaveTo] = useState<"home" | "arrival" | null>(null);
+  // 앱에 출발 시각이 없어 이번에 정거장 화면에 들어온 뒤부터 잰다
+  const [enteredAt] = useState(Date.now);
 
   const confirmStop = () =>
     openDialog({
       title: "운행을 멈출까요?",
       description: "읽은 기록은 저장돼요",
       confirmLabel: "멈추기",
-      onConfirm: () => setLeaveTo("home"),
+      onConfirm: () => {
+        track("route_exit", {
+          route_id: routeId,
+          station_index: stopNumber,
+          opened_count: stop?.progress.readCount ?? null,
+          elapsed_sec: Math.round((Date.now() - enteredAt) / 1000),
+        });
+        setLeaveTo("home");
+      },
       cancelLabel: "취소",
       onCancel: () => {},
     });
@@ -138,6 +149,7 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
     if (!stop) return;
     // 원문 열기 성공과 상관없이 누른 순간 완독이다 (다음 버튼이 열린다)
     readStop({ routeId, stopNumber });
+    track("article_open", { route_id: routeId, article_id: stop.articleId });
     if (!(await openOriginal(stop.sourceUrl)))
       showToast(OPEN_FAIL_TOAST_MESSAGE);
   };
@@ -146,12 +158,16 @@ function StopContent({ routeId, totalStops, initialStop }: StopContentProps) {
     if (!stop || isSaving || isUnsaving) return;
     if (stop.scrapped) return unsaveArticle(stop.articleId);
     saveArticle(stop.articleId, {
-      onSuccess: () => showToast(SCRAP_TOAST_MESSAGE),
+      onSuccess: () => {
+        track("article_save", { article_id: stop.articleId });
+        showToast(SCRAP_TOAST_MESSAGE);
+      },
     });
   };
 
   const handleSharePress = async () => {
     if (!stop) return;
+    track("share_click", { share_type: "article_link" });
     await Clipboard.setStringAsync(stop.sourceUrl);
     showToast(COPY_LINK_TOAST_MESSAGE);
   };

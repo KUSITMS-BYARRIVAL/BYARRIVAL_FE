@@ -2,6 +2,7 @@ import * as WebBrowser from "expo-web-browser";
 import { useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 
+import { track } from "@/lib/analytics";
 import { CATEGORY_IMAGES, CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { CategoryFilter } from "@/screens/archive/_components/category-filter";
@@ -70,25 +71,35 @@ export function ArchiveList({
                 aiSummary={article.oneLine}
                 isBookmarked
                 isDeleted={!article.available}
-                onPress={() => openSource(article.sourceUrl)}
+                onPress={() => {
+                  track("saved_item_open", {
+                    tab: "article",
+                    article_id: article.articleId,
+                  });
+                  openSource(article.sourceUrl);
+                }}
                 onBookmarkPress={() => onRemove(article.scrapId)}
               />
             ))
-          : smalltalks
-              .filter(isVisible)
-              .map((smalltalk) => (
-                <EditorPickSmalltalkCard
-                  key={smalltalk.scrapId}
-                  category={CATEGORY_KEY_BY_ID[smalltalk.categoryId]}
-                  categoryLabel={smalltalk.categoryName}
-                  newsTitle={smalltalk.articleTitle}
-                  question={smalltalk.hook}
-                  isBookmarked
-                  isDeleted={!smalltalk.available}
-                  onPress={() => openSource(smalltalk.sourceUrl)}
-                  onBookmarkPress={() => onRemove(smalltalk.scrapId)}
-                />
-              ))}
+          : smalltalks.filter(isVisible).map((smalltalk) => (
+              <EditorPickSmalltalkCard
+                key={smalltalk.scrapId}
+                category={CATEGORY_KEY_BY_ID[smalltalk.categoryId]}
+                categoryLabel={smalltalk.categoryName}
+                newsTitle={smalltalk.articleTitle}
+                question={smalltalk.hook}
+                isBookmarked
+                isDeleted={!smalltalk.available}
+                onPress={() => {
+                  track("saved_item_open", {
+                    tab: "smalltalk",
+                    talk_id: smalltalk.smalltalkId,
+                  });
+                  openSource(smalltalk.sourceUrl);
+                }}
+                onBookmarkPress={() => onRemove(smalltalk.scrapId)}
+              />
+            ))}
       </View>
     </ScrollView>
   );

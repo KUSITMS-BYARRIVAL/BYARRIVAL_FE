@@ -2,7 +2,7 @@ import { Image } from "expo-image";
 import { router, useFocusEffect } from "expo-router";
 import { setStatusBarStyle } from "expo-status-bar";
 import * as WebBrowser from "expo-web-browser";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BackHandler, Pressable, ScrollView, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -10,6 +10,7 @@ import { Button } from "@/components/button/button";
 import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useAgreeTerms } from "@/hooks/mutations/use-agree-terms";
 import { useGetTerms } from "@/hooks/queries/use-get-terms";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 import type { TermsResponse } from "@/types/user/user.types";
 
 import { TermsCheckRow } from "./_components/terms-check-row";
@@ -31,6 +32,9 @@ export function TermsScreen() {
   const { data: terms = [], isPending, isError, refetch } = useGetTerms();
   const { mutate: agree, isPending: isAgreeing } = useAgreeTerms();
   const [checkedIds, setCheckedIds] = useState<number[]>([]);
+  // 온보딩 소요 시간(onboarding_complete)의 시작
+  const markStarted = useOnboardingStore((state) => state.markStarted);
+  useEffect(() => markStarted(), [markStarted]);
 
   // 어두운 배경이라 이 화면에 있는 동안만 상태바 글자를 밝게 한다
   // 리렌더마다 다시 실행되지 않게 고정한다 (실행될 때마다 상태바가 깜빡인다)

@@ -1,5 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 
+import { track } from "@/lib/analytics";
 import { useToastStore } from "@/stores/toast-store";
 
 const MAX_RETRY_COUNT = 2;
@@ -17,12 +18,14 @@ export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
       if (query.meta?.skipToast) return;
+      track("error_view", { code: error.code });
       useToastStore.getState().showToast({ message: error.message });
     },
   }),
   mutationCache: new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       if (mutation.meta?.skipToast) return;
+      track("error_view", { code: error.code });
       useToastStore.getState().showToast({ message: error.message });
     },
   }),

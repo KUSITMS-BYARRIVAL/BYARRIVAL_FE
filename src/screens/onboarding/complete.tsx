@@ -6,6 +6,7 @@ import { Button } from "@/components/button/button";
 import type { Time } from "@/components/time-picker/time-picker";
 import { ProgressStepper } from "@/components/progress-stepper/progress-stepper";
 import { useCompleteOnboarding } from "@/hooks/mutations/use-complete-onboarding";
+import { track } from "@/lib/analytics";
 import { COMMUTE_WORDS, INTERESTS, USER_TYPES } from "@/screens/_constants";
 import { useAuthStore } from "@/stores/auth-store";
 import { useOnboardingStore } from "@/stores/onboarding-store";
@@ -94,7 +95,16 @@ export function OnboardingCompleteScreen() {
           onPress={() =>
             mutate(undefined, {
               // 완료로 저장하면 루트 가드가 홈으로 보낸다 (온보딩으로 돌아갈 수 없다)
-              onSuccess: () => setOnboarded(),
+              onSuccess: () => {
+                const { startedAt } = useOnboardingStore.getState();
+                track("onboarding_complete", {
+                  duration_sec:
+                    startedAt === null
+                      ? null
+                      : Math.round((Date.now() - startedAt) / 1000),
+                });
+                setOnboarded();
+              },
             })
           }
         />

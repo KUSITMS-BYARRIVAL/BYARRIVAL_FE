@@ -1,6 +1,7 @@
 import { View } from "react-native";
 
 import { useUpdateMe } from "@/hooks/mutations/use-update-me";
+import { track } from "@/lib/analytics";
 import { SelectionCard } from "@/screens/_components/selection-card";
 import { USER_TYPES } from "@/screens/_constants";
 import { fromTravelType, toTravelType } from "@/types/user/user.mappers";
@@ -29,7 +30,13 @@ export function ProfileUserTypeScreen() {
                   disabled={isPending}
                   onPress={() =>
                     userType !== type &&
-                    mutate({ travelType: toTravelType(type) })
+                    mutate(
+                      { travelType: toTravelType(type) },
+                      {
+                        onSuccess: () =>
+                          track("setting_change", { field: "situation" }),
+                      },
+                    )
                   }
                 />
               ))}

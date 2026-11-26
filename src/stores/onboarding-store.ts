@@ -48,6 +48,10 @@ type OnboardingDraft = {
 };
 
 type OnboardingState = OnboardingDraft & {
+  /** 온보딩 첫 화면(약관 또는 닉네임)에 들어온 시각(ms). 메모리에만 있어 앱을 다시 켜면 다시 들어온 시각부터 잰다 */
+  startedAt: number | null;
+  /** 처음 한 번만 시작 시각을 남긴다 (약관 → 닉네임으로 넘어가도 유지) */
+  markStarted: () => void;
   /** 서버에 저장된 값으로 초안을 채운다 (중간 이탈 후 이어서 진행) */
   hydrate: (draft: Partial<OnboardingDraft>) => void;
   setNickname: (nickname: string) => void;
@@ -76,6 +80,9 @@ const INITIAL: OnboardingDraft = {
 // 단계마다 서버에 저장하고, 화면 사이에서는 이 초안으로 값을 넘긴다 (뒤로 가도 유지)
 export const useOnboardingStore = create<OnboardingState>((set) => ({
   ...INITIAL,
+  startedAt: null,
+  markStarted: () =>
+    set(({ startedAt }) => ({ startedAt: startedAt ?? Date.now() })),
   hydrate: (draft) => set(draft),
   setNickname: (nickname) => set({ nickname }),
   setUserType: (userType) => set({ userType }),
@@ -89,5 +96,5 @@ export const useOnboardingStore = create<OnboardingState>((set) => ({
     })),
   setJobGroup: (jobGroup) => set({ jobGroup }),
   setRegion: (region) => set({ region }),
-  reset: () => set(INITIAL),
+  reset: () => set({ ...INITIAL, startedAt: null }),
 }));

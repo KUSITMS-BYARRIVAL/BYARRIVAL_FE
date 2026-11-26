@@ -1,5 +1,6 @@
 import * as SecureStore from "expo-secure-store";
 
+import { posthog } from "@/lib/analytics";
 import { queryClient } from "@/lib/query-client";
 
 import { useAuthStore } from "../auth-store";
@@ -114,6 +115,23 @@ describe("useAuthStore", () => {
         isOnboarded: false,
       });
       expect(queryClient.getQueryData(["me"])).toBeUndefined();
+    });
+  });
+
+  describe("clearSession · PostHog", () => {
+    it("PostHog 사용자 식별을 초기화한다", async () => {
+      await useAuthStore.getState().clearSession();
+
+      expect(posthog.reset).toHaveBeenCalledTimes(1);
+    });
+
+    it("SecureStore 삭제가 실패해도 PostHog 사용자 식별을 초기화한다", async () => {
+      deleteItemAsync.mockRejectedValueOnce(new Error("삭제 실패"));
+
+      await expect(useAuthStore.getState().clearSession()).rejects.toThrow(
+        "삭제 실패",
+      );
+      expect(posthog.reset).toHaveBeenCalledTimes(1);
     });
   });
 

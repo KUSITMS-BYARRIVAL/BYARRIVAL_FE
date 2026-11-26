@@ -8,6 +8,7 @@ import { useMarkAllNotificationsRead } from "@/hooks/mutations/use-mark-all-noti
 import { useMarkNotificationRead } from "@/hooks/mutations/use-mark-notification-read";
 import { useGetNotifications } from "@/hooks/queries/use-get-notifications";
 import { useGetUnreadCount } from "@/hooks/queries/use-get-unread-count";
+import { track } from "@/lib/analytics";
 import { Notification } from "@/screens/notifications/_components/notification";
 import { NOTIFICATION_TYPES } from "@/screens/notifications/_constants";
 import {
@@ -77,6 +78,7 @@ export function NotificationsScreen() {
               time={formatNotificationTime(item.createdAt, now)}
               isUnread={!item.read}
               onPress={() => {
+                track("notification_item_click", { type: item.type });
                 if (!item.read) markRead(item.id);
                 openNotification(item.type, item.params);
               }}

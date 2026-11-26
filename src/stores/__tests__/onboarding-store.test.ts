@@ -75,6 +75,28 @@ describe("useOnboardingStore", () => {
     expect(state().travelMinutes).toBe(45);
   });
 
+  describe("startedAt", () => {
+    beforeEach(() => jest.useFakeTimers());
+    afterEach(() => jest.useRealTimers());
+
+    it("markStarted는 처음 시각만 남기고 두 번째 호출에도 유지한다", () => {
+      jest.setSystemTime(1000);
+      state().markStarted();
+      jest.setSystemTime(5000);
+      state().markStarted();
+
+      expect(state().startedAt).toBe(1000);
+    });
+
+    it("reset하면 startedAt이 null이 된다", () => {
+      jest.setSystemTime(1000);
+      state().markStarted();
+      state().reset();
+
+      expect(state().startedAt).toBeNull();
+    });
+  });
+
   it("reset은 바뀐 모든 값을 초기값으로 되돌린다", () => {
     state().hydrate({
       nickname: "홍길동",

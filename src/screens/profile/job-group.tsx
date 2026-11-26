@@ -1,6 +1,7 @@
 import { View } from "react-native";
 
 import { useReplaceJobGroups } from "@/hooks/mutations/use-replace-job-groups";
+import { track } from "@/lib/analytics";
 import { SelectionTile } from "@/screens/_components/selection-tile";
 import { JOB_GROUPS } from "@/screens/_constants";
 import { fromJobGroupCode, toJobGroupCode } from "@/types/user/user.mappers";
@@ -40,7 +41,11 @@ export function ProfileJobGroupScreen() {
                       disabled={isPending}
                       className="w-[32%]"
                       onPress={() =>
-                        !isSelected && mutate([toJobGroupCode(value)])
+                        !isSelected &&
+                        mutate([toJobGroupCode(value)], {
+                          onSuccess: () =>
+                            track("setting_change", { field: "job" }),
+                        })
                       }
                     />
                   );

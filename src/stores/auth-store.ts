@@ -1,6 +1,7 @@
 import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 
+import { posthog } from "@/lib/analytics";
 import { queryClient } from "@/lib/query-client";
 import { useOnboardingStore } from "@/stores/onboarding-store";
 
@@ -113,6 +114,8 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       });
       queryClient.clear();
       useOnboardingStore.getState().reset();
+      // 같은 기기에서 다음에 로그인한 사람의 이벤트가 이전 사용자에게 묶이지 않게 한다
+      posthog.reset();
     }
   },
 }));

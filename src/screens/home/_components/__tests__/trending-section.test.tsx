@@ -1,10 +1,13 @@
 import { render, screen, userEvent } from "@testing-library/react-native";
 
+import { posthog } from "@/lib/analytics";
+
 import { TrendingSection } from "../trending-section";
 
 const CHIPS = [
   {
     label: "내 직군 · 기획·마케팅",
+    jobGroup: "PLANNING_MARKETING",
     isAggregating: false,
     articles: [
       { title: "직군 기사 1", url: "https://example.com/j1", viewers: 1234 },
@@ -13,6 +16,7 @@ const CHIPS = [
   },
   {
     label: "전체",
+    jobGroup: null,
     isAggregating: false,
     articles: [
       { title: "전체 기사 1", url: "https://example.com/a1", viewers: 64 },
@@ -102,6 +106,7 @@ describe("TrendingSection", () => {
     const user = userEvent.setup();
     const designChip = {
       label: "내 직군 · 디자인",
+      jobGroup: "DESIGN",
       isAggregating: false,
       articles: [
         { title: "디자인 기사", url: "https://example.com/d1", viewers: 5 },
@@ -123,7 +128,10 @@ describe("TrendingSection", () => {
   it("선택한 칩이 집계중이면 기사 목록 대신 집계중 카드를 보여주고 칩은 그대로 둔다", async () => {
     const user = userEvent.setup();
     await renderSection({
-      chips: [CHIPS[0]!, { label: "전체", isAggregating: true, articles: [] }],
+      chips: [
+        CHIPS[0]!,
+        { label: "전체", jobGroup: null, isAggregating: true, articles: [] },
+      ],
     });
     expect(screen.queryByText("데이터를 집계중이에요")).toBeNull();
     await user.press(allChip());
@@ -137,6 +145,7 @@ describe("TrendingSection", () => {
     const user = userEvent.setup();
     const designChip = {
       label: "내 직군 · 디자인",
+      jobGroup: "DESIGN",
       isAggregating: false,
       articles: [
         { title: "디자인 기사", url: "https://example.com/d1", viewers: 5 },
@@ -158,9 +167,68 @@ describe("TrendingSection", () => {
     expect(screen.getByText("전체 기사 1")).toBeOnTheScreen();
   });
 
+  describe("집계중 이벤트", () => {
+    const AGGREGATING_ALL = {
+      label: "전체",
+      jobGroup: null,
+      isAggregating: true,
+      articles: [],
+    };
+
+    beforeEach(() => jest.mocked(posthog.capture).mockClear());
+
+    it("선택한 칩이 집계중이면 home_aggregating_view를 칩 값과 함께 1번만 보낸다", async () => {
+      const user = userEvent.setup();
+      await renderSection({ chips: [AGGREGATING_ALL, CHIPS[0]!] });
+      await user.press(jobGroupChip());
+      await user.press(allChip());
+
+      expect(posthog.capture).toHaveBeenCalledTimes(1);
+      expect(posthog.capture).toHaveBeenCalledWith("home_aggregating_view", {
+        screen: "home",
+        chip: "all",
+      });
+    });
+
+    it("집계중인 칩이 직군이면 직군 코드를 chip으로 보낸다", async () => {
+      await renderSection({
+        chips: [{ ...CHIPS[0]!, isAggregating: true, articles: [] }],
+      });
+
+      expect(posthog.capture).toHaveBeenCalledWith("home_aggregating_view", {
+        screen: "home",
+        chip: "PLANNING_MARKETING",
+      });
+    });
+
+    it("다시 렌더해도 추가로 보내지 않는다", async () => {
+      await renderSection({ chips: [AGGREGATING_ALL] });
+      await screen.rerender(
+        <TrendingSection
+          route="출근길"
+          person="직장인"
+          userType="worker"
+          chips={[AGGREGATING_ALL]}
+          onSeeAllPress={jest.fn()}
+          onArticlePress={jest.fn()}
+        />,
+      );
+
+      expect(posthog.capture).toHaveBeenCalledTimes(1);
+    });
+
+    it("집계중인 칩이 없으면 보내지 않는다", async () => {
+      await renderSection();
+
+      expect(posthog.capture).not.toHaveBeenCalled();
+    });
+  });
+
   it("선택한 칩의 기사가 없으면 기사 행을 그리지 않는다", async () => {
     await renderSection({
-      chips: [{ label: "전체", isAggregating: false, articles: [] }],
+      chips: [
+        { label: "전체", jobGroup: null, isAggregating: false, articles: [] },
+      ],
     });
     expect(screen.queryByText(/명이 보고 있어요/)).toBeNull();
   });

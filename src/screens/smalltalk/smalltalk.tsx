@@ -10,6 +10,7 @@ import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useSaveSmalltalk } from "@/hooks/mutations/use-save-smalltalk";
 import { useUnsaveSmalltalk } from "@/hooks/mutations/use-unsave-smalltalk";
 import { useGetTodaySmalltalks } from "@/hooks/queries/use-get-today-smalltalks";
+import { track } from "@/lib/analytics";
 import { EditorPickSmalltalkCard } from "@/screens/_components/editor-pick-smalltalk-card";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 
@@ -35,6 +36,10 @@ export function SmalltalkScreen() {
       }));
     setBookmarked(!isBookmarked);
     (isBookmarked ? unsaveSmalltalk : saveSmalltalk).mutate(smalltalkId, {
+      // 화면은 먼저 바뀌므로 저장이 성공한 시점에 보낸다 (해제는 이벤트 없음)
+      onSuccess: () => {
+        if (!isBookmarked) track("article_save", { talk_id: smalltalkId });
+      },
       onError: () => setBookmarked(isBookmarked),
     });
   };
@@ -84,6 +89,10 @@ export function SmalltalkScreen() {
                   question={smalltalk.hook}
                   isBookmarked={isBookmarked}
                   onPress={() => {
+                    track("smalltalk_card_click", {
+                      talk_id: smalltalk.smalltalkId,
+                      source: "smalltalk_list",
+                    });
                     // 서버가 준 주소라도 https 원문만 연다
                     if (smalltalk.sourceUrl.startsWith("https://"))
                       WebBrowser.openBrowserAsync(smalltalk.sourceUrl);

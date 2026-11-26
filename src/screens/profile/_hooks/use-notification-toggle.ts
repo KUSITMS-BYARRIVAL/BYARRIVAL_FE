@@ -4,6 +4,7 @@ import { AppState, Linking } from "react-native";
 import { useUpdateNotificationPermission } from "@/hooks/mutations/use-update-notification-permission";
 import { useUpdateNotificationSettings } from "@/hooks/mutations/use-update-notification-settings";
 import { useGetNotificationSettings } from "@/hooks/queries/use-get-notification-settings";
+import { track } from "@/lib/analytics";
 import {
   getNotificationPermission,
   requestNotificationPermission,
@@ -63,7 +64,12 @@ export function useNotificationToggle() {
           onCancel: () => undefined,
         });
       }
-      savePermission(await requestNotificationPermission());
+      const requested = await requestNotificationPermission();
+      track("push_permission_result", {
+        result: requested === "GRANTED" ? "granted" : "denied",
+        source: "profile",
+      });
+      savePermission(requested);
     } catch {
       // 권한 모듈이 없는 옛 개발 빌드 — 수신 설정만 바뀐다
     }

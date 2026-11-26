@@ -76,9 +76,9 @@ describe("ProfileInterestsScreen", () => {
     const user = userEvent.setup();
     await render(<ProfileInterestsScreen />);
     await user.press(screen.getByRole("checkbox", { name: "스포츠" }));
-    expect(mockReplace).toHaveBeenLastCalledWith([1, 2, 8]);
+    expect(mockReplace).toHaveBeenLastCalledWith([1, 2, 8], expect.anything());
     await user.press(screen.getByRole("checkbox", { name: "경제·금융" }));
-    expect(mockReplace).toHaveBeenLastCalledWith([2]);
+    expect(mockReplace).toHaveBeenLastCalledWith([2], expect.anything());
   });
 
   it("마지막 하나는 선택된 채 비활성화되어 뺄 수 없다", async () => {

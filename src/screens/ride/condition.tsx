@@ -7,6 +7,7 @@ import { Badge } from "@/components/badge/badge";
 import { Button } from "@/components/button/button";
 import { Header } from "@/components/header/header";
 import { useCreateRoute } from "@/hooks/mutations/use-create-route";
+import { track } from "@/lib/analytics";
 import { useToastStore } from "@/stores/toast-store";
 import { formatMonthDayWeekday } from "@/utils/format-date";
 
@@ -17,17 +18,29 @@ export function ConditionScreen() {
   const { top, bottom } = useSafeAreaInsets();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { mutate: createRoute, isPending } = useCreateRoute();
+  const [enteredAt] = useState(Date.now);
 
   // 담기 단계(CREATED)에서 다른 컨디션을 고르면 서버가 같은 routeId로 노선을 다시 만든다 (담은 카드 · 위치 초기화). 그 외엔 기존 노선 그대로
-  const handleStart = () =>
-    createRoute(CONDITIONS[selectedIndex].condition, {
+  const handleStart = () => {
+    const { condition } = CONDITIONS[selectedIndex];
+    const timeToSelectSec = Math.round((Date.now() - enteredAt) / 1000);
+    createRoute(condition, {
       onSuccess: ({ state }) => {
-        if (state !== "EMPTY") return router.push("/ride/select");
+        if (state !== "EMPTY") {
+          track("condition_select", {
+            condition,
+            time_to_select_sec: timeToSelectSec,
+            // 처음에 맑음(0번)이 미리 선택돼 있다
+            is_default: selectedIndex === 0,
+          });
+          return router.push("/ride/select");
+        }
         // [임시] EMPTY 화면 모양이 정해지기 전까지 토스트 후 홈으로
         useToastStore.getState().showToast({ message: EMPTY_ROUTE_MESSAGE });
         router.dismissTo("/");
       },
     });
+  };
 
   return (
     <View className="flex-1 bg-grey-100" style={{ paddingTop: top }}>

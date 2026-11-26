@@ -1,5 +1,6 @@
 import { MutationObserver } from "@tanstack/react-query";
 
+import { posthog } from "@/lib/analytics";
 import { useToastStore } from "@/stores/toast-store";
 import { ApiError } from "@/types/api";
 
@@ -49,6 +50,7 @@ describe("queryClient 쿼리 재시도 정책", () => {
 
 describe("queryClient mutation 에러 토스트", () => {
   beforeEach(() => {
+    jest.mocked(posthog.capture).mockClear();
     jest.useFakeTimers();
     useToastStore.getState().hideToast();
   });
@@ -68,6 +70,22 @@ describe("queryClient mutation 에러 토스트", () => {
     expect(useToastStore.getState().toast).toBeNull();
   });
 
+  it("mutation이 실패하면 error_view를 에러 code와 함께 보낸다", async () => {
+    await failMutation(new ApiError(400, "BAD", "요청이 잘못됐어요"));
+
+    expect(posthog.capture).toHaveBeenCalledWith("error_view", {
+      code: "BAD",
+    });
+  });
+
+  it("mutation에 meta.skipToast가 true이면 error_view를 보내지 않는다", async () => {
+    await failMutation(new ApiError(400, "BAD", "요청이 잘못됐어요"), {
+      skipToast: true,
+    });
+
+    expect(posthog.capture).not.toHaveBeenCalled();
+  });
+
   it.each([{ skipToast: false }, undefined])(
     "meta가 %j이면 토스트가 뜬다",
     async (meta) => {
@@ -80,6 +98,7 @@ describe("queryClient mutation 에러 토스트", () => {
 
 describe("queryClient 조회 에러 토스트", () => {
   beforeEach(() => {
+    jest.mocked(posthog.capture).mockClear();
     jest.useFakeTimers();
     useToastStore.getState().hideToast();
   });
@@ -107,5 +126,21 @@ describe("queryClient 조회 에러 토스트", () => {
     });
 
     expect(useToastStore.getState().toast).toBeNull();
+  });
+
+  it("조회가 실패하면 error_view를 에러 code와 함께 보낸다", async () => {
+    await failQuery(new ApiError(404, "NOT_FOUND", "기록이 없어요"));
+
+    expect(posthog.capture).toHaveBeenCalledWith("error_view", {
+      code: "NOT_FOUND",
+    });
+  });
+
+  it("조회에 meta.skipToast가 true이면 error_view를 보내지 않는다", async () => {
+    await failQuery(new ApiError(404, "NOT_FOUND", "기록이 없어요"), {
+      skipToast: true,
+    });
+
+    expect(posthog.capture).not.toHaveBeenCalled();
   });
 });
