@@ -12,6 +12,7 @@ import { ProgressStepper } from "@/components/progress-stepper/progress-stepper"
 import { useAnswerQuiz } from "@/hooks/mutations/use-answer-quiz";
 import { useGetQuizzes } from "@/hooks/queries/use-get-quizzes";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { CATEGORY_KEY_BY_ID } from "@/screens/_constants";
 import type { Quiz, QuizAnswer } from "@/types/quiz/quiz.types";
@@ -64,7 +65,17 @@ export function QuizScreen() {
     setIndex(current);
     answerQuiz(
       { routeId, quizId: quiz.quizId, choiceSeq },
-      { onSuccess: setAnswer },
+      {
+        onSuccess: (result) => {
+          // 이미 푼 문제는 다시 보기라 채점 요청이 없어, 마지막 문제를 채점한 응답에서만 finished가 true다
+          if (result.progress.finished)
+            track("quiz_complete", {
+              score: result.progress.correctCount,
+              total: result.progress.total,
+            });
+          setAnswer(result);
+        },
+      },
     );
   };
 
