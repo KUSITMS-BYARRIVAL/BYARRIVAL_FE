@@ -5,6 +5,7 @@ import { TrendingSection } from "../trending-section";
 const CHIPS = [
   {
     label: "내 직군 · 기획·마케팅",
+    jobGroup: "PLANNING_MARKETING",
     isAggregating: false,
     articles: [
       { title: "직군 기사 1", url: "https://example.com/j1", viewers: 1234 },
@@ -13,6 +14,7 @@ const CHIPS = [
   },
   {
     label: "전체",
+    jobGroup: null,
     isAggregating: false,
     articles: [
       { title: "전체 기사 1", url: "https://example.com/a1", viewers: 64 },
@@ -102,6 +104,7 @@ describe("TrendingSection", () => {
     const user = userEvent.setup();
     const designChip = {
       label: "내 직군 · 디자인",
+      jobGroup: "DESIGN",
       isAggregating: false,
       articles: [
         { title: "디자인 기사", url: "https://example.com/d1", viewers: 5 },
@@ -123,7 +126,10 @@ describe("TrendingSection", () => {
   it("선택한 칩이 집계중이면 기사 목록 대신 집계중 카드를 보여주고 칩은 그대로 둔다", async () => {
     const user = userEvent.setup();
     await renderSection({
-      chips: [CHIPS[0]!, { label: "전체", isAggregating: true, articles: [] }],
+      chips: [
+        CHIPS[0]!,
+        { label: "전체", jobGroup: null, isAggregating: true, articles: [] },
+      ],
     });
     expect(screen.queryByText("데이터를 집계중이에요")).toBeNull();
     await user.press(allChip());
@@ -137,6 +143,7 @@ describe("TrendingSection", () => {
     const user = userEvent.setup();
     const designChip = {
       label: "내 직군 · 디자인",
+      jobGroup: "DESIGN",
       isAggregating: false,
       articles: [
         { title: "디자인 기사", url: "https://example.com/d1", viewers: 5 },
@@ -160,7 +167,9 @@ describe("TrendingSection", () => {
 
   it("선택한 칩의 기사가 없으면 기사 행을 그리지 않는다", async () => {
     await renderSection({
-      chips: [{ label: "전체", isAggregating: false, articles: [] }],
+      chips: [
+        { label: "전체", jobGroup: null, isAggregating: false, articles: [] },
+      ],
     });
     expect(screen.queryByText(/명이 보고 있어요/)).toBeNull();
   });

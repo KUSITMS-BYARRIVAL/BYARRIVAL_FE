@@ -77,7 +77,7 @@ describe("ProfileRegionScreen", () => {
     const user = userEvent.setup();
     await render(<ProfileRegionScreen />);
     await user.press(screen.getByRole("checkbox", { name: "강동구" }));
-    expect(mockChange).toHaveBeenCalledWith(12);
+    expect(mockChange).toHaveBeenCalledWith(12, expect.anything());
   });
 
   it("검색 결과를 고르면 그 지역으로 저장한다", async () => {
@@ -85,6 +85,6 @@ describe("ProfileRegionScreen", () => {
     await render(<ProfileRegionScreen />);
     await user.type(screen.getByLabelText("지역명 검색"), "해운대");
     await user.press(screen.getByRole("button", { name: "부산 해운대구" }));
-    expect(mockChange).toHaveBeenCalledWith(21);
+    expect(mockChange).toHaveBeenCalledWith(21, expect.anything());
   });
 });

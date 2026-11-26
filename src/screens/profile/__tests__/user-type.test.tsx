@@ -52,6 +52,9 @@ describe("ProfileUserTypeScreen", () => {
     const user = userEvent.setup();
     await render(<ProfileUserTypeScreen />);
     await user.press(screen.getByRole("radio", { name: /학생/ }));
-    expect(mockUpdateMe).toHaveBeenCalledWith({ travelType: "STUDENT" });
+    expect(mockUpdateMe).toHaveBeenCalledWith(
+      { travelType: "STUDENT" },
+      expect.anything(),
+    );
   });
 });

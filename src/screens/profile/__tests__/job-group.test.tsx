@@ -51,6 +51,9 @@ describe("ProfileJobGroupScreen", () => {
     const user = userEvent.setup();
     await render(<ProfileJobGroupScreen />);
     await user.press(screen.getByRole("radio", { name: /미디어·문화·스포츠/ }));
-    expect(mockReplace).toHaveBeenCalledWith(["MEDIA_CULTURE_SPORTS"]);
+    expect(mockReplace).toHaveBeenCalledWith(
+      ["MEDIA_CULTURE_SPORTS"],
+      expect.anything(),
+    );
   });
 });
