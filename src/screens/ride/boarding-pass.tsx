@@ -9,6 +9,7 @@ import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { useDepart } from "@/hooks/mutations/use-depart";
 import { useReturnToCardSelection } from "@/hooks/mutations/use-return-to-card-selection";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { track } from "@/lib/analytics";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
 import { BoardingPassCard } from "@/screens/ride/_components/boarding-pass-card";
 import { OVER_LIMIT_TOAST_MESSAGE } from "@/screens/ride/_constants";
@@ -45,12 +46,21 @@ export function BoardingPassScreen() {
   };
 
   const handleDepart = () => {
-    if (routeId === undefined) return;
+    if (!route) return;
     // 응답 전에 나가도 되돌리기 요청이 출발과 엇갈리지 않게 보내는 순간부터 막는다 (실패하면 다시 푼다)
     hasSentDepartRef.current = true;
-    depart(routeId, {
-      // 출발하면 노선이 고정되므로 뒤로 가도 탑승권으로 돌아오지 않게 바꾼다
-      onSuccess: () => router.replace("/ride/stop"),
+    depart(route.routeId, {
+      onSuccess: () => {
+        track("route_start", {
+          route_id: route.routeId,
+          article_count: route.cart.count,
+          expected_min: route.cart.totalMinutes,
+          available_min: route.targetMinutes,
+          condition: route.condition,
+        });
+        // 출발하면 노선이 고정되므로 뒤로 가도 탑승권으로 돌아오지 않게 바꾼다
+        router.replace("/ride/stop");
+      },
       onError: () => {
         hasSentDepartRef.current = false;
       },

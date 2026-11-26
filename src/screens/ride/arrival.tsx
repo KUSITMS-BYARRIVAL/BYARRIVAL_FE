@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { router } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { type ComponentRef, useEffect, useRef } from "react";
@@ -13,7 +14,11 @@ import { LoadingDots } from "@/components/loading-dots/loading-dots";
 import { ShareButton } from "@/components/share-button/share-button";
 import { useArrive } from "@/hooks/mutations/use-arrive";
 import { useGetQuizResult } from "@/hooks/queries/use-get-quiz-result";
-import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import {
+  getTodayRouteQuery,
+  useGetTodayRoute,
+} from "@/hooks/queries/use-get-today-route";
+import { track } from "@/lib/analytics";
 import { LogoHeader } from "@/screens/_components/logo-header";
 import { openArticle } from "@/screens/_helpers";
 import { useCommuteWords } from "@/screens/_hooks/use-commute-words";
@@ -21,6 +26,7 @@ import { ArrivalHero } from "@/screens/ride/_components/arrival-hero";
 import { ArrivalResultCard } from "@/screens/ride/_components/arrival-result-card";
 import { ArrivalShareCard } from "@/screens/ride/_components/arrival-share-card";
 import { useToastStore } from "@/stores/toast-store";
+import type { TodayRoute } from "@/types/ride/ride.types";
 
 export function ArrivalScreen() {
   const { top, bottom } = useSafeAreaInsets();
@@ -32,11 +38,34 @@ export function ArrivalScreen() {
   const { data: quizResult } = useGetQuizResult(arrival?.routeId);
   const shareCardRef = useRef<ComponentRef<typeof View>>(null);
   const isSharingRef = useRef(false);
+  const queryClient = useQueryClient();
+  const isTop3Aggregating = arrival?.top3?.status === "AGGREGATING";
 
   // 도착 API는 같은 결과를 돌려주므로(멱등) 홈 '오늘의 노선 돌아보기'로 다시 들어와도 그대로 부른다
   useEffect(() => {
-    if (routeId !== undefined) arrive(routeId);
-  }, [routeId, arrive]);
+    if (routeId === undefined) return;
+    // 그래서 이번이 처음 완주인지는 호출 전 노선 상태로 가린다. 성공하면 노선 캐시가 다시 받아져 COMPLETED로 바뀐다
+    const before = queryClient.getQueryData<TodayRoute>(
+      getTodayRouteQuery().queryKey,
+    )?.route;
+    arrive(routeId, {
+      onSuccess: ({ readCount, usedMinutes }) => {
+        if (before?.status === "COMPLETED") return;
+        track("route_complete", {
+          route_id: routeId,
+          opened_count: readCount,
+          duration_min: usedMinutes,
+          condition: before?.condition ?? null,
+        });
+      },
+    });
+  }, [routeId, arrive, queryClient]);
+
+  // 도착 응답은 다시 받지 않아 화면 진입당 1번만 바뀐다
+  useEffect(() => {
+    if (isTop3Aggregating)
+      track("home_aggregating_view", { screen: "arrival" });
+  }, [isTop3Aggregating]);
 
   if (!arrival)
     return (
@@ -54,6 +83,7 @@ export function ArrivalScreen() {
     // 연타로 공유 시트가 겹쳐 열리지 않게 막는다
     if (isSharingRef.current) return;
     isSharingRef.current = true;
+    track("share_click", { share_type: "arrival_card" });
     const showFailToast = () =>
       useToastStore.getState().showToast({ message: "공유하지 못했어요" });
     try {

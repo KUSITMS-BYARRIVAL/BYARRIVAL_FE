@@ -18,6 +18,7 @@ import { useBoard } from "@/hooks/mutations/use-board";
 import { useRemoveCard } from "@/hooks/mutations/use-remove-card";
 import { useSaveCursor } from "@/hooks/mutations/use-save-cursor";
 import { useGetTodayRoute } from "@/hooks/queries/use-get-today-route";
+import { track } from "@/lib/analytics";
 import {
   ADD_TOAST_MESSAGE,
   OVER_LIMIT_TOAST_MESSAGE,
@@ -72,6 +73,15 @@ function SelectContent({ route }: { route: Route }) {
 
   useEffect(() => () => clearTimeout(toastTimer.current), []);
 
+  // 노선을 받은 뒤 마운트되므로 화면 진입당 1번. 추천 수용률의 분모
+  const candidateCount = cards.length;
+  useEffect(() => {
+    track("route_candidates_view", {
+      route_id: routeId,
+      candidate_count: candidateCount,
+    });
+  }, [routeId, candidateCount]);
+
   // 헤더 뒤로가기 · iOS 스와이프 · Android 뒤로 버튼 모두 확인을 거친다.
   // 보이는 동안만 막는다 — 정거장에서 홈으로 나갈 때 뒤에 깔린 이 화면도 함께 빠지므로
   usePreventRemove(isFocused && !isLeaving, () =>
@@ -109,15 +119,25 @@ function SelectContent({ route }: { route: Route }) {
     );
   };
 
-  const toggle = ({ articleId, carted, addable }: RouteCard) => {
+  const toggle = ({ articleId, categoryName, carted, addable }: RouteCard) => {
     // 응답으로 노선이 바뀌기 전에 또 누르면 담기 · 빼기 · 시작이 엇갈린다
     if (isAdding || isRemoving || isBoarding) return;
-    if (carted) return removeCard({ routeId, articleId });
+    const cardProperties = { article_id: articleId, category: categoryName };
+    if (carted)
+      return removeCard(
+        { routeId, articleId },
+        { onSuccess: () => track("card_remove", cardProperties) },
+      );
     if (!addable) return showToast(OVER_LIMIT_TOAST_MESSAGE);
     // 뺄 때는 토스트를 띄우지 않는다
     addCard(
       { routeId, articleId },
-      { onSuccess: () => showToast(ADD_TOAST_MESSAGE) },
+      {
+        onSuccess: () => {
+          track("card_add", cardProperties);
+          showToast(ADD_TOAST_MESSAGE);
+        },
+      },
     );
   };
   // 바는 목표 시간(T) 대비 담은 시간 — 담기·빼기 때만 바뀐다 (넘기기와 무관). 시간은 탑승권 '예상 시간'과 같은 값
